@@ -1,0 +1,286 @@
+\documentclass[14pt, a4paper]{article}
+\usepackage{minitoc}
+\usepackage[left=3.00cm, right=2.5cm, top=2.00cm, bottom=2.00cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{blindtext}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage[utf8]{vietnam}
+\usepackage{fancyhdr} % header, footer
+\usepackage{hyperref} % loại bỏ border với mục lục và công thức
+\pagestyle{fancy}
+%\usepackage[style=numeric,sortcites]{biblatex}
+%\addbibresource{ref.bib}
+\usepackage[numbers]{natbib}
+\usepackage{indentfirst}
+
+
+%\renewbibmacro*{cite}{%
+%  \printtext[bibhyperref]{%
+%    \printfield{prefixnumber}%
+%    \printfield{labelnumber}%
+%    \ifbool{bbx:subentry}%
+%      {\printfield{entrysetcount}}%
+%   \ifnumequal{\value{citecount}}{\value{citetotal}-1}%
+%       {\gdef\multicitedelim{\addspace\bibstring{and}\space}}%
+%       {\gdef\multicitedelim{\addcomma\space}}%
+%    }%
+%}
+
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+}
+
+\title{Tiểu luận phương pháp số cho đại số tuyến tính}
+
+\author{Nguyễn Chí Thanh}
+
+%\date{24-04-2022}
+\fancyhf{}
+\rhead{\textbf{Học viên thực hiện: Nguyễn Chí Thanh}}
+\lhead{\textbf{GVHD: TS. Nguyễn Trung Hiếu}}
+\rfoot{\thepage}
+\lfoot{\textbf{Phương pháp số cho đại số tuyến tính}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\numberwithin{equation}{section}
+\numberwithin{algorithm}{section}
+
+\setlength{\parindent}{0pt}
+
+\doublespacing
+\begin{document}
+
+\tableofcontents
+
+\maketitle
+
+\nocite{*}
+
+\section{Tổng quan về các phương pháp lặp trên không gian con Krylov}
+
+Các phương pháp trên không gian con Krylov là một nhóm quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
+
+\begin{equation}
+    x \rightarrow \boxed{\mathrm{black} \thickspace \mathrm{box}} \rightarrow Ax
+\end{equation}
+
+Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n (b;A)$ với $\mathcal{K}_n (b; A)$ là không gian con Krylov thứ n $\mathcal{K}_n (b; A)=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$
+Các đặc điểm của không gian con Krylov:
+\begin{itemize}
+    \item Ta có thể xây dựng $\mathcal{K}_n {b;A}$ như một hộp đen
+    \item $\mathcal{K}_n(b;A) \subseteq \mathcal{K}_{n+1}(b;A)$
+    \item Giả sử $P_n(A)$ là một đa thức của ma trận $A$. Bất kỳ một tổ hợp tuyến tính của các vector $b, Ab, \dots$ cũng bằng $P_n(A)$ nhân với $b$, $\lVert b - Ax \rVert_2^2 = \lVert P_n(A)b \rVert_2^2$
+\end{itemize}
+
+Ta xét ma trận Krylov, $K_n = \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \end{bmatrix}$. Đây là một ma trận điều kiện tồi. Vì khi $n$ càng lớn, vector $A^nb$ tiến gần đến bội của một vector riêng của ma trận $A$, làm cho ma trận $K_n$ rất gần với một ma trận kỳ dị. Vì vậy ta cần làm việc với một hệ sơ sở trực chuẩn.
+
+Với ma trận $A$ có kích thước $m \times m$, ta có thể tính một ma trận trực giao $Q$ và một ma trận Hessenberg $H$ có dạng một ma trận tam giác trên và một đường chéo phụ:
+
+\begin{equation}
+    A = QHQ^T
+\end{equation}
+
+$Q_n=\begin{bmatrix} q_1, q_2, \dots, q_n \end{bmatrix}$ là $n$ cột đầu của ma trận $Q$:
+
+\begin{equation} \label{eq:Hessenberg_matrix}
+    \widetilde{H}_n = \begin{bmatrix} h_{1,1} & h_{1, 2} & \dots & h_{1, n} \\
+    h_{2, 1} & h_{2, 2} & \dots & h_{2, n} \\
+    0 & h_{3, 2} & \dots  & h_{3, n} \\
+    \vdots & \space & \space & \vdots \\
+    0 & \dots & h_{n, n-1} & h_{n, n} \\
+    0 & 0 & \dots & h_{n+1, n}\end{bmatrix}
+\end{equation}
+
+$\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ kích thước $(n+1)\times n$ với:
+
+\begin{equation} \label{eq:A_projection}
+    AQ_n = Q_{n+1}\widetilde{H}_n
+\end{equation}
+
+\begin{equation} \label{eq:recurrence_term}
+    Aq_n = h_{1, n}q_1 + h_{2, n}q_2 + \dots + h_{n, n}q_n + h_{n+1, n}q_{n+1}
+\end{equation}
+
+
+\begin{algorithm}
+    \caption{Thuật toán Arnoldi}\label{alg:Arnoldi}
+    \begin{algorithmic}
+        \State {Cho ma trận $A, b$, gán $q_1 \leftarrow b/\lVert b \rVert$}
+        \For {$n = 1,2,3,\dots$}
+            \State $v \leftarrow Aq_n$
+            \For {$j=1$ to $n$}
+                \State $h_{j,n} \leftarrow q_j^T v$
+                \State $v \leftarrow v - h_{j,n}q_j$
+            \EndFor
+            \State $h_{n+1,n} \leftarrow \lVert v \rVert$
+            \State $q_{n+1} \leftarrow v/h_{n+1,n}$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Công thức \ref{eq:recurrence_term} là công thức truy hồi $n+1$ tham số cho vector $q_{n+1}$. Ma trận \ref{eq:Hessenberg_matrix} thu được từ quá trình trực chuẩn hóa Gram-Schmidt. Quá trình này được gọi là thuật toán Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi}. $Q_n=\begin{bmatrix} q_1, q_2, \dots, q_n \end{bmatrix}$ là cơ sở trực chuẩn của không gian con Krylov thứ n $\mathcal{K}_n(b;A)$.
+Nhân cả 2 vế công thức \ref{eq:A_projection} với $Q_n^T$ ta được:
+
+\begin{equation}
+    Q_n^TAQ_n=Q_n^TQ_{n+1}\widetilde{H}_n \\
+    \Rightarrow Q_n^TQ_{n+1}\widetilde{H}_n = \begin{bmatrix}
+        q_1^T \\ q_2^T \\ \vdots \\ q_n^T
+    \end{bmatrix} \begin{bmatrix} q_1, q_2, \dots, q_n, q_{n+1} \end{bmatrix}
+    \begin{bmatrix} H_n \\ h_{n+1,n}e_n^T \end{bmatrix}=\begin{bmatrix} I & 0 \end{bmatrix} \begin{bmatrix} H_n \\ h_{n+1,n}e_n^T \end{bmatrix}=H_n
+\end{equation}
+
+$H_n$ là ma trận thu được bằng cách lấy $n$ hàng đầu của ma trận $\widetilde{H}_n$. $H_n$ có thể được giải thích là phép chiếu trực giao của ma trận $A$ lên $\mathcal{K}_n$ đối với hệ cơ sở $\lbrace q_1, q_2, \dots, q_n \rbrace$, giới hạn ánh xạ $A: \mathbb{C}^m \mapsto \mathbb{C}^m$ sang $H_n: \mathcal{K}_n \mapsto \mathcal{K}_n$. Phép chiếu này được gọi là phép chiếu Rayleigh-Ritz.
+
+Nếu $A$ là ma trận đối xứng thì ma trận $\widetilde{H}_n$ trở thành ma trận ba đường chéo $\widetilde{T}_n$ có dạng:
+
+\begin{equation} \label{eq:Trigonal_Matrix}
+    \widetilde{T}_n = \begin{bmatrix}
+        \alpha_1 & \beta_1 & \space & \space & \space \\
+        \beta_1 & \alpha_2 & \beta_1 & \space & \space \\
+        \space & \beta_2 & \alpha_3 & \ddots & \space \\
+        \space & \space & \ddots & \ddots & \beta_{k-1} \\
+        \space & \space & \space & \beta_{k-1} & \alpha_k \\
+        \space & \space & \space & \space & \beta_{n}
+    \end{bmatrix}
+\end{equation}
+
+Ma trận $\widetilde{T}_n$ thu được từ thuật toán Lanczos được miêu tả ở thuật toán \ref{alg:Lanczos}
+Với:
+
+\begin{equation}
+    AQ_n = Q_{n+1}\widetilde{T}_n \Rightarrow Q_n^TAQ_n = Q_n^TQ_{n+1}\widetilde{T}_n=\begin{bmatrix}
+        q_1^T \\ q_2^T \\ \vdots \\ q_n^T
+    \end{bmatrix} \begin{bmatrix} q_1, q_2, \dots, q_n, q_{n+1} \end{bmatrix}\begin{bmatrix}
+        T_n \\ \beta_n e_n^T
+    \end{bmatrix}=\begin{bmatrix}
+        I & 0
+    \end{bmatrix} \begin{bmatrix}
+        T_n \\ \beta_n e_n^T
+    \end{bmatrix}=T_n
+\end{equation}
+
+$T_n$ là ma trận thu được bằng cách lấy $n$ hàng đầu của ma trận $\widetilde{T}_n$. 
+Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy hồi ba tham số.
+
+\begin{algorithm}
+    \caption{Thuật toán Lanczos}\label{alg:Lanczos}
+    \begin{algorithmic}
+        \State {Cho ma trận $A$ đối xứng, $b$, gán $\beta_0 \leftarrow 0, q_0 \leftarrow 0, q_1 \leftarrow b/\lVert b \rVert$}
+        \For {$n=1,2,3,\dots$}
+            \State $v \leftarrow Aq_n$
+            \State $\alpha_n=q_n^Tv$
+            \State $v \leftarrow v - \beta_{n-1}q_{n-1} - \alpha_n q_n$
+            \State $\beta_n \leftarrow \lVert v \rVert$
+            \State $q_{n+1}=v/\beta_n$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+
+
+\section{Giới thiệu phương pháp GMRES và phương pháp MINRES}
+
+Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
+MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị.
+Hai phương pháp này gần giống với phương pháp Gradient liên hợp nhưng phương pháp Gradient liên hợp cực tiểu hóa hàm mục tiêu $\displaystyle \min_{x \in \mathcal{K}_n (b;A)}\dfrac{1}{2}x^TAx - x^Tb$,
+trong khi hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ n $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n (b;A)}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$
+
+Hai phương pháp GMRES và MINRES giải các bài toán tối ưu hóa có ràng buộc, nói chung là bài toán khá khó giải. Xét $x_n \in \mathcal{K}_n$, ta có thể biểu diễn $x_n$ dạng:
+$x_n = Q_n y$ với $y$ là tọa độ của $x_n$ trong hệ cơ sở trực chuẩn của không gian Krylov thứ n $\mathcal{K}_n$. Hàm mục tiêu trở thành:
+\begin{equation} \min_{y \in \mathbb{R}^{n}}  \lVert b - AQ_n y \rVert_2^2\end{equation}
+
+Như vậy bài toán đã được đưa về bài toán tối ưu có ràng buộc với số chiều của $y$ nhỏ hơn so với $x$. Tuy nhiên với ma trận $A$ có kích thước lớn thì bài toán trên vẫn khá đắt.
+
+Nhưng chúng ta có thể giảm số chiều của bài toán đi nữa bằng cách nhân hàm mục tiêu với ma trận trực giao $Q_{n+1}$ là ma trận cơ sở trực chuẩn của không gian con Krylov thứ n+1:
+\begin{equation} \min_{y \in \mathbb{R}^{n}}  \lVert b - AQ_n y \rVert_2^2 = \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2 \label{eq:uncons_obj}\end{equation}
+
+Ta sử dụng công thức:
+
+\begin{equation}
+    AQ_n = Q_{n+1}\widetilde{H}_n
+\end{equation}
+
+đối với phương pháp GMRES, đối với phương pháp MINRES:
+\begin{equation}
+    AQ_n = Q_{n+1} \widetilde{T}_n
+\end{equation}
+trong đó, $\widetilde{H}_n$ là ma trận Hessenberg có dạng ở công thức \ref{eq:Hessenberg_matrix}:
+và ma trận $\widetilde{T}_n$ là ma trận 3 đường chéo được đề cập ở công thức \ref{eq:Trigonal_Matrix}:
+
+Với $\lVert b \rVert = \beta, q_1 = \dfrac{b}{\beta}$, hàm mục tiêu \eqref{eq:uncons_obj} trở thành:
+
+\begin{equation}
+    \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2=\min_{y \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{H}_n y\rVert_2^2
+\end{equation}
+
+đối với phương pháp GMRES (ma trận A là ma trận không suy biến).
+Đối với phương pháp MINRES (ma trận A là ma trận đối xứng):
+\begin{equation}
+    \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2=\min_{y \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{T}_n y\rVert_2^2
+\end{equation}
+
+Như vậy, bài toán được đưa về một bài toán bình phương tối thiểu với kích thước $(n+1)\times n$
+
+\begin{equation}
+    y_n = \operatorname*{argmin}_{y_n \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{H}_n y\rVert_2^2
+\end{equation}
+
+đối với phương pháp GMRES, và:
+\begin{equation}
+    y_n = \underset{y_n \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{T}_n y\rVert_2^2
+\end{equation}
+
+đối với phương pháp MINRES
+
+
+\section{Các bước phương pháp GMRES}
+
+Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không suy biến.
+
+\begin{algorithm}
+    \caption{Thuật toán GMRES}\label{alg:GMRES}
+    \begin{algorithmic}
+        \State{Gán $q_1 \leftarrow b/\lVert b \rVert$}
+        \For {$n=1,2,3,\dots$}
+            \State {Thực hiện bước thứ n của thuật toán \ref{alg:Arnoldi}}
+            \State {Tìm $y$ để cực tiểu hóa $\lVert \beta e_1 - \widetilde{H}_n y \rVert_2=\lVert r_n \rVert_2$}
+            \State {$x_n \leftarrow Q_n y$}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+
+\section{Các bước phương pháp MINRES}
+
+Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận đối xứng
+
+\begin{algorithm}
+    \caption{Thuật toán MINRES}\label{alg:MINRES}
+    \begin{algorithmic}
+        \State{Gán $q_1 \leftarrow b/\lVert b \rVert$}
+        \For {$n=1,2,3,\dots$}
+            \State {Thực hiện bước thứ n của thuật toán \ref{alg:Lanczos}}
+            \State {Tìm $y$ để cực tiểu hóa $\lVert \beta e_1 - \widetilde{T}_n y \rVert_2=\lVert r_n \rVert_2$}
+            \State {$x_n \leftarrow Q_n y$}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+
+\newpage
+\bibliographystyle{IEEEtraN}
+\bibliography{ref}
+
+%\newpage
+%\printbibliography
+
+\end{document}
