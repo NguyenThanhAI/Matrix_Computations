@@ -17,9 +17,10 @@
 \pagestyle{fancy}
 %\usepackage[style=numeric,sortcites]{biblatex}
 %\addbibresource{ref.bib}
-\usepackage[numbers]{natbib}
+%\usepackage[numbers]{natbib}
 \usepackage{indentfirst}
-
+\usepackage[natbib,backend=biber,style=ieee, sorting=ynt]{biblatex}
+\bibliography{ref.bib}
 
 %\renewbibmacro*{cite}{%
 %  \printtext[bibhyperref]{%
@@ -56,6 +57,17 @@
 
 \setlength{\parindent}{0pt}
 
+\setcounter{secnumdepth}{3} % Cho phép subsubsection trong report
+\setcounter{tocdepth}{3} % Chèn subsubsection vào bảng mục lục
+
+\newtheorem{dl}{Định lý}
+\newtheorem{md}{Mệnh đề}
+\newtheorem{bd}{Bổ đề}
+
+\numberwithin{dl}{section}
+\numberwithin{md}{section}
+\numberwithin{bd}{section}
+
 \doublespacing
 \begin{document}
 
@@ -74,7 +86,7 @@
 
     \includegraphics[scale=0.2]{figures/HUS-logo.jpg}\\[0.5cm]
 
-    \textsc{\Large Chuyên ngành Khoa học dữ liệu}\\[0.5cm] % Major heading such as course name
+    \textsc{\Large Chuyên ngành: Khoa học dữ liệu}\\[0.5cm] % Major heading such as course name
 
     
     %----------------------------------------------------------------------------------------
@@ -134,7 +146,11 @@
     
     \end{titlepage}
 
+\cleardoublepage
+\pagenumbering{gobble}
 \tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
 
 %\maketitle
 
@@ -188,6 +204,9 @@ $\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ 
 \end{equation}
 
 
+\subsection{Thuật toán lặp Arnoldi}
+
+
 \begin{algorithm}
     \caption{Thuật toán Arnoldi}\label{alg:Arnoldi}
     \begin{algorithmic}
@@ -224,17 +243,52 @@ Các thành phần nằm trên đường chéo của ma trận $H_n$ chính là 
 
 Các giá trị riêng của ma trận $H_n$ được gọi là ước lượng giá trị riêng Arnoldi (tại bước $n$) hoặc các giá trị Ritz (tương ứng với $\mathcal{K}_n$) của A. Một vài số trong những số này có thể xấp xỉ bằng một vài trong những giá trị riêng của ma trận $A$ ngay cả khi $n$ nhỏ hơn rất nhiều so với $m$
 
-Một trường hợp đặc biệt, trong quá trình thực hiện thuật toán Arnoldi, tại một bước $n$ nào đó khi tính $v \leftarrow v - h_{j,n}q_j$, nếu thu được $v=0$ ta có thể dừng luôn thuật toán Arnoldi vì không gian con Krylov đã mở rộng đến cực đại hay nói cách khác:
+Để sử dụng thuật toán lặp Arnoldi để ước lượng các giá trị riêng, ta tính giá trị riêng của $H_n$ tại bước thứ $n$. Nếu $m=n$, các giá trị Ritz là các giá trị riêng của ma trận $A$. Nói chung, nếu $n \ll m$, chỉ một số ít giá trị riêng được ước lượng. Thường các giá trị riêng có giá trị gần vùng biên của phổ (tập các giá trị riêng) sẽ được hội tụ đầu tiên.
+
+Trong nhiều ứng dụng thực tế, các giá trị tại khu vực gần biên của phổ được quan tâm chủ yếu:
+
+\begin{itemize}
+    \item Phân tích tích ổn định thường yêu cầu ước lượng bán kính phổ
+    \item Phân tích thành phần chính thường yêu cầu ước lượng giá trị riêng lớn nhất và các vector riêng tương ứng của ma trận $A^T A$
+\end{itemize}
+
+Nếu $A$ có $m$ giá trị riêng phân biệt, thuật toán lặp Arnoldi tìm được tất cả các giá trị riêng này sau $m$ bước. Trong một số trường hợp cụ thể, tốc độ hội tụ trong việc ước lượng các giá trị riêng của thuật toán lặp Arnoldi mang tính hình học (tuyến tính, hàm mũ, ...).
+
+Một số những đặc tính bất biến của thuật toán lặp Arnoldi được nêu ở trong định lý \ref{dl:Arnoldi_Properties}
+
+\begin{dl} \label{dl:Arnoldi_Properties}
+    Một thuật toán lặp Arnoldi áp dụng cho một ma trận $A \in \mathbb{R}^{m \times m}$ thỏa mãn các tính chất sau:
+    \begin{itemize}
+        \item \textbf{Bất biến tịnh tiến:} Nếu ma trận $A$ thay đổi thành $A + \sigma I $ với một số $\sigma \in \mathbb{R}$, và $b$ không đổi thì các giá trị Ritz $\lbrace \theta_j \rbrace$ thay đổi thành $\lbrace \theta_j + \sigma \rbrace$
+        \item \textbf{Bất biến co dãn:} Nếu ma trận $A$ thay đổi thành $\sigma A$ với một số $\sigma \in \mathbb{R}$ và $b$ không đổi thì $\lbrace \theta_j \rbrace$ thành $\lbrace \sigma \theta_j \rbrace$
+        \item \textbf{Bất biến dưới phép biến đổi tương đương trực giao:} Nếu ma trận $A$ thay đổi thành $UAU^T$ với một ma trận $U$ trực giao bất kỳ, $b$ thay đổi thành $Ub$ thì $\lbrace \theta_j \rbrace$ không đổi
+    \end{itemize}
+    Trong cả ba trường hợp trên, các vector Ritz $Q_n y_n$ tương ứng với vector riêng $y_j$ của ma trận $H_n$ không đổi dưới bất kỳ phép biến đổi nào đã được nêu trên.
+\end{dl}
+
+Một trường hợp đặc biệt, trong quá trình thực hiện thuật toán Arnoldi, tại một bước $n$ nào đó khi tính $v \leftarrow v - h_{j,n}q_j$, nếu thu được $v=0$ ta có thể dừng luôn thuật toán Arnoldi vì không gian con Krylov đã mở rộng đến cực đại, các điều sau đồng thời xảy ra:
+
 
 \begin{equation}
-    \mathcal{K}_n=\mathcal{K}_{n+1}=\mathcal{K}_{n+2}=\dots
+    \begin{cases}
+        A \mathcal{K}_n \subseteq  \mathcal{K}_n \\
+        \mathcal{K}_n=\mathcal{K}_{n+1}=\mathcal{K}_{n+2}=\dots \\
+        \text{Từng giá trị riêng của } H_n \text{ là giá trị riêng của } A \\
+        \text{Nếu ma trận } A \text{ là ma trận không kỳ dị, nghiệm chính xác của phương trình } Ax=b \text{ nằm trong } \mathcal{K}_n
+    \end{cases}
 \end{equation}
+
+
+Thuật toán lặp Arnoldi thuận tiện cho việc xây dựng cơ sở cho không gian con Krylov $\mathcal{K}_{n+1}$ từ cơ sở $\mathcal{K}_n$, mỗi bước này tạo thêm một vector mới $q_{n+1}$ và tránh việc sử dụng vector $A^n b$
 
 Thuật toán Arnoldi được sử dụng trong các trường hợp:
 \begin{itemize}
     \item Là cơ sở cho các thuật toán lặp giải hệ phương trình.
     \item Kỹ thuật tính giá trị riêng của ma trận không đối xứng.
-\end{itemize} 
+\end{itemize}
+
+\subsection{Thuật toán lặp Lanczos}
+
 
 Nếu $A$ là ma trận đối xứng thì ma trận $\widetilde{H}_n$ trở thành ma trận ba đường chéo $\widetilde{T}_n$ có dạng:
 
@@ -373,8 +427,11 @@ Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $
 
 
 \newpage
-\bibliographystyle{IEEEtraN}
-\bibliography{ref}
+\addcontentsline{toc}{section}{Tài liệu tham khảo}
+%\bibliographystyle{IEEEtraN}
+%\bibliography{ref}
+\pagestyle{plain}
+\printbibliography[title={Tài liệu tham khảo}]
 
 %\newpage
 %\printbibliography
