@@ -59,9 +59,86 @@
 \doublespacing
 \begin{document}
 
+\begin{titlepage}
+
+    \newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+    
+    \center % Center everything on the page
+     
+    %----------------------------------------------------------------------------------------
+    %	HEADING SECTIONS
+    %----------------------------------------------------------------------------------------
+    \textsc{\LARGE Đại học Quốc Gia Hà Nội}\\[0.5cm]
+    \textsc{\LARGE Đại học Khoa học tự nhiên}\\[0.5cm] % Name of your university/college
+    \textsc{\LARGE Khoa Toán - Cơ - Tin học}\\[0.5cm]
+
+    \includegraphics[scale=0.2]{figures/HUS-logo.jpg}\\[0.5cm]
+
+    \textsc{\Large Chuyên ngành Khoa học dữ liệu}\\[0.5cm] % Major heading such as course name
+
+    
+    %----------------------------------------------------------------------------------------
+    %	TITLE SECTION
+    %----------------------------------------------------------------------------------------
+    
+    \HRule \\[0.4cm]
+    { \huge \bfseries Tiểu luận môn học}\\[0.4cm] % Title of your document
+    \HRule \\[1.5cm]
+
+    \textsc{\Large Môn học: Phương pháp số cho đại số tuyến tính }\\[1.5cm] % Minor heading such as course title
+
+
+    \textsc{\Large Đề tài: So sánh thuật toán GMRES và thuật toán MINRES }\\[1.5cm]
+     
+
+    %----------------------------------------------------------------------------------------
+    %	AUTHOR SECTION
+    %----------------------------------------------------------------------------------------
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushleft} \Large
+        \emph{Giảng viên hướng dẫn:} \\
+        TS. Nguyễn Trung Hiếu % Supervisor's Name
+        \end{flushleft}
+    \end{minipage}\\[2cm]
+
+    \begin{minipage}{0.4\textwidth}
+    \begin{flushleft} \Large
+    \emph{Học viên thực hiện:}\\
+    Nguyễn Chí Thanh \\
+    MSHV: 21007925 \\ % Your name
+    Lớp: Khoa học dữ liệu - K4
+    \end{flushleft}
+    \end{minipage}
+    
+    
+    % If you don't want a supervisor, uncomment the two lines below and remove the section above
+    %\Large \emph{Author:}\\
+    %John \textsc{Smith}\\[3cm] % Your name
+    
+    %----------------------------------------------------------------------------------------
+    %	DATE SECTION
+    %----------------------------------------------------------------------------------------
+    
+    % I don't want day because it is English
+    % {\large \today}\\[2cm] % Date, change the \today to a set date if you want to be precise
+    
+    %----------------------------------------------------------------------------------------
+    %	LOGO SECTION
+    %----------------------------------------------------------------------------------------
+    
+    %\includegraphics{logo/rsz_3logo-khtn.png}\\[1cm] % Include a department/university logo - this will require the graphicx package
+     
+    %----------------------------------------------------------------------------------------
+    
+    \vfill % Fill the rest of the page with whitespace
+    
+    \end{titlepage}
+
 \tableofcontents
 
-\maketitle
+%\maketitle
+
+\newpage
 
 \nocite{*}
 
@@ -73,12 +150,12 @@ Các phương pháp trên không gian con Krylov là một nhóm quan trọng tr
     x \rightarrow \boxed{\mathrm{black} \thickspace \mathrm{box}} \rightarrow Ax
 \end{equation}
 
-Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n (b;A)$ với $\mathcal{K}_n (b; A)$ là không gian con Krylov thứ n $\mathcal{K}_n (b; A)=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$
+Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n$ với $\mathcal{K}_n$ là không gian con Krylov thứ n $\mathcal{K}_n=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$
 Các đặc điểm của không gian con Krylov:
 \begin{itemize}
-    \item Ta có thể xây dựng $\mathcal{K}_n {b;A}$ như một hộp đen
-    \item $\mathcal{K}_n(b;A) \subseteq \mathcal{K}_{n+1}(b;A)$
-    \item Giả sử $P_n(A)$ là một đa thức của ma trận $A$. Bất kỳ một tổ hợp tuyến tính của các vector $b, Ab, \dots$ cũng bằng $P_n(A)$ nhân với $b$, $\lVert b - Ax \rVert_2^2 = \lVert P_n(A)b \rVert_2^2$
+    \item Ta có thể xây dựng $\mathcal{K}_n$ như một hộp đen
+    \item $\mathcal{K}_n \subseteq \mathcal{K}_{n+1}$
+    \item Giả sử $p^n(A)$ là một đa thức của ma trận $A$. Bất kỳ một tổ hợp tuyến tính của các vector $b, Ab, \dots$ cũng bằng $p^n(A)$ nhân với $b$, $\lVert b - Ax \rVert_2^2 = \lVert p^n(A)b \rVert_2^2$
 \end{itemize}
 
 Ta xét ma trận Krylov, $K_n = \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \end{bmatrix}$. Đây là một ma trận điều kiện tồi. Vì khi $n$ càng lớn, vector $A^nb$ tiến gần đến bội của một vector riêng của ma trận $A$, làm cho ma trận $K_n$ rất gần với một ma trận kỳ dị. Vì vậy ta cần làm việc với một hệ sơ sở trực chuẩn.
@@ -127,7 +204,7 @@ $\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ 
     \end{algorithmic}
 \end{algorithm}
 
-Công thức \ref{eq:recurrence_term} là công thức truy hồi $n+1$ tham số cho vector $q_{n+1}$. Ma trận \ref{eq:Hessenberg_matrix} thu được từ quá trình trực chuẩn hóa Gram-Schmidt. Quá trình này được gọi là thuật toán Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi}. $Q_n=\begin{bmatrix} q_1, q_2, \dots, q_n \end{bmatrix}$ là cơ sở trực chuẩn của không gian con Krylov thứ n $\mathcal{K}_n(b;A)$.
+Công thức \ref{eq:recurrence_term} là công thức truy hồi $n+1$ tham số cho vector $q_{n+1}$. Ma trận \ref{eq:Hessenberg_matrix} thu được từ quá trình trực chuẩn hóa Gram-Schmidt. Quá trình này được gọi là thuật toán Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi}. $Q_n=\begin{bmatrix} q_1, q_2, \dots, q_n \end{bmatrix}$ là cơ sở trực chuẩn của không gian con Krylov thứ n $\mathcal{K}_n$.
 Nhân cả 2 vế công thức \ref{eq:A_projection} với $Q_n^T$ ta được:
 
 \begin{equation}
@@ -138,7 +215,26 @@ Nhân cả 2 vế công thức \ref{eq:A_projection} với $Q_n^T$ ta được:
     \begin{bmatrix} H_n \\ h_{n+1,n}e_n^T \end{bmatrix}=\begin{bmatrix} I & 0 \end{bmatrix} \begin{bmatrix} H_n \\ h_{n+1,n}e_n^T \end{bmatrix}=H_n
 \end{equation}
 
-$H_n$ là ma trận thu được bằng cách lấy $n$ hàng đầu của ma trận $\widetilde{H}_n$. $H_n$ có thể được giải thích là phép chiếu trực giao của ma trận $A$ lên $\mathcal{K}_n$ đối với hệ cơ sở $\lbrace q_1, q_2, \dots, q_n \rbrace$, giới hạn ánh xạ $A: \mathbb{C}^m \mapsto \mathbb{C}^m$ sang $H_n: \mathcal{K}_n \mapsto \mathcal{K}_n$. Phép chiếu này được gọi là phép chiếu Rayleigh-Ritz.
+$H_n$ là ma trận thu được bằng cách lấy $n$ hàng đầu của ma trận $\widetilde{H}_n$. $H_n$ có thể được giải thích là biểu diễn trong hệ cơ sở $\lbrace q_1, q_2, \dots, q_n \rbrace$ của phép chiếu trực giao của ma trận $A$ lên $\mathcal{K}_n$, giới hạn ánh xạ $A: \mathbb{C}^m \mapsto \mathbb{C}^m$ sang $H_n: \mathcal{K}_n \mapsto \mathcal{K}_n$. Phép chiếu này được gọi là phép chiếu Rayleigh-Ritz.
+Các thành phần nằm trên đường chéo của ma trận $H_n$ chính là các thương số Rayleigh tương ứng với vector $q_j$. Với thương số Rayleigh được tính bằng công thức:
+
+\begin{equation}
+    r(x) = \dfrac{x^T A x }{x^T x}
+\end{equation}
+
+Các giá trị riêng của ma trận $H_n$ được gọi là ước lượng giá trị riêng Arnoldi (tại bước $n$) hoặc các giá trị Ritz (tương ứng với $\mathcal{K}_n$) của A. Một vài số trong những số này có thể xấp xỉ bằng một vài trong những giá trị riêng của ma trận $A$ ngay cả khi $n$ nhỏ hơn rất nhiều so với $m$
+
+Một trường hợp đặc biệt, trong quá trình thực hiện thuật toán Arnoldi, tại một bước $n$ nào đó khi tính $v \leftarrow v - h_{j,n}q_j$, nếu thu được $v=0$ ta có thể dừng luôn thuật toán Arnoldi vì không gian con Krylov đã mở rộng đến cực đại hay nói cách khác:
+
+\begin{equation}
+    \mathcal{K}_n=\mathcal{K}_{n+1}=\mathcal{K}_{n+2}=\dots
+\end{equation}
+
+Thuật toán Arnoldi được sử dụng trong các trường hợp:
+\begin{itemize}
+    \item Là cơ sở cho các thuật toán lặp giải hệ phương trình.
+    \item Kỹ thuật tính giá trị riêng của ma trận không đối xứng.
+\end{itemize} 
 
 Nếu $A$ là ma trận đối xứng thì ma trận $\widetilde{H}_n$ trở thành ma trận ba đường chéo $\widetilde{T}_n$ có dạng:
 
@@ -191,8 +287,8 @@ Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy h
 
 Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
 MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị.
-Hai phương pháp này gần giống với phương pháp Gradient liên hợp nhưng phương pháp Gradient liên hợp cực tiểu hóa hàm mục tiêu $\displaystyle \min_{x \in \mathcal{K}_n (b;A)}\dfrac{1}{2}x^TAx - x^Tb$,
-trong khi hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ n $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n (b;A)}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$
+Hai phương pháp này gần giống với phương pháp Gradient liên hợp nhưng phương pháp Gradient liên hợp cực tiểu hóa hàm mục tiêu $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}x^TAx - x^Tb$,
+trong khi hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ n $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$
 
 Hai phương pháp GMRES và MINRES giải các bài toán tối ưu hóa có ràng buộc, nói chung là bài toán khá khó giải. Xét $x_n \in \mathcal{K}_n$, ta có thể biểu diễn $x_n$ dạng:
 $x_n = Q_n y$ với $y$ là tọa độ của $x_n$ trong hệ cơ sở trực chuẩn của không gian Krylov thứ n $\mathcal{K}_n$. Hàm mục tiêu trở thành:
@@ -242,7 +338,7 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 đối với phương pháp MINRES
 
 
-\section{Các bước phương pháp GMRES}
+\section{Thuật toán GMRES}
 
 Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không suy biến.
 
@@ -259,7 +355,7 @@ Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A
 \end{algorithm}
 
 
-\section{Các bước phương pháp MINRES}
+\section{Thuật toán MINRES}
 
 Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận đối xứng
 
