@@ -144,7 +144,7 @@
     
     \vfill % Fill the rest of the page with whitespace
     
-    \end{titlepage}
+\end{titlepage}
 
 \cleardoublepage
 \pagenumbering{gobble}
@@ -269,21 +269,19 @@ Một số những đặc tính bất biến của thuật toán lặp Arnoldi �
 Một trường hợp đặc biệt, trong quá trình thực hiện thuật toán Arnoldi, tại một bước $n$ nào đó khi tính $v \leftarrow v - h_{j,n}q_j$, nếu thu được $v=0$ ta có thể dừng luôn thuật toán Arnoldi vì không gian con Krylov đã mở rộng đến cực đại, các điều sau đồng thời xảy ra:
 
 
-\begin{equation}
-    \begin{cases}
-        A \mathcal{K}_n \subseteq  \mathcal{K}_n \\
-        \mathcal{K}_n=\mathcal{K}_{n+1}=\mathcal{K}_{n+2}=\dots \\
-        \text{Từng giá trị riêng của } H_n \text{ là giá trị riêng của } A \\
-        \text{Nếu ma trận } A \text{ là ma trận không kỳ dị, nghiệm chính xác của phương trình } Ax=b \text{ nằm trong } \mathcal{K}_n
-    \end{cases}
-\end{equation}
+\begin{itemize}
+    \item $A\mathcal{K}_n \subseteq  \mathcal{K}_n$
+    \item $\mathcal{K}_n=\mathcal{K}_{n+1}=\mathcal{K}_{n+2}=\dots$
+    \item Từng giá trị riêng của$ H_n$ là giá trị riêng của $A$
+    \item Nếu ma trận $A$ là ma trận không kỳ dị, nghiệm chính xác của phương trình $Ax=b$ nằm trong $\mathcal{K}_n$
+\end{itemize}
 
 
 Thuật toán lặp Arnoldi thuận tiện cho việc xây dựng cơ sở cho không gian con Krylov $\mathcal{K}_{n+1}$ từ cơ sở $\mathcal{K}_n$, mỗi bước này tạo thêm một vector mới $q_{n+1}$ và tránh việc sử dụng vector $A^n b$
 
 Thuật toán Arnoldi được sử dụng trong các trường hợp:
 \begin{itemize}
-    \item Là cơ sở cho các thuật toán lặp giải hệ phương trình.
+    \item Là cơ sở cho các thuật toán lặp giải hệ phương trình (GMRES, ...).
     \item Kỹ thuật tính giá trị riêng của ma trận không đối xứng.
 \end{itemize}
 
@@ -335,7 +333,37 @@ Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy h
     \end{algorithmic}
 \end{algorithm}
 
+Từ thuật toán \ref{alg:Lanczos}, ta nhận thấy mỗi bước của thuật toán Lanczos, bao gồm một phép nhân ma trận, một phép tích vô hướng và hai phép trừ vector, ít hơn so với thuật toán Arnoldi (1 phép nhân ma trận, $n$ phép tích vô hướng và $n$ phép trừ vector)
+Thuật toán đặc biệt hiệu quả cho những ma trận thưa. Trong thực tế, thuật toán lặp Lanczos hay được sử dụng để tính các giá trị riêng của các ma trận đối xứng có kích thước lớn.
 
+Cũng giống như thuật toán lặp Arnoldi, thuật toán lặp Lanczos cũng rất hữu ích và hay được sử dụng cho các bài toán:
+
+\begin{itemize}
+    \item Cơ sở cho các thuật toán lặp (ví dụ MINRES, Gradient liên hợp)
+    \item Một kỹ thuật dùng để ước lượng giá trị riêng của các ma trận đối xứng
+\end{itemize}
+
+Khi ước lượng giá trị riêng của một ma trận đối xứng sử dụng thuật toán lặp Lanczos, các giá trị Ritz thường hội tụ về các giá trị riêng nằm ở gần vùng biên của phổ đầu tiên. 
+
+Một vấn đề khá lớn của thuật toán lặp Lanczos là ảnh hưởng của sai số làm tròn.
+Sai số làm tròn có một tác động phức tạp lên quá trình thực hiện thuật toán lặp Lanczos. Thực tế trong đại số tuyến tính số học, tất cả các phép lặp dựa trên truy hồi ba tham số đều chịu ảnh hưởng lớn từ sai số làm tròn.
+Nếu trong các phương pháp truy hồi $n$ tham số (ví dụ thuật toán lặp Arnoldi), các vector $q_1, q_2, q_3, \dots$ bị bắt buộc trở thành trực giao bởi thủ tục trực chuẩn hóa Gram-Schmidt. Các thuật toán lặp truy hồi ba tham số (ví dụ thuật toán lặp Lanczos), phụ thuộc vào tính trực giao của các vector $\lbrace q_j \rbrace$, các vector này được sinh ra dựa vào bản chất toán học nhưng bản chất này không được bảo toàn một cách nguyên vẹn trong quá trình tính toán do sai số làm tròn. Vì vậy, sau một số bước lặp tính trực giao của các vector bị biến mất.
+
+Khi tính trực giao của các vector $\lbrace q_j \rbrace$ mất đi, vẫn đề này sẽ làm ảnh hưởng đến quá trình hội tụ của các giá trị Ritz đến các giá trị riêng của ma trận $A$. Nhiều giá trị riêng trong số những giá trị riêng của ma trận $A$ mà mỗi giá trị riêng này có nhiều giá trị Ritz cùng hội tụ đến. Những giá trị Ritz bổ sung thêm một giá trị Ritz ban đầu cùng hội tụ đến một giá trị riêng của ma trận $A$ được gọi là các giá trị riêng "ma".
+Một phân tích chặt chẽ về hiện tượng giá trị riêng "ma" rất phức tạp. Tuy nhiên một giải thích trực quan cho hiện tượng này là:
+
+\begin{itemize}
+    \item Sự hội tụ của các giá trị Ritz triệt tiêu đi các thành phần của vector riêng tương ứng trong vector đang được vận hành.
+    \item Với sai số làm tròn, các nhiễu ngẫu nhiên tái kích hoạt lại các thành phần bị triệt tiêu ở trên, khiến cho một giá trị riêng nào đó của ma trận $A$ được xuất hiện nhiều lần.
+\end{itemize}
+
+Hệ quả của hiện tượng này là chúng ta không thể tin tưởng vào số bội của các giá trị riêng của ma trận $A$ trong quá trình ước lượng sử dụng thuật toán lặp Lanczos.
+Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong các bài toán thực tế:
+
+\begin{itemize}
+    \item PCA để giảm chiều trong phân tích dữ liệu, chúng ta chỉ cần tìm giá trị kỳ dị lớn nhất và vector kỳ dị tương ứng của ma trận $A$.
+    \item Một cách tiếp cận chuẩn tắc là áp dụng thuật toán lặp Lanczos vào ma trận $A^T A$ và $A A^T$ mà không tính hai tích trên một cách rõ ràng, sử dụng các vector Ritz để xác định các vector kỳ dị.
+\end{itemize}
 
 \section{Giới thiệu phương pháp GMRES và phương pháp MINRES}
 
