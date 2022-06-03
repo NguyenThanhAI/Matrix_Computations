@@ -12,6 +12,7 @@
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
 \usepackage[utf8]{vietnam}
+\usepackage[center]{caption}
 \usepackage{fancyhdr} % header, footer
 \usepackage{hyperref} % loại bỏ border với mục lục và công thức
 \pagestyle{fancy}
@@ -54,6 +55,7 @@
 
 \numberwithin{equation}{section}
 \numberwithin{algorithm}{section}
+\numberwithin{figure}{section}
 
 \setlength{\parindent}{0pt}
 
@@ -149,6 +151,8 @@
 \cleardoublepage
 \pagenumbering{gobble}
 \tableofcontents
+\newpage
+\listoffigures
 \cleardoublepage
 \pagenumbering{arabic}
 
@@ -422,8 +426,11 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 
 \section{Thuật toán GMRES}
 
-Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không suy biến.
+Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của thuật toán GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa phần dư $r_n = b - A x_n$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
 
+
+
+Ta áp dụng công thức
 \begin{algorithm}
     \caption{Thuật toán GMRES}\label{alg:GMRES}
     \begin{algorithmic}
@@ -436,10 +443,58 @@ Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A
     \end{algorithmic}
 \end{algorithm}
 
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=0.8]{figures/GMRES-LS.jpg}
+    \caption{Tìm một vector trong không gian $A \mathcal{K}_n$ \\ sao cho khoảng cách từ điểm này đến vector b nhỏ nhất}
+
+    \label{fig:GMRES-LS}
+\end{figure}
+
+Ta xét ma trận Krylov $K_n = \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \end{bmatrix}$, vì vậy:
+
+\begin{equation}
+    A K_n = \begin{bmatrix} Ab, A^2b, A^3b, \dots, A^nb \end{bmatrix}
+\end{equation}
+
+Bài toán của chúng ta là tìm một vector $c \in \mathbb{R}^n$ sao cho:
+
+\begin{equation} \label{eq:GMRES-LS-c}
+    c = \underset{c \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert b - AK_n c \rVert
+\end{equation}
+
+Với $\lVert \thickspace \rVert$ mặc định là $\lVert \thickspace \rVert_2$. Ta có thể sử dụng phân tích QR với ma trận $AK_n$. Khi đã tìm được $c$ là nghiệm của bài toán cực tiểu hóa \ref{eq:GMRES-LS-c}, $x_n=K_n c$. Nhưng bài toán trên là một bài toán không ổn định (do khi $n$ lớn ma trận $K_n$ rất gần với một ma trận kỳ dị), nên chúng ta sẽ sử dụng thuật toán lặp Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi}
+để xây dựng một dãy ma trận $Q_n$ mà các vector cột $q_1, q_2, q_3, \dots$ tạo nên cơ sở trực chuản của không gian con Krylov $\mathcal{K}_n$. Vì $x_n \in \mathcal{K}_n$, ta có thể viết $x_n = Q_n y$, bài toán cực tiểu hóa của chúng ta là tìm vector $y \in \mathbb{R}^n$, ta viết lại bài toán \ref{eq:GMRES-LS-c} dưới dạng:
+
+\begin{equation} \label{eq:GMRES-LS-y}
+    y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert b - A Q_n y \rVert
+\end{equation}
+
+Ta sử dụng công thức \ref{eq:A_projection}, bài toán \ref{eq:GMRES-LS-y} có dạng:
+
+\begin{equation}
+    y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert b - Q_{n+1} \widetilde{H}_n y \rVert
+\end{equation}
+
+Vì nhân một vector với một ma trận trực giao không làm thay đổi chuẩn của vector. Ta nhân các vector trong dấu $\lVert \thickspace \rVert$ với ma trận $Q_{n+1}^T$ ta được:
+
+\begin{equation}
+    y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert Q_{n+1}^T b - Q_{n+1}^T Q_{n+1} \widetilde{H}_n y \rVert
+\end{equation}
+
+Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi} để xây dựng cơ sở trực chuẩn $Q_n$ của không gian con Krylov $\mathcal{K}_n$, ta đặt $b=\lVert b \rVert e_1$ với $e_1 = \begin{bmatrix}
+    1 & 0 & 0 & \dots
+\end{bmatrix}^T$, ta thu được dạng cuối cùng của bài toán cực tiểu hóa GMRES:
+
+\begin{equation}
+    \lVert \lVert b \rVert e_1 - \widetilde{H}_n y \rVert
+\end{equation}
+
+Tại mỗi bước $n$, ta giải bài toán cho $y$ và thu được $x_n = Q_n y$
 
 \section{Thuật toán MINRES}
 
-Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận đối xứng
+Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận đối xứng.
 
 \begin{algorithm}
     \caption{Thuật toán MINRES}\label{alg:MINRES}
