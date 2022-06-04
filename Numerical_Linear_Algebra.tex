@@ -380,7 +380,7 @@ Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A
 
 Ta áp dụng công thức
 \begin{algorithm}
-    \caption{Thuật toán GMRES}\label{alg:GMRES}
+    \caption{Các bước cơ bản thuật toán GMRES}\label{alg:GMRES}
     \begin{algorithmic}
         \State{Gán $q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n=1,2,3,\dots$}
@@ -493,7 +493,139 @@ Thuật toán GMRES không có tính chất bất biến tịnh tiến như thu�
 
 \subsection{Chi tiết thực hiện thuật toán GMRES}
 
+Một phương pháp tiêu chuẩn để giải bài toán cực tiểu hóa $y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{H}_n y \rVert$ là phân tích ma trận $\widetilde{H}_n$ thành một một ma trận trực giao $G$ có kích thước $(n+1) \times (n+1)$ nhân với một ma trận tam giác trên $R$ có kích thước $(n+1) \times n$ (một ma trận mà khối $(n \times n)$ phía trên là ma trận tam giác trên và hàng cuối cùng là một vector hàng 0):
 
+\begin{equation} \label{eq:Givens-Apply}
+    \lVert r_n \rVert = \lVert G(\beta e_1 - \widetilde{H}_n y) \rVert = \lVert \beta G e_1 - R_n y \rVert
+\end{equation}
+
+
+Ta có thể sử dụng phương pháp phân tích Householder nhưng trong trường hợp với cấu trúc ma trận Hessenberg $\widetilde{H}_n$, ta sẽ sử dụng phương pháp ma trận quay Givens để đưa ma trận $\widetilde{H}_n$ về dạng ma trận tam giác trên.
+Phương pháp ma trận quay Givens (phép quay Givens) là một phương pháp hiệu quả để tạo ra các phần tử 0 bằng cách nhân ma trận với một ma trận trực giao hạng thấp. Ví dụ: ta muốn biến đổi một ma trận $A$ thành một ma trận tam giác trên $R$ trong phân tích QR.
+Ma trận Givens được ký hiệu là $G(i, k, \theta) \in \mathbb{R}^{n \times n}$ được cho bởi công thức:
+
+\begin{equation}
+    G(i, k, \theta) = \begin{bmatrix} 1 & 0 & \dots & 0 & \dots & 0 & \dots & 0 \\
+                                    0 & 1 & \dots & 0 & \dots & 0 & \dots & 0 \\
+                                    \vdots & \thickspace & \ddots & \thickspace & \thickspace & \thickspace & \thickspace \\
+                                    0 & \thickspace & \space & c & \thickspace & s & \thickspace & 0 \\
+                                    \vdots \\
+                                    0 & \thickspace & \space & -s & \thickspace & c & \thickspace & 0 \\
+                                    \vdots \\
+                                    0 & \dots & \thickspace & \thickspace & \thickspace & \thickspace & \space & 1    \end{bmatrix}
+\end{equation}
+
+với $c = \cos(\theta), s = \sin(\theta)$. Ma trận trên tác động lên vector $x: y=G(i, k, \theta)x$
+
+\begin{equation} \label{eq:Rotation-Result}
+    y_j = \begin{cases}
+        \cos(\theta) x_i + \sin(\theta) x_k, \thickspace j = i \\
+        -\sin(\theta) x_i + \cos(\theta) x_k, \thickspace j = k \\
+        x_j, \thickspace j \neq i, k
+    \end{cases}
+\end{equation}
+
+Phép quay chọn:
+
+\begin{equation}
+    \begin{cases}
+        \cos(\theta) = \dfrac{x_i}{\sqrt{x_i^2 + x_k^2}} \\
+        \sin(\theta) = \dfrac{x_k}{\sqrt{x_i^2 + x_k^2}}
+    \end{cases}
+\end{equation}
+
+Vì vậy $y_k = 0$. Ví dụ trong không gian hai chiều, ta quay một vector $x$ thành một vector $y$ nằm trên trục hoành. Phép quay bảo toàn độ dài của vector $x$.
+
+Ví dụ ta xét ma trận $\widetilde{H}_4$:
+
+\begin{equation}
+    \widetilde{H}_4 = \begin{bmatrix} h_{11} & h_{12} & h_{13} & h_{14} \\
+                                    h_{21} & h_{22} & h_{23} & h_{24} \\
+                                    0 & h_{32} & h_{33} & h_{34} \\
+                                    0 & 0 & h_{43} & h_{44} \\
+                                    0 & 0 & 0 & h_{54}  \end{bmatrix}
+\end{equation}
+
+Ta áp dụng các phép quay Givens thu được:
+
+\begin{equation}
+    G(1, 2, \theta_1) \widetilde{H}_4 = \begin{bmatrix} r_{11}^{'} & r_{12}^{'} & r_{13}^{'} & r_{14}^{'} \\
+        0 & r_{22}^{'} & r_{23}^{'} & r_{24}^{'} \\
+        0 & h_{32} & h_{33} & h_{34} \\
+        0 & 0 & h_{43} & h_{44} \\
+        0 & 0 & 0 & h_{54}  \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    G(2, 3, \theta_1)G(1, 2, \theta_1) \widetilde{H}_4 = \begin{bmatrix} r_{11}^{'} & r_{12}^{'} & r_{13}^{'} & r_{14}^{'} \\
+        0 & r_{22}^{''} & r_{23}^{''} & r_{24}^{''} \\
+        0 & 0 & r_{33}^{'} & r_{34}^{'} \\
+        0 & 0 & h_{43} & h_{44} \\
+        0 & 0 & 0 & h_{54}  \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    G(3, 4, \theta_1)G(2, 3, \theta_1)G(1, 2, \theta_1) \widetilde{H}_4 = \begin{bmatrix} r_{11}^{'} & r_{12}^{'} & r_{13}^{'} & r_{14}^{'} \\
+        0 & r_{22}^{''} & r_{23}^{''} & r_{24}^{''} \\
+        0 & 0 & r_{33}^{''} & r_{34}^{''} \\
+        0 & 0 & 0 & r_{44}^{'} \\
+        0 & 0 & 0 & h_{54}  \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    G(4, 5, \theta_4)G(3, 4, \theta_3)G(2, 3, \theta_2)G(1, 2, \theta_1) \widetilde{H}_4 = \begin{bmatrix} r_{11}^{'} & r_{12}^{'} & r_{13}^{'} & r_{14}^{'} \\
+        0 & r_{22}^{''} & r_{23}^{''} & r_{24}^{''} \\
+        0 & 0 & r_{33}^{''} & r_{34}^{''} \\
+        0 & 0 & 0 & r_{44}^{''} \\
+        0 & 0 & 0 & 0  \end{bmatrix}
+\end{equation}
+
+Tại mỗi bước $n$, chúng ta chỉ áp dụng $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1)$ vào cột cuối cùng của ma trận $\widetilde{H}_n$, sau đó ta xác định ma trận quay $G(n, n+1, \theta_{n})$ và áp dụng vào kết quả của bước trên bởi vì $G(n, n+1, \theta_{n})$ không tác dụng lên các cột phía trước cột hiện tại (cột thứ $n$ của $\widetilde{H}_n$). Chi phí để thực hiện phân tích QR tại mỗi bước $n$ là:
+
+\begin{itemize}
+    \item Cần áp dụng $n$ ma trận quay vào cột thứ $n$ của ma trận $\widetilde{H}_n$
+    \item Từ công thức \ref{eq:Rotation-Result}, mỗi bước ta cần 6 phép tính (4 phép nhân, 2 phép cộng)
+\end{itemize}
+
+Vì vậy, tại mỗi bước $n$ của thuật toán GMRES, ta cần $6n$ phép tính. Số phép tính tích lũy cần để phân tích QR cho ma trận $\widetilde{H}_n$ tính từ cột đầu tiên đến cột thứ $n=6(1+2+3+\dots+n)=6\dfrac{n(n+1)}{2}\sim O(n^2)$
+phép tính.
+
+Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVert$ tại bước lặp thứ $n$.
+Để tìm $y$, từ công thức \ref{eq:Givens-Apply}, ta giải $y$ bằng giải hệ phương trình lấy $n$ hàng đầu của $R_n$ và $n$ phần tử đầu của $\beta G e_1$. Đặt $\beta G e_1 = g_n$:
+
+\begin{equation} \label{eq:GMRES-Y-Backsubstitute}
+    R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack
+\end{equation}
+
+Đây là hệ phương trình gồm $n$ phương trình và $n$ ẩn, $y$ có thể giải bằng phép thế ngược do block phía trên của $R_n$ là ma trận tam giác trên.
+
+Để tính $\lbrack r_n \rbrack$, ta nhận thấy $r_n=g_n - R_n y$ có $n$ thành phần đầu bằng 0 do nghiệm $y$ thỏa mãn phương trình ở công thức \ref{eq:GMRES-Y-Backsubstitute}. Mặt khác do hàng cuối của $R_n$ là vector hàng 0 nên thành phần thứ $n+1$ của phần dư $r_n$ chính bằng thành phần thứ $n+1$ của $g_n$.
+
+\begin{md}
+    Chuẩn phần dư của nghiệm $x_n$ tại bước lặp thứ $n$ bằng thành phần thứ $n+1$ của vector $g_n$ thu được bằng cách nhân phía bên trái của $\beta e_1$ với liên tiếp các phép quay Givens biến đổi ma trận $\widetilde{H}_n$ thành ma trận tam giác trên.
+\end{md}
+
+Trong thực tế, khi giải các bài toán, tại mỗi bước ta thường kiểm tra chuẩn phần dư $\lVert r_n \rVert$ trước khi giải ra nghiệm $y$. Do trước khi thực hiện thuật toán, chúng ta có một ngưỡng chuẩn phần dư cho phép dừng vòng lặp $\epsilon$. Nếu tại bước hiện tại $n$, ta kiểm tra chuẩn phần dư $\lbrack r_n \rbrack$, nếu $\lbrack r_n \rbrack < \epsilon$ thì ta dừng vòng lặp, giải $y$ và tính $x_n=Q_n y$. Nếu không ta chuyển sang bước thứ $n+1$.
+
+Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuật toán GMRES được miêu tả ở thuật toán \ref{alg:GMRES-Detailed}:
+
+\begin{algorithm}
+    \caption{Các bước chi tiết thuật toán GMRES}\label{alg:GMRES-Detailed}
+    \begin{algorithmic}
+        \State{Cho ma trận $A$ không kỳ dị, $b$, chuẩn phần dư $\epsilon$ cho phép, gán $q_1 \leftarrow b/\lVert b \rVert$}
+        \For {$n=1,2,3,\dots$}
+            \State {Thực hiện bước thứ n của thuật toán \ref{alg:Arnoldi} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$}
+            \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1)$ vào cột cuối cùng của ma trận $\widetilde{H}_n$}
+            \State {Tính ma trận quay $G(n, n+1, \theta_n)$ từ kết quả của bước trên và áp dụng vào kết quả này}
+            \State {$g_n \leftarrow G(n, n+1, \theta_n)G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1) \beta e_1$}
+            \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
+                \State {Giải $y$ từ phương trình $R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack$}
+                \State {Tính $x_n = Q_n y$}
+                \State {break}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
 \section{Thuật toán MINRES}
 
