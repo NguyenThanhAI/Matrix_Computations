@@ -372,6 +372,8 @@ Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong 
 
 \section{Thuật toán GMRES}
 
+\subsection{Giới thiệu thuật toán GMRES}
+
 Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của thuật toán GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa phần dư $r_n = b - A x_n$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
 
 
@@ -438,7 +440,60 @@ Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả 
 
 Tại mỗi bước $n$, ta giải bài toán cho $y$ và thu được $x_n = Q_n y$. Nhưng trong thực tế, tại mỗi bước $n$ ta không cần giải tường minh $y$ mà chỉ cần tính phần dư $\lVert \beta e_1 - \widetilde{H}_n y \rVert$, nếu phần dư này đã đủ nhỏ hơn một ngưỡng cho trước, ta sẽ dừng tại bước $n$ hiện tại và tính $x_n$. Nếu phần dư đủ nhỏ ta thực hiện bước $n+1$. Chi tiết cách tính phần dư tại mỗi bước sẽ được trình bày chi tiết ở mục sau.
 
-Thuật toán GMRES được trình bày ở thuật toán \ref{alg:GMRES}
+Các bước cơ bản của thuật toán GMRES được trình bày ở thuật toán \ref{alg:GMRES}
+
+Thuật toán GMRES cũng giải một bài toán xấp xỉ đa thức. Ta xét nghiệm $x_n$, tại bước $n$, vì $x_n \in \mathcal{K}_n$ nên ta có thể viết:
+
+\begin{equation}
+    x_n = c_0 b + c_1 A b + c_2 A^b + \dots + c_{n-1}A^{n-1}b=(c_0 + c_1 A + c_2 A^2 + \dots + c_{n-1} A^{n-1})b
+\end{equation}
+
+Ta đặt:
+
+\begin{equation}
+    q(z) = c_0 + c_1 z + c_2 z^2 + \dots + c_{n-1}z^{n-1}
+\end{equation}
+
+Như vậy, nghiệm tại bước thứ $n$ có thể viết dưới dạng đa thức:
+
+\begin{equation}
+    x_n = q(A)b
+\end{equation}
+
+$z(z)$ là một đa thức có bậc tối đa bằng $n-1$ với các vector hệ số $c$. Phần dư tương ứng $r_n=b - Ax_n=(I - Aq(A))b$, ta đặt đa thức $p_n(z) = 1 - z q(z)$. Như vậy ta thu được:
+
+\begin{equation}
+    r_n = p_n(A)b
+\end{equation}
+
+Thuật toán GMRES tại mỗi bước tìm một đa thức $p_n \in P_n$ với $P_n$ là:
+
+\begin{equation}
+    P_n = \lbrace \text{là tập các đa thức có bậc } \leq n \text{ với } p(0)=1 \rbrace
+\end{equation}
+
+sao cho $p_n$ làm cực tiểu hóa phần dư (tìm vector hệ số $c$ của $p_n$):
+
+\begin{equation}
+    p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
+\end{equation}
+
+Thuật toán GMRES cũng thỏa mãn một số tính chất bất biến như thuật toán lặp Arnoldi
+
+\begin{dl}
+    Thuật toán GMRES áp dụng cho một ma trận $A \in \mathbb{R}^{m \times m}$ thỏa mãn các tính chất sau:
+
+    \begin{itemize}
+        \item \textbf{Bất biến co dãn:} Nếu ma trận $A$ thay đổi thành $\sigma A$ với một số $\sigma \in \mathbb{R}$, và $b$ thay đổi thành $\sigma b$ thì phần dư $\lbrace r_n \rbrace$ thay đổi thành $\lbrace \sigma r_n \rbrace$.
+        \item \textbf{Bất biến dưới phép biến đổi tương đương trực giao:} Nếu ma trận $A$ thay đổi thành $A A U^T$ với một ma trận $U$ trực giao bất kỳ, và $b$ thay đổi thành $Ub$, thì phần dư $\lbrace r_n \rbrace$ thay đổi thành $\lbrace U r_n \rbrace$.
+    \end{itemize}
+\end{dl}
+
+Thuật toán GMRES không có tính chất bất biến tịnh tiến như thuật toán lặp Arnoldi, vì điều kiện chuẩn hóa $p(0)=1$ liên quan đến sự phụ thuộc quá trình tịnh tiến. Sự thay đổi của $\lbrace r_n \rbrace$ theo phép tịnh tiến phụ thuộc nhiều vào lựa chọn điểm gốc
+
+\subsection{Chi tiết thực hiện thuật toán GMRES}
+
+
 
 \section{Thuật toán MINRES}
 
@@ -516,7 +571,7 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 \addcontentsline{toc}{section}{Tài liệu tham khảo}
 %\bibliographystyle{IEEEtraN}
 %\bibliography{ref}
-\pagestyle{plain}
+%\pagestyle{plain}
 \printbibliography[title={Tài liệu tham khảo}]
 
 %\newpage
