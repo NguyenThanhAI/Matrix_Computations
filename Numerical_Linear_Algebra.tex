@@ -369,60 +369,6 @@ Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong 
     \item Một cách tiếp cận chuẩn tắc là áp dụng thuật toán lặp Lanczos vào ma trận $A^T A$ và $A A^T$ mà không tính hai tích trên một cách rõ ràng, sử dụng các vector Ritz để xác định các vector kỳ dị.
 \end{itemize}
 
-\section{Giới thiệu phương pháp GMRES và phương pháp MINRES}
-
-Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
-MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị.
-Hai phương pháp này gần giống với phương pháp Gradient liên hợp nhưng phương pháp Gradient liên hợp cực tiểu hóa hàm mục tiêu $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}x^TAx - x^Tb$,
-trong khi hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ n $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$
-
-Hai phương pháp GMRES và MINRES giải các bài toán tối ưu hóa có ràng buộc, nói chung là bài toán khá khó giải. Xét $x_n \in \mathcal{K}_n$, ta có thể biểu diễn $x_n$ dạng:
-$x_n = Q_n y$ với $y$ là tọa độ của $x_n$ trong hệ cơ sở trực chuẩn của không gian Krylov thứ n $\mathcal{K}_n$. Hàm mục tiêu trở thành:
-\begin{equation} \min_{y \in \mathbb{R}^{n}}  \lVert b - AQ_n y \rVert_2^2\end{equation}
-
-Như vậy bài toán đã được đưa về bài toán tối ưu có ràng buộc với số chiều của $y$ nhỏ hơn so với $x$. Tuy nhiên với ma trận $A$ có kích thước lớn thì bài toán trên vẫn khá đắt.
-
-Nhưng chúng ta có thể giảm số chiều của bài toán đi nữa bằng cách nhân hàm mục tiêu với ma trận trực giao $Q_{n+1}$ là ma trận cơ sở trực chuẩn của không gian con Krylov thứ n+1:
-\begin{equation} \min_{y \in \mathbb{R}^{n}}  \lVert b - AQ_n y \rVert_2^2 = \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2 \label{eq:uncons_obj}\end{equation}
-
-Ta sử dụng công thức:
-
-\begin{equation}
-    AQ_n = Q_{n+1}\widetilde{H}_n
-\end{equation}
-
-đối với phương pháp GMRES, đối với phương pháp MINRES:
-\begin{equation}
-    AQ_n = Q_{n+1} \widetilde{T}_n
-\end{equation}
-trong đó, $\widetilde{H}_n$ là ma trận Hessenberg có dạng ở công thức \ref{eq:Hessenberg_matrix}:
-và ma trận $\widetilde{T}_n$ là ma trận 3 đường chéo được đề cập ở công thức \ref{eq:Trigonal_Matrix}:
-
-Với $\lVert b \rVert = \beta, q_1 = \dfrac{b}{\beta}$, hàm mục tiêu \eqref{eq:uncons_obj} trở thành:
-
-\begin{equation}
-    \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2=\min_{y \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{H}_n y\rVert_2^2
-\end{equation}
-
-đối với phương pháp GMRES (ma trận A là ma trận không suy biến).
-Đối với phương pháp MINRES (ma trận A là ma trận đối xứng):
-\begin{equation}
-    \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2=\min_{y \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{T}_n y\rVert_2^2
-\end{equation}
-
-Như vậy, bài toán được đưa về một bài toán bình phương tối thiểu với kích thước $(n+1)\times n$
-
-\begin{equation}
-    y_n = \operatorname*{argmin}_{y_n \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{H}_n y\rVert_2^2
-\end{equation}
-
-đối với phương pháp GMRES, và:
-\begin{equation}
-    y_n = \underset{y_n \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{T}_n y\rVert_2^2
-\end{equation}
-
-đối với phương pháp MINRES
-
 
 \section{Thuật toán GMRES}
 
@@ -482,15 +428,17 @@ Vì nhân một vector với một ma trận trực giao không làm thay đổi
     y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert Q_{n+1}^T b - Q_{n+1}^T Q_{n+1} \widetilde{H}_n y \rVert
 \end{equation}
 
-Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi} để xây dựng cơ sở trực chuẩn $Q_n$ của không gian con Krylov $\mathcal{K}_n$, ta đặt $b=\lVert b \rVert e_1$ với $e_1 = \begin{bmatrix}
+Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi} để xây dựng cơ sở trực chuẩn $Q_n$ của không gian con Krylov $\mathcal{K}_n$, ta đặt $\lVert b \rVert = \beta, b=\lVert b \rVert e_1=\beta e_1$ với $e_1 = \begin{bmatrix}
     1 & 0 & 0 & \dots
 \end{bmatrix}^T$, ta thu được dạng cuối cùng của bài toán cực tiểu hóa GMRES:
 
 \begin{equation}
-    \lVert \lVert b \rVert e_1 - \widetilde{H}_n y \rVert
+    y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{H}_n y \rVert
 \end{equation}
 
-Tại mỗi bước $n$, ta giải bài toán cho $y$ và thu được $x_n = Q_n y$
+Tại mỗi bước $n$, ta giải bài toán cho $y$ và thu được $x_n = Q_n y$. Nhưng trong thực tế, tại mỗi bước $n$ ta không cần giải tường minh $y$ mà chỉ cần tính phần dư $\lVert \beta e_1 - \widetilde{H}_n y \rVert$, nếu phần dư này đã đủ nhỏ hơn một ngưỡng cho trước, ta sẽ dừng tại bước $n$ hiện tại và tính $x_n$. Nếu phần dư đủ nhỏ ta thực hiện bước $n+1$. Chi tiết cách tính phần dư tại mỗi bước sẽ được trình bày chi tiết ở mục sau.
+
+Thuật toán GMRES được trình bày ở thuật toán \ref{alg:GMRES}
 
 \section{Thuật toán MINRES}
 
@@ -507,6 +455,61 @@ Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $
         \EndFor
     \end{algorithmic}
 \end{algorithm}
+
+
+\section{So sánh phương pháp GMRES và phương pháp MINRES}
+
+Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
+MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị.
+Hai phương pháp này gần giống với phương pháp Gradient liên hợp nhưng phương pháp Gradient liên hợp cực tiểu hóa hàm mục tiêu $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}x^TAx - x^Tb$,
+trong khi hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ n $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$
+
+Hai phương pháp GMRES và MINRES giải các bài toán tối ưu hóa có ràng buộc, nói chung là bài toán khá khó giải. Xét $x_n \in \mathcal{K}_n$, ta có thể biểu diễn $x_n$ dạng:
+$x_n = Q_n y$ với $y$ là tọa độ của $x_n$ trong hệ cơ sở trực chuẩn của không gian Krylov thứ n $\mathcal{K}_n$. Hàm mục tiêu trở thành:
+\begin{equation} \min_{y \in \mathbb{R}^{n}}  \lVert b - AQ_n y \rVert_2^2\end{equation}
+
+Như vậy bài toán đã được đưa về bài toán tối ưu có ràng buộc với số chiều của $y$ nhỏ hơn so với $x$. Tuy nhiên với ma trận $A$ có kích thước lớn thì bài toán trên vẫn khá đắt.
+
+Nhưng chúng ta có thể giảm số chiều của bài toán đi nữa bằng cách nhân hàm mục tiêu với ma trận trực giao $Q_{n+1}$ là ma trận cơ sở trực chuẩn của không gian con Krylov thứ n+1:
+\begin{equation} \min_{y \in \mathbb{R}^{n}}  \lVert b - AQ_n y \rVert_2^2 = \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2 \label{eq:uncons_obj}\end{equation}
+
+Ta sử dụng công thức:
+
+\begin{equation}
+    AQ_n = Q_{n+1}\widetilde{H}_n
+\end{equation}
+
+đối với phương pháp GMRES, đối với phương pháp MINRES:
+\begin{equation}
+    AQ_n = Q_{n+1} \widetilde{T}_n
+\end{equation}
+trong đó, $\widetilde{H}_n$ là ma trận Hessenberg có dạng ở công thức \ref{eq:Hessenberg_matrix}:
+và ma trận $\widetilde{T}_n$ là ma trận 3 đường chéo được đề cập ở công thức \ref{eq:Trigonal_Matrix}:
+
+Với $\lVert b \rVert = \beta, q_1 = \dfrac{b}{\beta}$, hàm mục tiêu \eqref{eq:uncons_obj} trở thành:
+
+\begin{equation}
+    \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2=\min_{y \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{H}_n y\rVert_2^2
+\end{equation}
+
+đối với phương pháp GMRES (ma trận A là ma trận không suy biến).
+Đối với phương pháp MINRES (ma trận A là ma trận đối xứng):
+\begin{equation}
+    \min_{y \in \mathbb{R}^{n}}  \lVert Q_{n+1}^T(b - AQ_n y) \rVert_2^2=\min_{y \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{T}_n y\rVert_2^2
+\end{equation}
+
+Như vậy, bài toán được đưa về một bài toán bình phương tối thiểu với kích thước $(n+1)\times n$
+
+\begin{equation}
+    y_n = \operatorname*{argmin}_{y_n \in \mathbb{R}^{n}} \lVert \beta e_1 - \widetilde{H}_n y\rVert_2^2
+\end{equation}
+
+đối với phương pháp GMRES, và:
+\begin{equation}
+    y_n = \underset{y_n \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{T}_n y\rVert_2^2
+\end{equation}
+
+đối với phương pháp MINRES
 
 
 \newpage
