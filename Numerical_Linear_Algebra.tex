@@ -372,7 +372,7 @@ Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong 
 
 \section{Thuật toán GMRES}
 
-\subsection{Giới thiệu thuật toán GMRES}
+\subsection{Giới thiệu thuật toán GMRES} \label{GMRES-Introduction}
 
 Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của thuật toán GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa phần dư $r_n = b - A x_n$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
 
@@ -462,7 +462,7 @@ Như vậy, nghiệm tại bước thứ $n$ có thể viết dưới dạng đa
 
 $z(z)$ là một đa thức có bậc tối đa bằng $n-1$ với các vector hệ số $c$. Phần dư tương ứng $r_n=b - Ax_n=(I - Aq(A))b$, ta đặt đa thức $p_n(z) = 1 - z q(z)$. Như vậy ta thu được:
 
-\begin{equation}
+\begin{equation} \label{eq:Polynomial-Approximation}
     r_n = p_n(A)b
 \end{equation}
 
@@ -628,7 +628,7 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
     \end{algorithmic}
 \end{algorithm}
 
-\subsection{Một số đặc điểm của thuật toán GMRES}
+\subsection{Một số đặc điểm của thuật toán GMRES} \label{GMRES-Characteristic}
 
 
 \subsubsection{Chi phí bộ nhớ}
@@ -665,15 +665,73 @@ Nếu giả sử tại bước $n$, điều kiện hội tụ đã thỏa mãn $
     \item $k-1$ phép trừ
 \end{itemize}
 
-Vậy số bước cần để giải hệ phương trình \ref{eq:GMRES-Y-Backsubstitute} là $n + 2\lbrack 1 + \dots + (k-1) + \dots + (n-1)\rbrack=n+(n-1)n=n^2$ phép tính
+Vậy số bước cần để giải hệ phương trình \ref{eq:GMRES-Y-Backsubstitute} là $n + 2\lbrack 0 + 1 + \dots + (k-1) + \dots + (n-1)\rbrack=n+(n-1)n=n^2$ phép tính
 
 Ngoài ra ta cần tính $x_n = Q_n y$ cần $m(2n-1)$ phép tính
 
-Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+15n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5~O(2m^2n+ 2mn^2)$
+Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+15n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim O(2m^2n+ 2mn^2)$
 
 Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với thuật toán GMRES.
 
 \subsubsection{Sự hội tụ của thuật toán GMRES}
+
+Ta nhận thấy có hai quan sát với phần dư của thuật toán GMRES:
+
+\begin{itemize}
+    \item $ \lVert r_{n+1} \rVert \leq \lVert r_{n} \rVert $. Lý do là vì $\lVert r_n \rVert$ nhỏ nhất có thể trong không gian con Krylov thứ $n$ $\mathcal{K}_n$, khi mở rộng không gian con Krylov $\mathcal{K}_n$ sang $\mathcal{K}_{n+1}$, chuẩn phần dư chỉ có thể giảm hoặc tệ nhất là chuẩn phần dư không thay đổi.
+    \item Mặt khác sau khi thực hiện $m$ bước lặp, quá trình phải hội tụ hay $\lVert r_m \rVert=0$. $\lVert r_m \rVert = 0$ sẽ xảy ra khi $\mathcal{K}_m = \mathbb{R}^m$ và trong trường hợp đặc biệt nếu vector $b \in \mathcal{K}_n$ với một số $n < m$, thì sự hội tụ sẽ xảy ra sớm hơn. $\lVert r_m \rVert = 0$ chỉ có ý nghĩa về mặt lý thuyết của thuật toán GMRES nhưng không có nhiều ý nghĩa về mặt thực tiễn, chúng ta mong rằng GMRES sẽ hội tụ sau $n$ bước nhỏ hơn rất nhiều so với $m$.
+\end{itemize}
+
+Để thu được nhiều thông tin hữu ích hơn về quá trình hội tụ của thuật toán GMRES, ta phải sử dụng bài toán xấp xỉ đa thức đã được đề cập ở mục \ref{GMRES-Introduction}. Từ công thức \ref{eq:Polynomial-Approximation}, ta biết rằng: $\lVert r_n \rVert=\lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert$. Ngoại trừ trường hợp $b$ có cấu trúc đặc biệt liên quan đến ma trận $A$ thì nhân tố quan trọng xác định $lVert r_n \rVert$ là $\lVert p_n(A) \rVert$. Bất đẳng thức xác định tốc độ hội tụ của thuật toán GMRES là:
+
+\begin{equation} \label{eq:GMRES-Convergence-Rate}
+    \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert
+\end{equation}
+
+Ta cần phân tích với một ma trận $A$ và một số $n$ cho trước thì $\lVert p_n(A) \rVert$ có thể nhỏ bao nhiêu. Cách tiếp cận tiêu chuẩn là tìm một đa thức $p(z)$ sao cho $p(z)$ càng nhỏ càng tốt trên tập phổ của ma trận $A$ $\Lambda(A)$ và thỏa mãn $p(0)=1$. Ta giả sử ma trận $A$ là ma trận chéo hóa được, thỏa mãn $A=V\Lambda V^{-1}$ với $V$ là ma trận không kỳ dị và $\Lambda$ là ma trận đường chéo. Ta có bất đẳng thức:
+
+\begin{equation}
+    \lVert p(A) \rVert \leq \lVert V \rVert \lVert p(\Lambda) \rVert \lVert V^{-1} \rVert = \dfrac{\max(\sigma(V))}{\min(\sigma(V))} \lVert p(\Lambda) \rVert = \kappa(V) \lVert p(\Lambda) \rVert
+\end{equation}
+
+Từ công thức trên và công thức \ref{eq:GMRES-Convergence-Rate}, ta đi đến định lý:
+
+\begin{dl} \label{dl:GMRES-Convergence-Rate}
+    Tại bước thứ $n$ của thuật toán GMRES, phần dư $r_n$ thỏa mãn:
+    \begin{equation}
+        \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert \leq \kappa(V) \inf_{p_n \in P_n} \lVert p_n \rVert_{\Lambda(A)}
+    \end{equation}
+    với $\Lambda(A)$ là tập các giá trị riêng của ma trận $A$, $V$ là ma trận không kỳ dị của các vector riêng của ma trận $A$ (giả sử ma trận $A$ chéo hóa được), và $\lVert p_n \rVert_{\Lambda(A)}=\underset{z \in \Lambda(A)}{\sup} \lvert p_n(z) \rvert$
+\end{dl}
+
+Ý nghĩa của định lý \ref{dl:GMRES-Convergence-Rate} là nếu ma trận $A$ có số điều kiện của ma trận $V$ là $\kappa(V)$ không quá lớn và một đa thức thuộc tập $P_n$ được tìm thấy mà độ lớn của nó trên phổ của ma trận $A$ là $\Lambda(A)$ giảm nhanh theo $n$ thì thuật toán GMRES hội tụ nhanh.
+
+Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
+\begin{itemize}
+    \item Nếu ma trận $A$ đối xứng xác định dương thì thuật toán GMRES cần $O(\sqrt{\kappa})$ bước để hội tụ.
+    \item Nếu ma trận $A$ không xác định dấu thì thuật toán GMRES cần $O(\kappa)$ bước để hội tụ.
+\end{itemize}
+
+Nếu ma trận $A$ là một ma trận không chéo hóa được, nếu $n^{*}$ là số chiều của \textit{không gian bất biến tổng quát nhỏ nhất} chứ vector $b$, thuật toán GMRES sẽ dừng sau đúng $n^{*}$ bước. Một không gian $\mathcal{S}$ được gọi là \textit{không gian con bất biến tổng quát} nếu $v \in \mathcal{S} \Rightarrow A^{n}v \in \mathcal{S} \thickspace \forall n \geq 0$ 
+
+Nếu ma trận $A=VJV^{-1}$ với ma trận $J$ là một ma trận có dạng chuẩn Jordan thì:
+
+\begin{equation}
+    \lVert p_n(A) \rVert \leq \lVert V \rVert \lVert p_n(J) \rVert \lVert V^{-1} \rVert=\dfrac{\max(\sigma(V))}{\min(\sigma(V))} \lVert p_n(J) \rVert = \kappa(V) \lVert p_n(J) \rVert
+\end{equation}
+
+và:
+
+\begin{equation}
+    \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert \leq \kappa(V) \inf_{p_n \in P_n} \lVert p_n(J) \rVert
+\end{equation}
+
+Để đánh giá $\inf_{p_n \in P_n} \lVert p_n(J) \rVert$ khá phức tạp, giá trị này được phân tích rất kỹ trong \cite{tichy2005worst}.
+
+\subsection{Cải thiện thuật toán GMRES}
+
+Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi phí về lưu trữ bộ nhớ và chi phí tính toán tăng theo $n$. Đây là nhược điểm rất lớn của thuật toán GMRES, vì vậy trong thực tế ta sẽ hay sử dụng phương pháp khởi tạo lại
+
 
 \section{Thuật toán MINRES}
 
