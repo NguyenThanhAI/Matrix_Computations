@@ -57,7 +57,7 @@
 \numberwithin{algorithm}{section}
 \numberwithin{figure}{section}
 
-\setlength{\parindent}{0pt}
+\setlength{\parindent}{0.5cm}
 
 \setcounter{secnumdepth}{3} % Cho phép subsubsection trong report
 \setcounter{tocdepth}{3} % Chèn subsubsection vào bảng mục lục
@@ -113,7 +113,7 @@
         \emph{Giảng viên hướng dẫn:} \\
         TS. Nguyễn Trung Hiếu % Supervisor's Name
         \end{flushleft}
-    \end{minipage}\\[2cm]
+    \end{minipage}\\[1cm]
 
     \begin{minipage}{0.4\textwidth}
     \begin{flushleft} \Large
@@ -214,7 +214,8 @@ $\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ 
 \begin{algorithm}
     \caption{Thuật toán Arnoldi}\label{alg:Arnoldi}
     \begin{algorithmic}
-        \State {Cho ma trận $A, b$, gán $q_1 \leftarrow b/\lVert b \rVert$}
+        \State {Cho ma trận $A, b$}
+        \State {$q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n = 1,2,3,\dots$}
             \State $v \leftarrow Aq_n$
             \For {$j=1$ to $n$}
@@ -326,7 +327,10 @@ Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy h
 \begin{algorithm}
     \caption{Thuật toán Lanczos}\label{alg:Lanczos}
     \begin{algorithmic}
-        \State {Cho ma trận $A$ đối xứng, $b$, gán $\beta_0 \leftarrow 0, q_0 \leftarrow 0, q_1 \leftarrow b/\lVert b \rVert$}
+        \State {Cho ma trận $A$ đối xứng, $b$}
+        \State {$\beta_0 \leftarrow 0$}
+        \State {$q_0 \leftarrow 0$}
+        \State {$q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n=1,2,3,\dots$}
             \State $v \leftarrow Aq_n$
             \State $\alpha_n=q_n^Tv$
@@ -676,7 +680,7 @@ Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nh�
 
 Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với thuật toán GMRES.
 
-\subsubsection{Sự hội tụ của thuật toán GMRES}
+\subsubsection{Sự hội tụ của thuật toán GMRES} \label{GMRES-Convergence}
 
 Ta nhận thấy có hai quan sát với phần dư của thuật toán GMRES:
 
@@ -685,7 +689,7 @@ Ta nhận thấy có hai quan sát với phần dư của thuật toán GMRES:
     \item Mặt khác sau khi thực hiện $m$ bước lặp, quá trình phải hội tụ hay $\lVert r_m \rVert=0$. $\lVert r_m \rVert = 0$ sẽ xảy ra khi $\mathcal{K}_m = \mathbb{R}^m$ và trong trường hợp đặc biệt nếu vector $b \in \mathcal{K}_n$ với một số $n < m$, thì sự hội tụ sẽ xảy ra sớm hơn. $\lVert r_m \rVert = 0$ chỉ có ý nghĩa về mặt lý thuyết của thuật toán GMRES nhưng không có nhiều ý nghĩa về mặt thực tiễn, chúng ta mong rằng GMRES sẽ hội tụ sau $n$ bước nhỏ hơn rất nhiều so với $m$.
 \end{itemize}
 
-Để thu được nhiều thông tin hữu ích hơn về quá trình hội tụ của thuật toán GMRES, ta phải sử dụng bài toán xấp xỉ đa thức đã được đề cập ở mục \ref{GMRES-Introduction}. Từ công thức \ref{eq:Polynomial-Approximation}, ta biết rằng: $\lVert r_n \rVert=\lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert$. Ngoại trừ trường hợp $b$ có cấu trúc đặc biệt liên quan đến ma trận $A$ thì nhân tố quan trọng xác định $lVert r_n \rVert$ là $\lVert p_n(A) \rVert$. Bất đẳng thức xác định tốc độ hội tụ của thuật toán GMRES là:
+Để thu được nhiều thông tin hữu ích hơn về quá trình hội tụ của thuật toán GMRES, ta phải sử dụng bài toán xấp xỉ đa thức đã được đề cập ở mục \ref{GMRES-Introduction}. Từ công thức \ref{eq:Polynomial-Approximation}, ta biết rằng: $\lVert r_n \rVert=\lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert$. Ngoại trừ trường hợp $b$ có cấu trúc đặc biệt liên quan đến ma trận $A$ thì nhân tố quan trọng xác định $ \lVert r_n \rVert$ là $\lVert p_n(A) \rVert$. Bất đẳng thức xác định tốc độ hội tụ của thuật toán GMRES là:
 
 \begin{equation} \label{eq:GMRES-Convergence-Rate}
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert
@@ -797,9 +801,43 @@ Nhược điểm của phương pháp là khiến cho thuật toán GMRES lâu h
 
 \subsubsection{Phương pháp điều kiện đầu}
 
+Thay vì giới hạn số bước lặp cho phép của thuật toán GMRES, đôi khi người ta sẽ cải thiện sự hội tụ của thuật toán bằng cách thay đổi cấu trúc giá trị riêng của ma trận $A$ từ đó làm giảm số bước lặp cần thiết để thuật toán hội tụ.
+Từ những phân tích ở tiểu mục \ref{GMRES-Convergence}, ta nhận thấy thuật toán GMRES hội tụ rất nhanh nếu ma trận $A$ có một số ít các giá trị riêng riêng biệt hoặc các giá trị riêng tập trung thành số ít các cụm. Vì vậy một ý tưởng tự nhiên là biến đổi ma trận $A$ bằng cách nhân ma trận $A$ với một ma trận $M$ (có thể nhân $M$ vào bên trái hoặc bên phải ma trận $A$ hoặc từ hai phía) mà kết quả là một ma trận có những đặc tính mong muốn giúp cho thuật toán hội tụ nhanh.
+Ta xét hệ phương trình $Ax=b$. Một ma trận điều kiện đầu $M$ thay đổi hệ phương trình thành:
+
+\begin{equation}
+    M^{-1}Ax = M^{-1}b
+\end{equation}
+
+được gọi là điều kiện đầu bên trái. Hay:
+
+\begin{equation}
+    AM^{-1}y = b
+\end{equation}
+
+được gọi là điều kiện đầu bên phải với $x=M^{-1}y$. Hay:
+
+\begin{equation}
+    L^{-1}AU^{-1}z = L^{-1}b
+\end{equation}
+
+được gọi là điều kiện đầu phân tách với $x=U^{-1}z$
+
+Điều kiện để chọn được một ma trận điều kiện đầu tốt cần thỏa mãn những yêu cầu (giả sử điều kiện đầu đang xét là điều kiện đầu bên trái):
+
+\begin{itemize}
+    \item $\kappa(M^{-1}A)\approx 1$
+    \item Phổ của ma trận $M^{-1}A$ gồm ít các ma trận riêng biệt hoặc các giá trị riêng tập trung theo số ít cụm.
+    \item Ma trận $M$ có thể được xây dựng bởi chi phí tính toán đủ thấp.
+\end{itemize}
+
 \section{Thuật toán MINRES}
 
-Phương pháp MINRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận đối xứng.
+\subsection{Giới thiệu thuật toán MINRES}
+
+Chương trước đã trình bày về thuật toán GMRES. Mặc dù thuật toán MINRES là đối tượng chính được đề cập trong tiểu luận nhưng thuật toán GMRES được trình bày rất chi tiết, mục đích là để có thể dễ dàng so sánh sự giống nhau và khác nhau của hai thuật toán trên nhiều khía cạnh. Thuật toán MINRES áp dụng cho bài toán giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ là ma trận đối xứng và có thể là ma trận kỳ dị, vector $b \in \mathbb{R}^m$, ma trận $A \neq 0$ và vector $b \neq 0$
+
+
 
 \begin{algorithm}
     \caption{Thuật toán MINRES}\label{alg:MINRES}
