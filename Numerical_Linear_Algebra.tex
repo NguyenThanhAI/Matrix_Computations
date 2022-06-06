@@ -474,7 +474,7 @@ Thuật toán GMRES tại mỗi bước tìm một đa thức $p_n \in P_n$ vớ
 
 sao cho $p_n$ làm cực tiểu hóa phần dư (tìm vector hệ số $c$ của $p_n$):
 
-\begin{equation}
+\begin{equation} \label{eq:Find-Polynomial}
     p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
 \end{equation}
 
@@ -612,7 +612,10 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
 \begin{algorithm}
     \caption{Các bước chi tiết thuật toán GMRES}\label{alg:GMRES-Detailed}
     \begin{algorithmic}
-        \State{Cho ma trận $A$ không kỳ dị, $b$, chuẩn phần dư $\epsilon$ cho phép, gán $q_1 \leftarrow b/\lVert b \rVert$}, gán $g_0 \leftarrow \beta e_1$
+        \State{Cho ma trận $A$ không kỳ dị, $b$, chuẩn phần dư $\epsilon$ cho phép}
+        \State{$q_1 \leftarrow b/\lVert b \rVert$}
+        \State{$\beta \leftarrow \lVert b \rVert$}
+        \State{$g_0 \leftarrow \beta e_1$}
         \For {$n=1,2,3,\dots$}
             \State {Thực hiện bước thứ n của thuật toán \ref{alg:Arnoldi} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$}
             \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1)$ vào cột cuối cùng của ma trận $\widetilde{H}_n$}
@@ -621,7 +624,7 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
             \State {$g_n \leftarrow G(n, n+1, \theta_n) g_{n-1}$}
             \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
                 \State {Giải $y$ từ phương trình $R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack$}
-                \State {Tính $x_n = Q_n y$}
+                \State {$x_n \leftarrow Q_n y$}
                 \State {break}
             \EndIf
         \EndFor
@@ -691,7 +694,7 @@ Ta nhận thấy có hai quan sát với phần dư của thuật toán GMRES:
 Ta cần phân tích với một ma trận $A$ và một số $n$ cho trước thì $\lVert p_n(A) \rVert$ có thể nhỏ bao nhiêu. Cách tiếp cận tiêu chuẩn là tìm một đa thức $p(z)$ sao cho $p(z)$ càng nhỏ càng tốt trên tập phổ của ma trận $A$ $\Lambda(A)$ và thỏa mãn $p(0)=1$. Ta giả sử ma trận $A$ là ma trận chéo hóa được, thỏa mãn $A=V\Lambda V^{-1}$ với $V$ là ma trận không kỳ dị và $\Lambda$ là ma trận đường chéo. Ta có bất đẳng thức:
 
 \begin{equation}
-    \lVert p(A) \rVert \leq \lVert V \rVert \lVert p(\Lambda) \rVert \lVert V^{-1} \rVert = \dfrac{\max(\sigma(V))}{\min(\sigma(V))} \lVert p(\Lambda) \rVert = \kappa(V) \lVert p(\Lambda) \rVert
+    \lVert p_n(A) \rVert \leq \lVert V \rVert \lVert p_n(\Lambda) \rVert \lVert V^{-1} \rVert = \dfrac{\max(\sigma(V))}{\min(\sigma(V))} \lVert p_n(\Lambda) \rVert = \kappa(V) \lVert p_n(\Lambda) \rVert
 \end{equation}
 
 Từ công thức trên và công thức \ref{eq:GMRES-Convergence-Rate}, ta đi đến định lý:
@@ -705,6 +708,16 @@ Từ công thức trên và công thức \ref{eq:GMRES-Convergence-Rate}, ta đi
 \end{dl}
 
 Ý nghĩa của định lý \ref{dl:GMRES-Convergence-Rate} là nếu ma trận $A$ có số điều kiện của ma trận $V$ là $\kappa(V)$ không quá lớn và một đa thức thuộc tập $P_n$ được tìm thấy mà độ lớn của nó trên phổ của ma trận $A$ là $\Lambda(A)$ giảm nhanh theo $n$ thì thuật toán GMRES hội tụ nhanh.
+
+Thuật toán GMRES sẽ hội tụ khi ta thực hiện số bước lặp bằng với số giá trị riêng riêng biệt của ma trận $A$. Sự hội tụ sẽ phụ thuộc vào cấu trúc các giá trị riêng của ma trận $A$ được phân bố thế nào.
+Từ bài toán tìm đa thức $p_n \in P_n$ được nêu ở công thức \ref{eq:Find-Polynomial}, ta đặt đa thức $p_n$ có dạng:
+
+\begin{equation}
+    p_n(z) = 1 - \sum_{i=1}^n c_i z^i
+\end{equation}
+
+Trong quá trình giải bài toán cực tiểu bằng việc tìm đa thức mà giá trị của nó nhỏ trên phổ của ma trận $A$ hay giá trị của nó nhỏ với mọi giá trị riêng của ma trận $A$. Trong trường hợp đặc biệt nếu $n$ lớn hơn số giá trị riêng của ma trận $A$ thì đa thức này sẽ bằng 0 tại mọi giá trị riêng của ma trận $A$ và thuộc $P_n$.
+Nhưng đôi khi chúng ta chỉ hy vọng tìm được một đa thức mà có giá trị đủ nhỏ tại tất cả các giá trị riêng. Việc tìm đa thức sẽ càng dễ hơn nếu các giá trị riêng phân thành các nhóm mà mỗi nhóm các giá trị riêng nằm sát nhau và khó hơn nếu các giá trị riêng có các giá trị riêng biệt và nằm ra nhau. Và việc phân bố các giá trị riêng của ma trận $A$ có mối quan hệ mật thiết với số điều kiện của ma trận $A$.
 
 Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \begin{itemize}
@@ -728,10 +741,61 @@ và:
 
 Để đánh giá $\inf_{p_n \in P_n} \lVert p_n(J) \rVert$ khá phức tạp, giá trị này được phân tích rất kỹ trong \cite{tichy2005worst}.
 
+
 \subsection{Cải thiện thuật toán GMRES}
 
-Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi phí về lưu trữ bộ nhớ và chi phí tính toán tăng theo $n$. Đây là nhược điểm rất lớn của thuật toán GMRES, vì vậy trong thực tế ta sẽ hay sử dụng phương pháp khởi tạo lại
+\subsubsection{Phương pháp khởi tạo lại}
 
+Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi phí về lưu trữ bộ nhớ và chi phí tính toán tăng theo $n$. Đây là nhược điểm rất lớn của thuật toán GMRES, vì vậy trong thực tế ta sẽ hay sử dụng phương pháp khởi tạo lại.
+Ý tưởng của phương pháp này là chọn giới hạn số bước lặp $n_{\max}$. Khi $n$ đạt đến $n_{\max}$ mà thuật toán GMRES chưa hội tụ, ta tính $x_{n_{\max}}$ và bỏ tất cả các vector trực giao $q_1, q_2, \dots, q_{n_{\max}}$ chỉ giữ lại nghiệm tại bước lặp $x_{n_{\max}}$. Đặt $x_{n_{\max}}=x_0$, ta quay trở lại giải hệ phương trình:
+
+\begin{equation} \label{eq:Restart-Equation}
+    A(x - x_0) = b - A x_0 = r_0
+\end{equation}
+
+Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương tự như trình tự đã được trình bày ở thuật toán \ref{alg:GMRES-Detailed} chỉ khác là vai trò của $b$ đã được thay bằng $r_0$ và $x_n$ được thay bằng $x_0+Q_n y$
+
+\begin{algorithm}
+    \caption{Các bước chi tiết thuật toán GMRES khởi tạo lại}\label{alg:GMRES-Restart}
+    \begin{algorithmic}
+        \State{Cho ma trận $A$ không kỳ dị, $b$, $n_{\max}$, chuẩn phần dư $\epsilon$ cho phép}
+        \State{$x_0 \leftarrow 0$}
+        \State{$r_0 \leftarrow b - A x_0$}
+        \State{$q_1 \leftarrow r_0 / \lVert r_0 \rVert$}
+        \State{$\beta \leftarrow \lVert r_0 \rVert$}
+        \State{$g_0 \leftarrow \beta e_1$}
+        \For {$n=1,2,3,\dots, n_{\max}$}
+            \State {Thực hiện bước thứ n của thuật toán \ref{alg:Arnoldi} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$}
+            \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1)$ vào cột cuối cùng của ma trận $\widetilde{H}_n$}
+            \State {Tính ma trận quay $G(n, n+1, \theta_n)$ từ kết quả của bước trên và áp dụng vào kết quả này}
+            \State {$g_{n-1} \leftarrow \begin{bmatrix} g_{n-1} & 0 \end{bmatrix}$}
+            \State {$g_n \leftarrow G(n, n+1, \theta_n) g_{n-1}$}
+            \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
+                \State {Giải $y$ từ phương trình $R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack$}
+                \State {$x_n \leftarrow x_0 + Q_n y$}
+                \State {break}
+            \EndIf
+
+            \If {$n = n_{\max}$}
+                \State {Giải $y$ từ phương trình $R_{n_{\max}} \lbrack 1:n_{\max},1:n_{\max} \rbrack y = g_{n_{\max}} \lbrack 1:n_{\max} \rbrack$}
+                \State {$x_{n_{\max}} \leftarrow x_0 + Q_{n_{\max}} y$}
+                \State {$x_0 \leftarrow x_{n_{\max}}$}
+                \State{$r_0 \leftarrow b - A x_0$}
+                \State{Xóa $Q_{n_{\max}}$}
+                \State{$q_1 \leftarrow r_0 / \lVert r_0 \rVert$}
+                \State{$\beta \leftarrow \lVert r_0 \rVert$}
+                \State{$g_0 \leftarrow \beta e_1$}
+                \State{Quay trở lại vòng lặp for ban đầu}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Phương pháp khởi tạo lại có ưu điểm là khiến cho chi phí bộ nhớ và chi phí tính toán tại mỗi bước là không quá lớn. Đặc biệt việc giới hạn không cho phép lượng bộ nhớ quá lớn phải sử dụng, nếu không giới hạn số bước thì rất có thể bộ nhớ trong hệ thống thực thi thuật toán GMRES dễ bị tràn.
+
+Nhược điểm của phương pháp là khiến cho thuật toán GMRES lâu hội tụ hơn. Nếu $n_{\max}$ quá lớn vẫn có thể khiến cho bộ nhớ bị tràn hoặc chi phí tính toán trong từng bước lớn. Nếu $n_{\max}$ nhỏ có thể khiến thuật toán GMRES gần như không bao giờ hội tụ. Việc chọn $n_{\max}$ tối ưu vẫn là một câu hỏi mở.
+
+\subsubsection{Phương pháp điều kiện đầu}
 
 \section{Thuật toán MINRES}
 
