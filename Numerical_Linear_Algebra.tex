@@ -23,6 +23,8 @@
 \usepackage[natbib,backend=biber,style=ieee, sorting=ynt]{biblatex}
 \bibliography{ref.bib}
 
+\graphicspath{{./figures/}}
+
 %\renewbibmacro*{cite}{%
 %  \printtext[bibhyperref]{%
 %    \printfield{prefixnumber}%
@@ -86,7 +88,7 @@
     \textsc{\LARGE Đại học Khoa học tự nhiên}\\[0.5cm] % Name of your university/college
     \textsc{\LARGE Khoa Toán - Cơ - Tin học}\\[0.5cm]
 
-    \includegraphics[scale=0.2]{figures/HUS-logo.jpg}\\[0.5cm]
+    \includegraphics[scale=0.2]{HUS-logo.jpg}\\[0.5cm]
 
     \textsc{\Large Chuyên ngành: Khoa học dữ liệu}\\[0.5cm] % Major heading such as course name
 
@@ -162,6 +164,13 @@
 
 \nocite{*}
 
+\begin{center}
+\section*{LỜI MỞ ĐẦU}
+\end{center}
+\addcontentsline{toc}{section}{{\bf LỜI MỞ ĐẦU}\rm}
+
+\newpage
+
 \section{Tổng quan về các phương pháp lặp trên không gian con Krylov}
 
 Các phương pháp trên không gian con Krylov là một nhóm quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
@@ -182,7 +191,7 @@ Ta xét ma trận Krylov, $K_n = \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \e
 
 Với ma trận $A$ có kích thước $m \times m$, ta có thể tính một ma trận trực giao $Q$ và một ma trận Hessenberg $H$ có dạng một ma trận tam giác trên và một đường chéo phụ:
 
-\begin{equation}
+\begin{equation} \label{eq:AQHQ}
     A = QHQ^T
 \end{equation}
 
@@ -309,7 +318,7 @@ Nếu $A$ là ma trận đối xứng thì ma trận $\widetilde{H}_n$ trở th�
 Ma trận $\widetilde{T}_n$ thu được từ thuật toán Lanczos được miêu tả ở thuật toán \ref{alg:Lanczos}
 Với:
 
-\begin{equation}
+\begin{equation} \label{eq:Three-term-recurrence}
     AQ_n = Q_{n+1}\widetilde{T}_n \Rightarrow Q_n^TAQ_n = Q_n^TQ_{n+1}\widetilde{T}_n=\begin{bmatrix}
         q_1^T \\ q_2^T \\ \vdots \\ q_n^T
     \end{bmatrix} \begin{bmatrix} q_1, q_2, \dots, q_n, q_{n+1} \end{bmatrix}\begin{bmatrix}
@@ -397,7 +406,7 @@ Ta áp dụng công thức
 
 \begin{figure}[h!] \centering
 
-    \includegraphics[scale=0.8]{figures/GMRES-LS.jpg}
+    \includegraphics[scale=0.8]{GMRES-LS.jpg}
     \caption{Tìm một vector trong không gian $A \mathcal{K}_n$ \\ sao cho khoảng cách từ điểm này đến vector b nhỏ nhất}
 
     \label{fig:GMRES-LS}
@@ -434,7 +443,7 @@ Vì nhân một vector với một ma trận trực giao không làm thay đổi
     y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert Q_{n+1}^T b - Q_{n+1}^T Q_{n+1} \widetilde{H}_n y \rVert
 \end{equation}
 
-Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi} để xây dựng cơ sở trực chuẩn $Q_n$ của không gian con Krylov $\mathcal{K}_n$, ta đặt $\lVert b \rVert = \beta, b=\lVert b \rVert e_1=\beta e_1$ với $e_1 = \begin{bmatrix}
+Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả ở thuật toán \ref{alg:Arnoldi} để xây dựng cơ sở trực chuẩn $Q_n$ của không gian con Krylov $\mathcal{K}_n$, ta đặt $\lVert b \rVert = \beta, Q_{n+1}^T b=\lVert b \rVert e_1=\beta e_1$ với $e_1 = \begin{bmatrix}
     1 & 0 & 0 & \dots
 \end{bmatrix}^T$, ta thu được dạng cuối cùng của bài toán cực tiểu hóa GMRES:
 
@@ -591,7 +600,7 @@ Tại mỗi bước $n$, chúng ta chỉ áp dụng $G(n-1, n, \theta_{n-1})G(n-
     \item Từ công thức \ref{eq:Rotation-Result}, mỗi bước ta cần 6 phép tính (4 phép nhân, 2 phép cộng)
 \end{itemize}
 
-Vì vậy, tại mỗi bước $n$ của thuật toán GMRES, ta cần $6n$ phép tính. Số phép tính tích lũy cần để phân tích QR cho ma trận $\widetilde{H}_n$ tính từ cột đầu tiên đến cột thứ $n=6(1+2+3+\dots+n)=6\dfrac{n(n+1)}{2}\sim O(n^2)$
+Vì vậy, tại mỗi bước $n$ của thuật toán GMRES, ta cần $6n$ phép tính. Số phép tính tích lũy cần để phân tích QR cho ma trận $\widetilde{H}_n$ tính từ cột đầu tiên đến cột thứ $n=6(1+2+3+\dots+n)=6\dfrac{n(n+1)}{2}\sim \mathcal{O}(n^2)$
 phép tính.
 
 Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVert$ tại bước lặp thứ $n$.
@@ -676,7 +685,7 @@ Vậy số bước cần để giải hệ phương trình \ref{eq:GMRES-Y-Backs
 
 Ngoài ra ta cần tính $x_n = Q_n y$ cần $m(2n-1)$ phép tính
 
-Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+15n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim O(2m^2n+ 2mn^2)$
+Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+15n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
 
 Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với thuật toán GMRES.
 
@@ -835,7 +844,66 @@ Ta xét hệ phương trình $Ax=b$. Một ma trận điều kiện đầu $M$ t
 
 \subsection{Giới thiệu thuật toán MINRES}
 
-Chương trước đã trình bày về thuật toán GMRES. Mặc dù thuật toán MINRES là đối tượng chính được đề cập trong tiểu luận nhưng thuật toán GMRES được trình bày rất chi tiết, mục đích là để có thể dễ dàng so sánh sự giống nhau và khác nhau của hai thuật toán trên nhiều khía cạnh. Thuật toán MINRES áp dụng cho bài toán giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ là ma trận đối xứng và có thể là ma trận kỳ dị, vector $b \in \mathbb{R}^m$, ma trận $A \neq 0$ và vector $b \neq 0$
+Chương trước đã trình bày về thuật toán GMRES. Mặc dù thuật toán MINRES là đối tượng chính được đề cập trong tiểu luận nhưng thuật toán GMRES được trình bày rất chi tiết, mục đích là để có thể dễ dàng so sánh sự giống nhau và khác nhau của hai thuật toán trên nhiều khía cạnh. Thuật toán MINRES áp dụng cho bài toán giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ là ma trận đối xứng không xác định dấu và có thể là ma trận kỳ dị, vector $b \in \mathbb{R}^m$, ma trận $A \neq 0$ và vector $b \neq 0$
+
+Thuật toán MINRES có nhiều điểm tương đồng với thuật toán GMRES. Thuật toán MINRES có thể xem như là thuật toán GMRES áp dụng cho ma trận đối xứng không xác định dấu.
+Thuật toán lặp Arnoldi trở thành thuật toán lặp Lanczos hay còn gọi là phương pháp truy hồi ba tham số.
+
+Ta cần kiểm chứng hệ vector được tạo thành từ thuật toán lặp Lanczos cũng là hệ cơ sở trực chuẩn giống như thuật toán lặp Arnoldi khi ma trận $A$ là ma trận đối xứng. Đặt $\tilde{q}_{n+1}=Aq_{n} - \alpha_n q_n - \beta_{n-1}q_{n-1}$
+Ta xét tích vô hướng $\tilde{q}_{n+1}^T q_{n-1}$:
+
+\begin{equation}
+    \begin{aligned}
+        \tilde{q}_{n+1}^T q_{n-1}&=(Aq_{n} - \alpha_n q_n - \beta_{n-1}q_{n-1})^T q_{n-1} \\
+        & = (Aq_{n})^T q_{n-1} - \beta_{n-1}\\
+        & =q_{n}^T (Aq_{n-1}) - \beta_{n-1}=q_n^T(\tilde{q}_n^T + \alpha_{n-1}q_{n-1} + \beta_{n-2}q_{n-2})-\beta_{n-1} \\
+        &= \beta_{n-1} - \beta_{n-1} = 0
+    \end{aligned}
+\end{equation}
+
+Với $k < n-1$, ta xét tích vô hướng $\tilde{q}_{n+1}^T q_k$:
+
+\begin{equation}
+    \begin{aligned}
+        \tilde{q}_{n+1}^T q_k &= (A q_n - \alpha_n q_n - \beta_{n-1} q_{n-1})^T q_k \\
+        &= (Aq_n)^T q_k \\
+        &= q_n^T (Aq_k)=q_n^T (\tilde{q}_k + \alpha_k q_k + \beta_{k-1} q_{k-1})=0
+    \end{aligned}
+\end{equation}
+
+Vì vậy, các vector $q_1, q_2, \dots, q_{n+1}$ tạo thành một hệ cơ sở trực chuẩn của không gian con Krylov.
+
+Giống như thuật toán GMRES, tại mỗi bước $n$, ta tìm một điểm $x_n$ sao cho cực tiểu hóa phần dư $r_n=b - Ax_n$
+Ta xét lại công thức \ref{eq:AQHQ}, vì $A = A^T$ nên ta có:
+
+\begin{equation}
+    A = QHQ^T = A^T = QH^TQ^T \Rightarrow H = H^T
+\end{equation}
+
+Vì vậy ma trận $H$ trong trường hợp ma trận $A$ đối xứng có dạng 3 đường chéo $T$
+Vì $x_n \in \mathcal{K}_n$, ta có thể viết $x_n = Q_n y$ với $y \in \mathbb{R}^n$ là tọa độ của $x_n$ trong $\mathcal{K}_n$. Ta tìm vector $y \in \mathbb{R}^n$ cực tiểu hóa hàm mục tiêu:
+
+\begin{equation} \label{eq:MINRES-Least-Square-Problem}
+    y = \underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert b - AQ_n y \rVert
+\end{equation}
+
+Ta sử dụng công thức \ref{eq:Three-term-recurrence}, bài toán cực tiểu hóa \ref{eq:MINRES-Least-Square-Problem} có dạng:
+
+\begin{equation}
+    y = \underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert b - Q_{n+1} \widetilde{T}_{n+1} y \rVert
+\end{equation}
+
+Ở trong dấu $\lVert \thickspace \rVert$ của công thức trên ta nhân bên trái với ma trận trực giao $Q_{n+1}^T$ ta được:
+
+\begin{equation}
+    y = \underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert Q_{n+1}^T(b - Q_{n+1} \widetilde{T}_{n+1} y) \rVert
+\end{equation}
+
+Cũng như thuật toán GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\beta e_1$, dạng cuối cùng của bài toán cực tiểu hóa MINRES:
+
+\begin{equation}
+    y = \underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{T}_{n+1} y \rVert 
+\end{equation}
 
 
 
@@ -906,13 +974,18 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 
 đối với phương pháp MINRES
 
+\newpage
+\begin{center}
+    \section*{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN ĐỀ TÀI}
+    \addcontentsline{toc}{section}{{\bf KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN ĐỀ TÀI}\rm}
+\end{center}
 
 \newpage
-\addcontentsline{toc}{section}{Tài liệu tham khảo}
+\addcontentsline{toc}{section}{TÀI LIỆU THAM KHẢO}
 %\bibliographystyle{IEEEtraN}
 %\bibliography{ref}
 %\pagestyle{plain}
-\printbibliography[title={Tài liệu tham khảo}]
+\printbibliography[title={TÀI LIỆU THAM KHẢO}]
 
 %\newpage
 %\printbibliography
