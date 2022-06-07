@@ -13,6 +13,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[utf8]{vietnam}
 \usepackage[center]{caption}
+\usepackage[shortlabels]{enumitem}
 \usepackage{fancyhdr} % header, footer
 \usepackage{hyperref} % loại bỏ border với mục lục và công thức
 \pagestyle{fancy}
@@ -342,10 +343,10 @@ Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy h
         \State {$q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n=1,2,3,\dots$}
             \State $v \leftarrow Aq_n$
-            \State $\alpha_n=q_n^Tv$
+            \State $\alpha_n \leftarrow q_n^Tv$
             \State $v \leftarrow v - \beta_{n-1}q_{n-1} - \alpha_n q_n$
             \State $\beta_n \leftarrow \lVert v \rVert$
-            \State $q_{n+1}=v/\beta_n$
+            \State $q_{n+1} \leftarrow v/\beta_n$
         \EndFor
     \end{algorithmic}
 \end{algorithm}
@@ -638,6 +639,7 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
             \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
                 \State {Giải $y$ từ phương trình $R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack$}
                 \State {$x_n \leftarrow Q_n y$}
+                \State \Return $x_n$
                 \State {break}
             \EndIf
         \EndFor
@@ -652,7 +654,7 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
 Thuật toán GMRES yêu cầu một lượng lớn bộ nhớ và trở nên rất đắt khi số bước lặp cao.
 Yêu cầu về bộ nhớ cơ bản là lưu các vector $b, x \in \mathbb{R}^{m}$ và ma trận $A \in \mathbb{R}^{m \times m}$. Nếu $A$ là ma trận thưa, mỗi hàng có $l$ phần tử khác 0 thì yêu cầu về bộ nhớ cần lưu $(l+2)m$ số thực để tạo bài toán. Thuật toán GMRES cần phải lưu tất cả các vector $q_1, q_2, \dots, q_n$. Từng vector $q_i \in \mathbb{R}^{m}, i=1\dots n$, vì vậy cần chi phí bộ nhớ là $mn$ số thực.
 Ngoài ra ta cần giải bài toán cực tiểu hóa, ta thu được $y \in \mathbb{R}^n$, tại bước lặp thứ $n$ $x_n = Q_n y$ (nếu thỏa mãn điều kiện hội tụ là $\lVert r_n \rVert < \epsilon$), ta cần lưu $n$ số thực cho $y$.
-Chúng ta cũng cần lưu ma trận $\widetilde{H}_n$, thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{n \times n}$ với chi phí $\dfrac{n^2 + n}{2}$.
+Chúng ta cũng cần lưu ma trận $\widetilde{H}_n$, thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{(n+1) \times n}$ với chi phí $\dfrac{n^2 + n}{2}$.
 Cuối cùng chúng ta cần lưu các ma trận quay Givens, mỗi ma trận quay cần lưu hai số $\sin$ và $\cos$. Tại bước thứ $n$, cần lưu $n$ ma trận quay Givens từ $\sin(\theta_1),\dots, \sin(\theta_n)$ và $\cos(\theta_1),\dots,\cos(\theta_n)$ như vậy chi phí là $2n$.
 Tổng hợp lại chi phí bộ nhớ cho thuật toán GMRES tại bước thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
 
@@ -664,15 +666,15 @@ Tại mỗi bước $n$, của thuật toán GMRES, ta cần thực hiện các 
     \item Thực hiện thuật toán Arnoldi để thu được vector $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$. Bước này chi phí là: \begin{itemize}
         \item Tính $Aq_n$ cần $m(2m-1)$ phép tính
         \item $n$ bước, mỗi bước gồm 1 phép nhân vô hướng ($h_{j,n} \leftarrow q_j^Tv$) cần $2m-1$ phép tính và một bước nhân 1 số ($h_{j,n}q_j$) với một vector cần $m$ phép tính và một bước trừ hai vector cần $m$ phép tính ($v \leftarrow v - h_{j,n}q_j$). Như vậy bước này cần $n(4m-1)$ phép tính.
-        \item Một bước tính chuẩn ($h_{n+1,n} \leftarrow \lVert v \rVert$) cần $2m-1$ phép tính.
+        \item Một bước tính chuẩn ($h_{n+1,n} \leftarrow \lVert v \rVert$) cần $2m$ phép tính.
         \item Một bước chuẩn hóa ($q_{n+1} \leftarrow v/h_{n+1,n}$) cần $m$ phép tính.
     \end{itemize}
-    Như vậy số phép tính để thực hiện thuật toán Arnoldi cần $m(2m-1) + n(4m-1) + 2m-1 + m=m(2m-1) + n(4m-1)+ 3m-1=2m^2+4mn+2m-n-1$.
+    Như vậy số phép tính để thực hiện thuật toán Arnoldi cần $m(2m-1) + n(4m-1) + 2m + m=m(2m-1) + n(4m-1)+ 3m=2m^2+4mn+2m-n$.
     \item Bước áp dụng phép quay Givens cho cột thứ $n$ của ma trận $\widetilde{H}_n$ gồm $6n+10$ ($10$ là số phép tính để tính $\sin(\theta_n)$ và $\cos(\theta_n)$).
     \item Bước cập nhật $g_n \leftarrow G(n, n+1, \theta_n)g_{n-1}$ cần 6 phép tính
 \end{itemize}
 
-Như vậy tại bước thứ $n$ của thuật toán GMRES ta cần số phép tính là: $2m^2+4mn+2m-n-1 + 6n+10 + 6=2m^2+4mn+2m+5n+15$ phép tính.
+Như vậy tại bước thứ $n$ của thuật toán GMRES ta cần số phép tính là: $2m^2+4mn+2m-n + 6n+10 + 6=2m^2+4mn+2m+5n+16$ phép tính.
 
 Nếu giả sử tại bước $n$, điều kiện hội tụ đã thỏa mãn $\lVert r_n \rVert < \epsilon$, ta cần thêm bước giải $y$ bằng phép thế ngược. Để giải hệ ở phương trình \ref{eq:GMRES-Y-Backsubstitute}, tại bước thế ngược thứ $k, k=1,2,\dots,n$, ta cần số phép tính:
 \begin{itemize}
@@ -685,7 +687,7 @@ Vậy số bước cần để giải hệ phương trình \ref{eq:GMRES-Y-Backs
 
 Ngoài ra ta cần tính $x_n = Q_n y$ cần $m(2n-1)$ phép tính
 
-Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+15n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
+Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+16n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
 
 Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với thuật toán GMRES.
 
@@ -786,6 +788,7 @@ Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương 
             \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
                 \State {Giải $y$ từ phương trình $R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack$}
                 \State {$x_n \leftarrow x_0 + Q_n y$}
+                \State \Return $x_n$
                 \State {break}
             \EndIf
 
@@ -979,7 +982,7 @@ Tại mỗi bước $n$, thuật toán MINRES chỉ cần áp dụng ba phép qu
 Tại đây ta có thể làm theo hai hướng:
 
 \begin{itemize}
-    \item Tương tự như thuật toán GMRES, ta lưu các vector $q_1, q_2, \dots, q_n$, kiểm tra xem đã đạt điều kiện hội tụ (chuẩn phần dư nhỏ hơn ngưỡng $\epsilon$ cho phép), nếu thỏa mãn tìm $y$ bằng cách giải hệ phương trình $R_n\lbrack 1:n, 1:n\rbrack y=g_n\lbrack 1:\rbrack]$ và tính $x_n=Q_n y$.
+    \item Tương tự như thuật toán GMRES, ta lưu các vector $q_1, q_2, \dots, q_n$, kiểm tra xem đã đạt điều kiện hội tụ (chuẩn phần dư nhỏ hơn ngưỡng $\epsilon$ cho phép), nếu thỏa mãn tìm $y$ bằng cách giải hệ phương trình $R_n\lbrack 1:n, 1:n\rbrack y=g_n\lbrack 1:n \rbrack$ và tính $x_n=Q_n y$.
     \item Ta không cần lưu các vector $q_1, q_2, \dots, q_n$, $x_n$ sẽ được tính từ $x_{n-1}$ và điều kiện để kết thúc thuật toán giống như điều kiện hội tụ ở thuật toán GMRES.
 \end{itemize}
 
@@ -1030,15 +1033,157 @@ Ta rút ra được:
         z_2 = \dfrac{q_3 - \epsilon_3 z_0 - \delta_3 z_1}{\gamma_3}\\
         z_3 = \dfrac{q_4 - \epsilon_4 z_1 - \delta_4 z_2}{\gamma_4}\\
         \vdots \\
-        z_n = \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n} \\
+        z_{n-1} = \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n} \\
     \end{cases}
 \end{equation}
 
 Ta suy ra công thức tổng quát để tính các cột của ma trận $Z_n$ là:
 
 \begin{equation}
-	z_n = \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}
+	z_{n-1} = \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}
 \end{equation}
+
+Từ đây ta suy ra công thức tính $x_n$ theo $x_{n-1}$:
+
+\begin{equation}
+    x_n = x_{n-1} + g_n\lbrack n \rbrack \Big(\dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}\Big)
+\end{equation}
+
+Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của cả hai phương pháp:
+
+\begin{itemize}
+    \item Thuật toán \ref{alg:MINRES-Detailed-1} miêu tả thuật toán MINRES giải tương tự theo cách của thuật toán GMRES bằng cách thế ngược và phải lưu các vector $q_1, q_2, \dots, q_n$ để tính $x_n = Q_n y$.
+    \item Thuật toán \ref{alg:MINRES-Detailed-2} miêu tả thuật toán MINRES mà $x_n$ được tính theo $x_{n-1}$ và không cần lưu các vector $q_1, q_2, \dots, q_n$.
+\end{itemize}
+
+\begin{algorithm}
+    \caption{Các bước chi tiết thuật toán MINRES theo phương pháp giải hệ}\label{alg:MINRES-Detailed-1}
+    \begin{algorithmic}
+        \State{Cho ma trận $A$ đối xứng không xác định dấu, $b$, chuẩn phần dư $\epsilon$ cho phép}
+        \State{$q_1 \leftarrow b/\lVert b \rVert$}
+        \State{$\beta \leftarrow \lVert b \rVert$}
+        \State{$g_0 \leftarrow \beta$}
+        \For {$n=1,2,3,\dots$}
+            \State {Thực hiện bước thứ n của thuật toán \ref{alg:Lanczos} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{T}_n$}
+            \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})$ vào cột cuối cùng của ma trận $\widetilde{T}_n$}
+            \State {Tính ma trận quay $G(n, n+1, \theta_n)$ từ kết quả của bước trên và áp dụng vào kết quả này}
+            \State {$g_{n-1} \leftarrow \begin{bmatrix} g_{n-1} & 0 \end{bmatrix}$}
+            \State {$g_n \leftarrow G(n, n+1, \theta_n) g_{n-1}$}
+            \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
+                \State {Giải $y$ từ phương trình $R_n \lbrack 1:n,1:n \rbrack y = g_n \lbrack 1:n \rbrack$}
+                \State {$x_n \leftarrow Q_n y$}
+                \State \Return $x_n$
+                \State {break}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+    \caption{Các bước chi tiết thuật toán MINRES theo phương pháp tìm mối quan hệ giữa $x_n$ và $x_{n-1}$}\label{alg:MINRES-Detailed-2}
+    \begin{algorithmic}
+        \State{Cho ma trận $A$ đối xứng không xác định dấu, $b$, chuẩn phần dư $\epsilon$ cho phép}
+        \State{$q_1 \leftarrow b/\lVert b \rVert$}
+        \State{$\beta \leftarrow \lVert b \rVert$}
+        \State{$g_0 \leftarrow \beta$}
+        \State{$x_0 \leftarrow 0$}
+        \For {$n=1,2,3,\dots$}
+            \State {Thực hiện bước thứ n của thuật toán \ref{alg:Lanczos} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{T}_n$}
+            \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})$ vào cột cuối cùng của ma trận $\widetilde{T}_n$}
+            \State {Tính ma trận quay $G(n, n+1, \theta_n)$ từ kết quả của bước trên và áp dụng vào kết quả này}
+            \State {$g_{n-1} \leftarrow \begin{bmatrix} g_{n-1} & 0 \end{bmatrix}$}
+            \State {$g_n \leftarrow G(n, n+1, \theta_n) g_{n-1}$}
+            \State {$z_{n-1} \leftarrow \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}$}
+            \State {$x_{n} \leftarrow x_{n-1} + g_n \lbrack n \rbrack z_{n-1}$}
+            \If {Nếu thành phần thứ $n+1$ của $g_n < \epsilon$ }
+                \State \Return $x_n$
+                \State {break}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Nếu ma trận $A$ là một ma trận đối xứng xác định dấu dương thì ma trận $T_k$ (thu được bằng cách bỏ đi hàng cuối của ma trận $\widetilde{T}_n)$ cũng là một ma trận đối xứng xác định dấu dương.
+Ma trận $T_n$ có thể được phân tích dưới dạng:
+
+\begin{equation}
+    T_n = L_nD_nL_n^T
+\end{equation}
+
+\subsection{Một số đặc điểm của thuật toán MINRES}
+
+\subsubsection{Chi phí bộ nhớ}
+
+Thuật toán MINRES có yêu cầu về bộ nhớ cơ bản là lư vector $b, x \in \mathbb{R}^m$. Vì $A$ là ma trận đối xứng nên chỉ cần lưu $\dfrac{m^2}{2} + m$ số thực như vậy ta cần $\dfrac{m^2}{2} + 3m$ số thực để tạo bài toán.
+Ta cần lưu ma trận $\widetilde{T}_n$ thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{(n+1) \times times}$ tam giác trên ba đường chéo với chi phí $n+(n-1) + (n-2)=3n-3$ số thực. Tại bước thứ $n$, ta cần lưu 3 ma trận quay Givens từ $\sin(\theta_{n-2}), \sin(\theta_{n-1}), \sin(\theta_n), \cos(\theta_{n-2}), \cos(\theta_{n-1}), \cos(\theta_n)$ với chi phí là 6, ngoại trừ $n=1$ lưu ma trận quay Givens với chi phí là 2 và $n=2$ là 4.
+Ta xét các trường hợp:
+
+\begin{enumerate}[a)] % a), b), c), ...
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES
+    \begin{itemize}
+        \item Ta cần lưu tất cả các vector $q_1, q_2, \dots, q_n$. Từng vector $q_i \in \mathbb{R}^n$ nên chi phí bộ nhớ là $mn$ số thực.
+        \item Tại bước lặp thứ $n$, ta cần lưu $y \in \mathbb{R}^n$ (nếu thỏa mãn điều kiện hội tụ $\lVert r_n \rVert < \epsilon$) với chi phí $n$
+    \end{itemize}
+    Như vậy tổng chi phí bộ nhớ nếu ta sử dụng phương pháp này là: $\dfrac{m^2}{2}+3m + 3n-3+6+mn+n=\dfrac{m^2}{2}+mn+3m+4n+3$
+    \item Nếu ta giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$:
+    \begin{itemize}
+        \item Tại bước thứ $n$, ta cần lưu hai vector $q_{n}, q_{n+1} \in \mathbb{R}^m$ với chi phí $2m$.
+        \item Lưu thêm một vị trí cho $x_{n-1}$ với chi phí là $m$, $x_n$ đã được lưu cho vị trí $x \in \mathbb{R}^n$ phía trên.
+        \item Tại bước thứ $n$, ta lưu 3 vector $z_{n-2}, z_{n-1}, z_n \in \mathbb{R}^m$ với chi phí $3m$, ngoại trừ $n=1$ lưu một vector $z_0$ và $n=2$ lưu 2 vector $z_0, z_1$
+    \end{itemize}
+    Tổng chi phí bộ nhớ nếu ta sử dụng phương pháp này là: $\dfrac{m^2}{2}+3m + 3n-3+6+2m + m + 3m=\dfrac{m^2}{2}+9m+3n+3$
+\end{enumerate}
+
+Ta nhận thấy theo phương pháp thứ hai thì chi phí bộ nhớ trong quá trình thực hiện thuật toán nhỏ đi nhiều.
+
+\subsubsection{Chi phí tính toán}
+
+Để ước lượng chi phí tính toán của thuật toán MINRES, ta sẽ tính chi phí tính toán của các bước mà cả hai phương pháp đều phải thực hiện:
+Tại mỗi bước $n$ của thuật toán GMRES, ta cần thực hiện:
+
+\begin{itemize}
+    \item Thực hiện thuật toán lặp Lanczos thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{T}_n$. Bước này có chi phí là:
+    \begin{itemize}
+        \item Tính $Aq_n$ cần $m(2m-1)$ phép tính.
+        \item Một phép nhân vô hướng hai vector ($\alpha_n \leftarrow q_n^Tv$) với chi phí $2m-1$. Hai phép nhân một số với một vector ($\beta_{n-1}q_{n-1}$ và $\alpha_n q_n$) với chi phí là $2m$. Hai phép trừ vector ($Aq_n - \alpha_n q_n - \beta_{n-1} q_{n-1}$) cần $2m$ phép tính. Như vậy chi phí tính toán của bước này là $6m-1$.
+        \item Một bước tính chuẩn ($\beta_n \leftarrow \lVert v \rVert$) chi phí $2m$ phép tính.
+        \item Một bước chuẩn hóa ($q_{n+1} \leftarrow v/\beta_n$) chi phí $m$ phép tính.
+    \end{itemize}
+    Số phép tính cần thiết để thực hiện thuật toán lặp Lanczos tại mỗi bước là $m(2m-1) + 6m-1 + 2m + m=2m^2+8m-1$ phép tính.
+    \item Bước áp dụng phép quay Givens cho cột thứ $n$ của ma trận $\widetilde{T}_n$, mỗi cột được áp dụng ba phép quay (trừ hai cột đầu) với chi phí là $6.3+10=28$ phép tính ($10$ là số phép tính để tính $\sin(\theta_n)$ và $\cos(\theta_n)$).
+    \item Bước cập nhật $g_n \leftarrow G(n, n+1, \theta_n)g_{n-1}$ cần 6 phép tính.
+\end{itemize}
+Số phép tính cơ bản tại các bước chung của hai phương pháp tại bước thứ $n$ của thuật toán MINRES là: $2m^2 + 8m-1 + 28 + 6=2m^2 + 8m + 33$ phép tính
+
+Ta xét hai trường hợp:
+
+\begin{enumerate}[a)] % a), b), c), ...
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES
+    Nếu giả sử tại bước $n$, điều kiện hội tụ đã thỏa mãn $\lVert r_n \rVert < \epsilon$, ta cần thêm bước giải $y$ bằng phép thế ngược. Để giải hệ ở phương trình $R_n \lbrack 1:n, 1:n \rbrack y = g_n \lbrack 1:n \rbrack$, tại bước thế ngược thứ $k, k=1,2,\dots,n$, ta cần số phép tính:
+    \begin{itemize}
+        \item 1 phép chia.
+        \item 2 phép nhân (ngoại trừ $k=1,2$).
+        \item 2 phép trừ (ngoại trừ $k=1,2$)
+    \end{itemize}
+    Ta cần tính $x_n = Q_n y$ với chi phí $m(2n-1)$ phép tính.
+    Số phép tính cần để giải hệ phương trình là: $m(2n-1) + n + 2(n-2) + 2(n-2) + 2=m(2n-1) + 5n-6$ phép tính ($+2$ tính cho phép nhân và phép trừ ở bước $k=2$)
+    \item Nếu ta giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$:
+    Tại mỗi bước $n$ ta cần thêm các bước tính toán:
+    \begin{itemize}
+        \item Một bước tính $z_{n-1} \leftarrow \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}$ có hai phép nhân một số với một vector ($\epsilon_n z_{n-2}$ và $\delta_n z_{n-1}$) cần $2m$ phép tính. Hai phép trừ vector cần $2m$ phép tính. Một phép chia một vector cho một số cần $m$ phép tính. Bước này cần tổng cộng $5m$ phép tính.
+        \item Một bước cập nhật $x_n \leftarrow x_{n-1} + g_n \lbrack n \rbrack z_{n-1}$ cần $2m$ phép tính (một phép nhân một số với một vector cần $m$ phép tính và một phép cộng vector chi phí $m$ phép tính)
+    \end{itemize}
+    Tổng cộng tại mỗi bước $n$ với chi phí $7m$ phép tính. Nếu giả sử thuật toán MINRES cần $n$ bước để thỏa mãn điều kiện hội tụ $\lVert r_n \rVert < \epsilon$ thì chi phí tính toán cần là $7mn$
+\end{enumerate}
+
+\textbf{Nhận xét:} Sử dụng phương pháp thứ hai có lợi hơn về chi phí bộ nhớ nhưng chi phí tính toán cao hơn so với phương pháp thứ nhất ($7mn > m(2n-1) + 5n - 6$)
+
+Tổng hợp lại theo phương pháp thứ nhất chi phí tính toán của thuật toán GMRES là: $2m^2n+8mn-n+m(2n-1)+5n-6=2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$ và chi phí tính toán theo phương pháp thứ hai là: $2m^2n+8mn-n + 7mn=2m^n+15mn-n \sim \mathcal{O}(m^2n)$. Cả hai phương pháp đều có cùng độ phức tạp $\mathcal{O}(m^2n)$ nhưng phương pháp thứ hai có chi phí bộ nhớ thấp hơn nên trung thực tế phương pháp thứ hai là sử dụng mối quan hệ giữa $x_n$ và $x_{n-1}$ không lưu các vector $q_1, q_2, \dots, q_n$ hay được sử dụng hơn.
+
+\subsubsection{Sự hội tụ của thuật toán MINRES}
+
+Thuật toán MINRES có chuẩn phần dư $\lVert r_n \rVert $ đơn điệu giảm theo $n$.
 
 
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
