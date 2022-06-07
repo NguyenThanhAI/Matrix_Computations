@@ -597,7 +597,7 @@ Tại mỗi bước $n$, chúng ta chỉ áp dụng $G(n-1, n, \theta_{n-1})G(n-
 
 \begin{itemize}
     \item Cần áp dụng $n$ ma trận quay vào cột thứ $n$ của ma trận $\widetilde{H}_n$
-    \item Từ công thức \ref{eq:Rotation-Result}, mỗi bước ta cần 6 phép tính (4 phép nhân, 2 phép cộng)
+    \item Từ công thức \ref{eq:Rotation-Result}, mỗi phép quay ta cần 6 phép tính (4 phép nhân, 2 phép cộng)
 \end{itemize}
 
 Vì vậy, tại mỗi bước $n$ của thuật toán GMRES, ta cần $6n$ phép tính. Số phép tính tích lũy cần để phân tích QR cho ma trận $\widetilde{H}_n$ tính từ cột đầu tiên đến cột thứ $n=6(1+2+3+\dots+n)=6\dfrac{n(n+1)}{2}\sim \mathcal{O}(n^2)$
@@ -612,7 +612,7 @@ Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVer
 
 Đây là hệ phương trình gồm $n$ phương trình và $n$ ẩn, $y$ có thể giải bằng phép thế ngược do block phía trên của $R_n$ là ma trận tam giác trên.
 
-Để tính $\lbrack r_n \rbrack$, ta nhận thấy $r_n=g_n - R_n y$ có $n$ thành phần đầu bằng 0 do nghiệm $y$ thỏa mãn phương trình ở công thức \ref{eq:GMRES-Y-Backsubstitute}. Mặt khác do hàng cuối của $R_n$ là vector hàng 0 nên thành phần thứ $n+1$ của phần dư $r_n$ chính bằng thành phần thứ $n+1$ của $g_n$.
+Để tính $\lVert r_n \rvert$, ta nhận thấy $r_n=g_n - R_n y$ có $n$ thành phần đầu bằng 0 do nghiệm $y$ thỏa mãn phương trình ở công thức \ref{eq:GMRES-Y-Backsubstitute}. Mặt khác do hàng cuối của $R_n$ là vector hàng 0 nên thành phần thứ $n+1$ của phần dư $r_n$ chính bằng thành phần thứ $n+1$ của $g_n$.
 
 \begin{md}
     Chuẩn phần dư của nghiệm $x_n$ tại bước lặp thứ $n$ bằng thành phần thứ $n+1$ của vector $g_n$ thu được bằng cách nhân phía bên trái của $\beta e_1$ với liên tiếp các phép quay Givens biến đổi ma trận $\widetilde{H}_n$ thành ma trận tam giác trên.
@@ -628,7 +628,7 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
         \State{Cho ma trận $A$ không kỳ dị, $b$, chuẩn phần dư $\epsilon$ cho phép}
         \State{$q_1 \leftarrow b/\lVert b \rVert$}
         \State{$\beta \leftarrow \lVert b \rVert$}
-        \State{$g_0 \leftarrow \beta e_1$}
+        \State{$g_0 \leftarrow \beta$}
         \For {$n=1,2,3,\dots$}
             \State {Thực hiện bước thứ n của thuật toán \ref{alg:Arnoldi} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$}
             \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1)$ vào cột cuối cùng của ma trận $\widetilde{H}_n$}
@@ -776,7 +776,7 @@ Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương 
         \State{$r_0 \leftarrow b - A x_0$}
         \State{$q_1 \leftarrow r_0 / \lVert r_0 \rVert$}
         \State{$\beta \leftarrow \lVert r_0 \rVert$}
-        \State{$g_0 \leftarrow \beta e_1$}
+        \State{$g_0 \leftarrow \beta$}
         \For {$n=1,2,3,\dots, n_{\max}$}
             \State {Thực hiện bước thứ n của thuật toán \ref{alg:Arnoldi} thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$}
             \State {Tính $G(n-1, n, \theta_{n-1})G(n-2, n-1, \theta_{n-2})\dots G(1, 2, \theta_1)$ vào cột cuối cùng của ma trận $\widetilde{H}_n$}
@@ -953,7 +953,7 @@ Ta xem lại cấu trúc của ma trận ba đường chéo $\widetilde{T_n}$:
 Ta vẫn sử dụng phương pháp ma trận quay Givens nhưng trong trường hợp ma trận $\widetilde{T}_n$, cấu trúc của ma trận $\widetilde{T}_n$ tạo ra một vài khác biệt trong quá trình tính toán:
 
 \begin{itemize}
-    \item Mỗi ma trận quay $G(n, n+1, \theta_n)$ chỉ thực sự có hiệu lực trên ba cột $n, n+1, n+2$ của ma trận $\widetilde{T}_n$.
+    \item Mỗi ma trận quay $G(n, n+1, \theta_n)$ chỉ thực sự tác dụng trên ba cột $n, n+1, n+2$ của ma trận $\widetilde{T}_n$.
     \item Mỗi cột thứ $n$ chỉ áp dụng ba ma trận quay $G(n-2, n-1, \theta_{n-2}), G(n-1, n, \theta_{n-1})$ (được tính ở các hai bước liền kề $n-2$ và $n-1$) và $G(n, n+1, \theta_n)$. Ngoại trừ hai cột đầu tiên của ma trận $\widetilde{T}_n$, cột đầu tiên chỉ được áp dụng duy nhất ma trận $G(1, 2, \theta_1)$ và cột thứ hai được áp dụng hai ma trận $G(1, 2, \theta_1), G(2, 3,\theta_2)$.
 \end{itemize}
 
@@ -967,11 +967,79 @@ Như vậy, sau khi thực hiện phân tích QR cho ma trận $\widetilde{T}_n$
         \space & \gamma_2 & \delta_3 & \epsilon_4 & \space & \space & \space \\
         \space & \space  & \gamma_3 & \delta_4 & \epsilon_5 & \space & \space \\
         \space & \space & \space & \ddots & \ddots & \ddots & \space \\
-        \space & \space & \space & \space & \gamma_{k-2} & \delta_{k-1} & \epsilon_k \\
-        \space & \space & \space & \space & \space & \gamma_{k-1} & \delta_k \\
-        \space & \space & \space & \space & \space & \space & \gamma_k
+        \space & \space & \space & \space & \gamma_{n-2} & \delta_{n-1} & \epsilon_n \\
+        \space & \space & \space & \space & \space & \gamma_{n-1} & \delta_n \\
+        \space & \space & \space & \space & \space & \space & \gamma_n \\
+        0 & \dots & 0 & \dots & 0 & \dots & 0
     \end{bmatrix}
 \end{equation}
+
+Tại mỗi bước $n$, thuật toán MINRES chỉ cần áp dụng ba phép quay (ngoại trừ hai cột đầu tiên) vào cột cuối cùng của ma trận $\widetilde{T}_n$. Chí phí để thực hiện phân tích QR tại mỗi bước $n, n \neq 1, 2$ là $6*3 + 10 \sim \mathcal{O}(1)$ phép tính (10 phép tính là số phép tính để tính $\cos(\theta_n)$ và $\sin(\theta_n)$)
+
+Tại đây ta có thể làm theo hai hướng:
+
+\begin{itemize}
+    \item Tương tự như thuật toán GMRES, ta lưu các vector $q_1, q_2, \dots, q_n$, kiểm tra xem đã đạt điều kiện hội tụ (chuẩn phần dư nhỏ hơn ngưỡng $\epsilon$ cho phép), nếu thỏa mãn tìm $y$ bằng cách giải hệ phương trình $R_n\lbrack 1:n, 1:n\rbrack y=g_n\lbrack 1:\rbrack]$ và tính $x_n=Q_n y$.
+    \item Ta không cần lưu các vector $q_1, q_2, \dots, q_n$, $x_n$ sẽ được tính từ $x_{n-1}$ và điều kiện để kết thúc thuật toán giống như điều kiện hội tụ ở thuật toán GMRES.
+\end{itemize}
+
+Ta xét hướng thứ hai, để tìm công thức tính $x_n$ theo $x_{n-1}$, \cite{greenbaum1997iterative} định nghĩa một ma trận $Z_n$:
+
+\begin{equation}
+    Z_n = \begin{bmatrix}
+        z_0, z_1, \dots, z_{n-1}
+    \end{bmatrix}=Q_n (R\lbrack 1:n, 1:n \rbrack)^{-1}
+\end{equation}
+
+hay:
+
+\begin{equation} \label{eq:Z-Definition}
+    Z_n R\lbrack 1:n, 1:n \rbrack = Q_n
+\end{equation}
+
+Ta thế vào công thức tính $x_n = Q_n y$:
+
+\begin{equation}
+    \begin{aligned}
+        x_n = Q_n y &= Z_n  R\lbrack 1:n, 1:n \rbrack y \\
+        &= Z_n g_n \lbrack 1:n \rbrack \\
+        &=Z_{n-1}g_n \lbrack 1:n-1 \rbrack+g_n\lbrack n \rbrack z_{n-1}\\
+        &=x_{n-1} + g_n\lbrack n \rbrack z_{n-1}
+    \end{aligned}
+\end{equation}
+
+Bây giờ ta cần xác định các cột của $Z_n$, từ công thức \ref{eq:Z-Definition} ta có:
+
+\begin{equation}
+    \begin{cases}
+        \gamma_1 z_0 = q_1 \\
+        \delta_2 z_0 + \gamma_2 z_1 = q_2 \\
+        \epsilon_3 z_0 + \delta_3 z_1 + \gamma_3 z_2 = q_3 \\
+        \epsilon_4 z_1 + \delta_4 z_2 + \gamma_4 z_3 = q_4 \\
+        \vdots \\
+        \epsilon_n z_{n-3} + \delta_n z_{n-2} + \gamma_n z_{n-1} = q_n
+    \end{cases}
+\end{equation}
+
+Ta rút ra được:
+
+\begin{equation}
+    \begin{cases}
+        z_0 = \dfrac{q_1}{\gamma_1}\\
+        z_1 = \dfrac{q_2 - \delta_2 z_0}{\gamma_2}\\
+        z_2 = \dfrac{q_3 - \epsilon_3 z_0 - \delta_3 z_1}{\gamma_3}\\
+        z_3 = \dfrac{q_4 - \epsilon_4 z_1 - \delta_4 z_2}{\gamma_4}\\
+        \vdots \\
+        z_n = \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n} \\
+    \end{cases}
+\end{equation}
+
+Ta suy ra công thức tổng quát để tính các cột của ma trận $Z_n$ là:
+
+\begin{equation}
+	z_n = \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}
+\end{equation}
+
 
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
 
