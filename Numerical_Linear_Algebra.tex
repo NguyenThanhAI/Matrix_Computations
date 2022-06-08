@@ -302,7 +302,7 @@ Thuật toán Arnoldi được sử dụng trong các trường hợp:
     \item Kỹ thuật tính giá trị riêng của ma trận không đối xứng.
 \end{itemize}
 
-\subsection{Thuật toán lặp Lanczos}
+\subsection{Thuật toán lặp Lanczos} \label{Lanczos-Algorithm}
 
 
 Nếu $A$ là ma trận đối xứng thì ma trận $\widetilde{H}_n$ trở thành ma trận ba đường chéo $\widetilde{T}_n$ có dạng:
@@ -1106,12 +1106,29 @@ Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của c
     \end{algorithmic}
 \end{algorithm}
 
-Nếu ma trận $A$ là một ma trận đối xứng xác định dấu dương thì ma trận $T_k$ (thu được bằng cách bỏ đi hàng cuối của ma trận $\widetilde{T}_n)$ cũng là một ma trận đối xứng xác định dấu dương.
+Nếu ma trận $A$ là một ma trận đối xứng xác định dấu dương thì ma trận $T_n$ (thu được bằng cách bỏ đi hàng cuối của ma trận $\widetilde{T}_n)$ cũng là một ma trận đối xứng xác định dấu dương.
 Ma trận $T_n$ có thể được phân tích dưới dạng:
 
 \begin{equation}
     T_n = L_nD_nL_n^T
 \end{equation}
+
+với:
+
+\begin{equation}
+    L_n = \begin{bmatrix} 1 & \thickspace & \thickspace & \thickspace & \thickspace \\
+    \mu_1 & 1 & \thickspace & \thickspace & \thickspace \\
+    \thickspace & \ddots & \ddots & \thickspace & \thickspace \\
+    \thickspace & \thickspace & \mu_{n-2} & 1 & \thickspace \\
+    \thickspace & \thickspace & \thickspace & \mu_{n-1} & 1 \end{bmatrix}
+    D_n = \begin{bmatrix} d_1 & \thickspace & \thickspace & \thickspace & \thickspace \\
+        \thickspace & d_2 & \thickspace & \thickspace & \thickspace \\
+        \thickspace & \thickspace & \ddots & \thickspace & \thickspace \\
+        \thickspace & \thickspace & \thickspace & d_{n-1} & \thickspace \\
+        \thickspace & \thickspace & \thickspace & \thickspace & d_n\end{bmatrix}
+\end{equation}
+
+$L_n$ là ma trận hai đường chéo tam giác dưới, $D_n$ là ma trận đường chéo.
 
 \subsection{Một số đặc điểm của thuật toán MINRES}
 
@@ -1255,11 +1272,11 @@ Ta xét hai trường hợp:
 
     \begin{dl} \label{dl:MINRES-RESIDUAL-CHEBYSEV}
         Xét hệ phương trình $Ax=b$. Với $A$ là ma trận đối xứng xác định dấu dương. Ta giải hệ phương trình $Ax=b$ bằng thuật toán MINRES, gọi $r_n$ là phần dư tại bước lặp thứ $n$. Khi đó:
-        \begin{equation}
+        \begin{equation} \label{eq:MINRES-A-SPD-UPPER-BOUND}
             \dfrac{\lVert r_n \rVert }{\lVert b \rVert} \leq \Big(\dfrac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1}\Big)^n
         \end{equation}
     \end{dl}
-    Ta chứng minh định lý \ref{dl:MINRES-RESIDUAL-CHEBYSEV}: Phần dư $r_n$ chính là phần dư sao cho $x_n \in \mathcal{K}_n$ sao cho chuẩn phần dư $\lVert r_n = b - Ax_n \rVert$ nhỏ nhất. Gọi $p_n$ là đa thức Krylov-Chebysev. $A=V \Lambda V^T$ là phân tích giá trị riêng của ma trận $A$, ta có:
+    Ta chứng minh định lý \ref{dl:MINRES-RESIDUAL-CHEBYSEV}: Phần dư $r_n$ chính là phần dư sao cho $x_n \in \mathcal{K}_n$ sao cho chuẩn phần dư $\lVert r_n \rVert = \lVert b - Ax_n \rVert$ nhỏ nhất. Gọi $p_n$ là đa thức Krylov-Chebysev. $A=V \Lambda V^T$ là phân tích giá trị riêng của ma trận $A$, ta có:
     \begin{equation}
         \begin{aligned}
         \lVert r_n \rVert &= \lvert p_n(A)b \rVert=\lVert V p_n(\Lambda) V^T b \rVert = \lVert p_n(\Lambda) V^T b \rVert \\
@@ -1292,11 +1309,47 @@ Ta xét hai trường hợp:
     \end{equation}
     \begin{itemize}
         \item Trường hợp 1: Nếu $\lambda_{\max} - \lambda_{l+1}=\lambda_{l} - \lambda_{\min}$, việc đánh giá chuẩn $\lVert r_n \rVert / \lVert b \rVert$ là một bài toán min-max:
-        \begin{equation}
-            \min_{p_n \in P_n} \max_{\lambda \in I^- \cup I^+} \lvert p_n(\lambda) \rvert
+        \begin{equation} \label{eq:Same-Length-Min-Max}
+            \inf_{p_n \in P_n} \sup_{\lambda_i \in I^- \cup I^+} \lvert p_n(\lambda_i) \rvert
         \end{equation}
+        Theo \cite{de1982extremal}, đại lượng \ref{eq:Same-Length-Min-Max} được đánh giá:
+        \begin{equation} \label{eq:Same-Length-Upper-Bound}
+            \inf_{p_n \in P_n} \sup_{\lambda_i \in I^- \cup I^+} \lvert p_n(\lambda_i) \rvert \leq 2 \Bigg( \dfrac{\sqrt{\lvert \lambda_{\min} \lambda_{\max} \rvert} - \sqrt{\lvert \lambda_{l} \lambda_{l+1} \rvert}}{\sqrt{\lvert \lambda_{\min} \lambda_{\max} \rvert} + \sqrt{\lvert \lambda_{l} \lambda_{l+1} \rvert}} \Bigg)^{\lbrack n/2 \rbrack}
+        \end{equation}
+        với $\lbrack n/2 \rbrack$ là phần nguyên của $n/2$. Để có được cách nhìn trực quan hơn của cận trên trong công thức vừa rồi, ta giả sử $\lvert \lambda_{\min} \rvert=\lambda_{\max}=1$ và $\lvert \lambda_l \rvert=\lambda_{l+1}$. Ta viết lại công thức trên:
+        \begin{equation} \label{eq:Upper-Bound}
+            \inf_{p_n \in P_n} \sup_{\lambda_i \in I^- \cup I^+} \lvert p_n(\lambda_i) \rvert \leq 2 \Bigg( \dfrac{1/\lambda_{l+1}-1}{1/\lambda_{l+1}+1} \Bigg)^{\lbrack n/2 \rbrack}
+        \end{equation}
+        Vế phải ở công thức \ref{eq:Upper-Bound} tương ứng với vế phải trong công thức \ref{eq:MINRES-A-SPD-UPPER-BOUND} tại bước $\lbrack n/2 \rbrack$ cho ma trận đối xứng xác định dấu dương có tất cả các giá trị riêng nằm trong khoảng $\lbrack \lambda_{l+1}^2, 1 \rbrack$ và số điều kiện là $1/\lambda_{l+1}^2$. Khi $\lambda_{l+1} \rightarrow 0$, $\kappa_{l+1}\rightarrow \infty$:
+        \begin{equation}
+                \lim_{\lambda_{l+1} \rightarrow 0} \Bigg( \dfrac{1/\lambda_{l+1}-1}{1/\lambda_{l+1}+1} \Bigg)^{\lbrack n/2 \rbrack}=\lim_{\kappa \rightarrow \infty}\Bigg( 1 - \dfrac{2}{\kappa} \Bigg)^{\lbrack n/2 \rbrack}=\lim_{\kappa \rightarrow \infty} \Bigg( 1 - \dfrac{2}{\kappa} \Bigg)^{-\dfrac{\kappa}{2}-\dfrac{2}{\kappa}\lbrack n/2 \rbrack} \approx \exp \Big( - \dfrac{n}{k} \Big)
+        \end{equation}
+
+        Trong trường hợp này ta cần số bước lặp là $\mathcal{O}(\kappa)$ để thuật toán MINRES đạt điều kiện hội tụ.
+
+        Trong trường hợp tổng quát, hai khoảng $I^-$ và $I^+$ không có cùng độ dài, không có một cận trên tường minh cho bài toán ở công thức \ref{eq:Same-Length-Min-Max}, một lời giải được đề xuất trong \cite{fischer2011polynomial}. Ta có thể sử dụng cách chia các khoảng trên thành các khoảng có độ dài bằng nhau và vẫn áp dụng công thức \ref{eq:Same-Length-Upper-Bound}, nhưng thường đây là một cận trên yếu và không phản ánh chính xác thông tin về quá trình hội tụ của thuật toán MINRES.
+        Một cách khác là xem xét đặc tính tiệm cận của giá trị min-max trong công thức \ref{eq:Same-Length-Min-Max} gọi là nhân tố hội tụ tiệm cận:
+
+        \begin{equation} \label{eq:Asymtotic-Convergence-Bound}
+            \rho(I^- \cup I^+) \equiv \lim_{n \rightarrow \infty} (\inf_{p_n \in P_n} \sup_{\lambda_i \in I^- \cup I^+} \lvert p_n(\lambda_i) \rvert)^{1/n}
+        \end{equation}
+        Đại lượng ở công thức \ref{eq:Asymtotic-Convergence-Bound} rất hữu hiệu trong việc phân tích sự hội tụ của thuật toán MINRES trong trường hợp một hệ phương trình tăng dần số chiều.
+
     \end{itemize}
 \end{enumerate}
+
+\subsubsection{Tính mất trực giao}
+
+Như đã được trình bày về thuật toán Lanczos ở mục \ref{Lanczos-Algorithm}, ta đã biết thuật toán lặp Lanczos bị ảnh hưởng của sai số làm tròn làm cho tính trực giao của các vector $q_1, q_2, \dots, q_n$ không còn được bảo toàn. Ta xét các chỉ số $i=1, \dots, n$:
+
+\begin{equation}
+    \lvert \hat{q}_{n+1}^T \hat{q}_i \rvert \approx \dfrac{\hat{r}_n^T \hat{q}_i + \epsilon \lVert A \rVert}{\lvert \hat{\beta}_n \rvert}
+\end{equation}
+
+Với dấu mũ là giá trị được tính toán. $\hat{q}_i$ là cột thứ $i$ của ma trận $\hat{Q}_n$, $\epsilon$ là độ chính xác máy, $\hat{r}_n=A\hat{q}_n - \hat{\alpha}_n \hat{q}_n - \hat{\beta}_{n-1} \hat{q}_{n-1} $ là phần dư tính toán. Sai số làm mất tính trực giao là một sai số tích lũy, khi $\hat{\beta}_n$ nhỏ, các cột của ma trận $\hat{Q}_{n+1}$ có thể mất tính trực giao ngay cả khi $\hat{r}_n^T \hat{Q}_n=0$. Nếu không được chú ý, những sai số làm tròn này sẽ làm cho các giá trị riêng của $\hat{T}_n$ khác xa so với các giá trị riêng của $T_n$.
+
+\subsection{Cải thiện thuật toán MINRES}
+
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
 
 Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
