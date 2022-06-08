@@ -1282,6 +1282,20 @@ Ta xét hai trường hợp:
 
     Từ công thức \ref{eq:MINRES-CONVERGENCE-LIM}, ta nhận thấy sự hội tụ của thuật toán MINRES xảy ra khi $n$ bằng một số bội lần của $\sqrt{\kappa}$ hay thuật toán sẽ hội tụ sau $\mathcal{O}(\sqrt{\kappa})$ bước.
     \item Nếu ma trận $A$ là ma trận đối xứng không xác định dấu:
+    Trong trường hợp này, các giá trị riêng của ma trận $A$ có thể dương hoặc âm. Ta chia tập các giá trị riêng của ma trận $A$ thành hai tập $I^-$ gồm các giá trị riêng nhỏ hơn 0 và $I^+$ gồm các giá trị riêng lớn hơn 0:
+
+    \begin{equation}
+        \begin{cases}
+            I^- \cup I^+ \equiv \Lambda(A) \equiv \lbrack \lambda_{\min}, \lambda_l \rbrack \cup \lbrack \lambda_{l+1}, \lambda_{\max} \rbrack \\
+            \lambda_{\min} \leq \lambda_l < 0 < \lambda_{l+1} \leq \lambda_{\max}
+        \end{cases}
+    \end{equation}
+    \begin{itemize}
+        \item Trường hợp 1: Nếu $\lambda_{\max} - \lambda_{l+1}=\lambda_{l} - \lambda_{\min}$, việc đánh giá chuẩn $\lVert r_n \rVert / \lVert b \rVert$ là một bài toán min-max:
+        \begin{equation}
+            \min_{p_n \in P_n} \max_{\lambda \in I^- \cup I^+} \lvert p_n(\lambda) \rvert
+        \end{equation}
+    \end{itemize}
 \end{enumerate}
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
 
