@@ -179,7 +179,7 @@
 Các phương pháp trên không gian con Krylov là một nhóm quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
 
 \begin{equation}
-    x \rightarrow \boxed{\mathrm{black} \thickspace \mathrm{box}} \rightarrow Ax
+    x \rightarrow \boxed{\text{hộp đen}} \rightarrow Ax
 \end{equation}
 
 Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n$ với $\mathcal{K}_n$ là không gian con Krylov thứ n $\mathcal{K}_n=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$
@@ -223,7 +223,7 @@ $\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ 
 \subsection{Thuật toán lặp Arnoldi}
 
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Thuật toán Arnoldi}\label{alg:Arnoldi}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {Cơ sở trực chuẩn $q_1, q_2, \dots, q_n, q_{n+1} \in \mathbb{R}^m$, ma trận Hessenberg $\widetilde{H}_n \in \mathbb{R}^{(n+1) \times n}$}
@@ -290,7 +290,7 @@ Một trường hợp đặc biệt, trong quá trình thực hiện thuật to�
 \begin{itemize}
     \item $A\mathcal{K}_n \subseteq  \mathcal{K}_n$
     \item $\mathcal{K}_n=\mathcal{K}_{n+1}=\mathcal{K}_{n+2}=\dots$
-    \item Từng giá trị riêng của$ H_n$ là giá trị riêng của $A$
+    \item Từng giá trị riêng của $ H_n$ là giá trị riêng của $A$
     \item Nếu ma trận $A$ là ma trận không kỳ dị, nghiệm chính xác của phương trình $Ax=b$ nằm trong $\mathcal{K}_n$
 \end{itemize}
 
@@ -337,7 +337,7 @@ Với:
 $T_n$ là ma trận thu được bằng cách lấy $n$ hàng đầu của ma trận $\widetilde{T}_n$. 
 Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy hồi ba tham số.
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Thuật toán Lanczos}\label{alg:Lanczos}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận đối xứng $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {Cơ sở trực chuẩn $q_1, q_2, \dots, q_n, q_{n+1} \in \mathbb{R}^m$, ma trận ba đường chéo $\widetilde{T}_n \in \mathbb{R}^{(n+1) \times n}$}
@@ -379,6 +379,14 @@ Một phân tích chặt chẽ về hiện tượng giá trị riêng "ma" rất
     \item Với sai số làm tròn, các nhiễu ngẫu nhiên tái kích hoạt lại các thành phần bị triệt tiêu ở trên, khiến cho một giá trị riêng nào đó của ma trận $A$ được xuất hiện nhiều lần.
 \end{itemize}
 
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=0.4]{Lanczos-Repeated-Eigenvalues.jpg}
+    \caption{Thuật toán Lanczos được thực hiện 120 bước, các số trong hình thể hiện số bội của giá trị Ritz, có 4 giá trị Ritz "ma" tương ứng với giá tri riêng 3.0, 2 giá trị Ritz "ma" ứng với giá trị riêng 2.5 \cite{trefethen1997numerical}}
+
+    \label{fig:Lanczos-Repeated-Eigenvalues}
+\end{figure}
+
 Hệ quả của hiện tượng này là chúng ta không thể tin tưởng vào số bội của các giá trị riêng của ma trận $A$ trong quá trình ước lượng sử dụng thuật toán lặp Lanczos.
 Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong các bài toán thực tế:
 
@@ -397,7 +405,7 @@ Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A
 
 
 Ta áp dụng công thức
-\begin{algorithm}
+\begin{algorithm}[h!]
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \caption{Các bước cơ bản thuật toán GMRES}\label{alg:GMRES}
@@ -629,7 +637,7 @@ Trong thực tế, khi giải các bài toán, tại mỗi bước ta thường 
 
 Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuật toán GMRES được miêu tả ở thuật toán \ref{alg:GMRES-Detailed}:
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Các bước chi tiết thuật toán GMRES}\label{alg:GMRES-Detailed}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
@@ -739,7 +747,7 @@ Từ bài toán tìm đa thức $p_n \in P_n$ được nêu ở công thức \re
 \end{equation}
 
 Trong quá trình giải bài toán cực tiểu bằng việc tìm đa thức mà giá trị của nó nhỏ trên phổ của ma trận $A$ hay giá trị của nó nhỏ với mọi giá trị riêng của ma trận $A$. Trong trường hợp đặc biệt nếu $n$ lớn hơn số giá trị riêng của ma trận $A$ thì đa thức này sẽ bằng 0 tại mọi giá trị riêng của ma trận $A$ và thuộc $P_n$.
-Nhưng đôi khi chúng ta chỉ hy vọng tìm được một đa thức mà có giá trị đủ nhỏ tại tất cả các giá trị riêng. Việc tìm đa thức sẽ càng dễ hơn nếu các giá trị riêng phân thành các nhóm mà mỗi nhóm các giá trị riêng nằm sát nhau và khó hơn nếu các giá trị riêng có các giá trị riêng biệt và nằm ra nhau. Và việc phân bố các giá trị riêng của ma trận $A$ có mối quan hệ mật thiết với số điều kiện của ma trận $A$.
+Nhưng đôi khi chúng ta chỉ hy vọng tìm được một đa thức mà có giá trị đủ nhỏ tại tất cả các giá trị riêng. Việc tìm đa thức sẽ càng dễ hơn nếu các giá trị riêng phân thành các nhóm mà mỗi nhóm các giá trị riêng nằm sát nhau và khó hơn nếu các giá trị riêng có các giá trị riêng biệt và nằm xa nhau. Và việc phân bố các giá trị riêng của ma trận $A$ có mối quan hệ mật thiết với số điều kiện của ma trận $A$.
 
 Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \begin{itemize}
@@ -763,6 +771,49 @@ và:
 
 Để đánh giá $\inf_{p_n \in P_n} \lVert p_n(J) \rVert$ khá phức tạp, giá trị này được phân tích rất kỹ trong \cite{tichy2005worst}.
 
+\textbf{Ví dụ:} Một ma trận $A$ có kích thước $200\times 200$ mà từng phần từ của nó độc lập và được lấy mẫu từ phân bố chuẩn $\mathcal{N}\Bigg(2;\Big(\dfrac{0.5}{\sqrt{200}} \Big)^2 \Bigg)$
+
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=1.0]{A-Eigenvalues.jpg}
+    \caption{Các giá trị riêng của ma trận $A$ ở ví dụ trên, đường tròn nét đứt là đường tròn có tâm $(0; 2)$ và bán kinh $R=\dfrac{1}{2}$ \cite{trefethen1997numerical}}
+
+    \label{fig:A-Eigenvalues}
+\end{figure}
+
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=0.6]{GMRES-Convergence-Curve.jpg}
+    \caption{Đường cong hội tụ $\dfrac{\lVert r_n \rVert}{\lVert b \rVert} $ theo thuật toán GMRES của ma trận $A$ \cite{trefethen1997numerical}}
+
+    \label{fig:GMRES-Convergence-Curve}
+\end{figure}
+
+Hình \ref{fig:A-Eigenvalues} thể hiện các giá trị riêng của ma trận $A$, một tập các điểm được phân bố đều trong một chiếc đĩa bán kính $R=\dfrac{1}{2}$ và tâm $(0;2)$. Hình \ref{GMRES-Convergence} đường cong hội tụ khi thực hiện thuật toán GMRES giải hệ phương trình $Ax=b$ với $b=\begin{bmatrix} 1 & 1 \dots & 1 \end{bmatrix}^T$. Sự hội tụ trong trường hợp này bằng $4^{-n}$. Ta có phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một chiếc đĩa được miêu tả ở trên. $\lVert p_n(A) \rVert $ được cực tiểu hóa với lựa chọn $p_n(s)=(1-s/2)^n$, ta có $\lVert p_n(A) \rVert = \lVert (I - A/2)^n \rVert \approx 4^{-n}$. Ma trận $A$ là ma trận có điều kiện tốt với số điều kiện $\kappa(A) \approx 2.03$
+
+\textbf{Ví dụ:} Cho trước các giá trị riêng (chấm đỏ) và các đa thức $p_n$ (các đường cong màu xanh) được chọn được biểu diễn trên các hình \ref{fig:Convergence-Behavior-1} và hình \ref{fig:Convergence-Behavior-2}, phân tích sự hội tụ trong từng trường hợp
+
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=0.5]{Convergence-Behavior-1.jpg}
+    \caption{Các ví dụ chọn đa thức tương ứng với tập các giá trị riêng của ma trận $A$}
+
+    \label{fig:Convergence-Behavior-1}
+\end{figure}
+
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=0.5]{Convergence-Behavior-2.jpg}
+    \caption{Các ví dụ chọn đa thức tương ứng với tập các giá trị riêng của ma trận $A$}
+
+    \label{fig:Convergence-Behavior-2}
+\end{figure}
+
+Trong hình \ref{fig:Convergence-Behavior-1}, hình đầu tiên bên trái ma trận $A$ có hai giá trị riêng, đa thức được chọn là một hàm bậc 2, đường cong này có giá trị bằng 0 tại các giá trị riêng, hình thứ 2 ma trận $A$ có 3 giá trị riêng và đa thức được chọn là một hàm bậc 3 hay hình thứ 3 ma trận $A$ có 5 giá trị riêng, tương tự đa thức được chọn là một hàm bậc 5. Trong trường hợp cả 3 hình này, phần dư đều đã về 0, thuật toán GMRES tìm được nghiệm chính xác tương ứng sau số bước lặp chính bằng số giá trị riêng của ma trận $A$.
+
+Trong hình \ref{fig:Convergence-Behavior-2}, cả 3 hình đều biểu diễn các giá trị riêng của ma trận $A$ có 5 giá trị riêng, nhưng thể hiện các đường cong là các đa thức được chọn tại các bước lặp $n$ khác nhau. Hình đầu tiên bên trái, tại $n=2$, đa thức được chọn là hàm số bậc 2 nhưng giá trị của đa thức này tại các giá trị riêng vẫn khá lớn (chỉ nhỏ tại giá trị riêng thứ 4). Hình thứ 2 tại $n=3$, đa thức được chọn là hàm số bậc 3, giá trị của đa thức này khá nhỏ ở 3 giá trị riêng bên phải nhưng vẫn khá lớn ở 2 giá trị riêng bên trái nên phần dư tại $n=3$ vẫn khá lớn. Hình cuối cùng tại $n=4$, đa thức được chọn là hàm số bậc 4 đã có giá trị rất nhỏ tại tất cả các giá trị riêng của ma trận $A$, ta đã có thể dừng tại bước này vì phần dư đã đủ nhỏ. Tuy nhiên nếu ta thực hiện thêm bước lặp $n=5$, ta sẽ chọn được một đa thức là hàm số bậc 5 và có giá trị bằng 0 tại mọi giá trị riêng.
+
+Từ ví dụ trên, ta xác nhận một điều. Nếu ma trận $A$ có $n$ giá trị riêng riêng biệt thì thuật toán GMRES sẽ tìm được nghiệm chính xác sau $n$ bước lặp. Nếu các giá trị riêng phân thành các nhóm gần nhau thì thuật toán GMRES sẽ cần số bước ít hơn (xấp xỉ bằng số nhóm) để đạt điều kiện hội tụ. Nếu các giá trị riêng tách biệt xa nhau, thuật toán cần nhiều bước (xấp xỉ số giá trị riêng riêng biệt) để đạt điều kiện hội tụ.
 
 \subsection{Cải thiện thuật toán GMRES}
 
@@ -777,7 +828,7 @@ Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi
 
 Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương tự như trình tự đã được trình bày ở thuật toán \ref{alg:GMRES-Detailed} chỉ khác là vai trò của $b$ đã được thay bằng $r_0$ và $x_n$ được thay bằng $x_0+Q_n y$
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Các bước chi tiết thuật toán GMRES khởi tạo lại}\label{alg:GMRES-Restart}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị, vector $b \in \mathbb{R}^m$, $n_{\max}$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
@@ -918,7 +969,7 @@ Cũng như thuật toán GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\
 
 
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Thuật toán MINRES}\label{alg:MINRES}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
@@ -1066,7 +1117,7 @@ Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của c
     \item Thuật toán \ref{alg:MINRES-Detailed-2} miêu tả thuật toán MINRES mà $x_n$ được tính theo $x_{n-1}$ và không cần lưu các vector $q_1, q_2, \dots, q_n$.
 \end{itemize}
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Các bước chi tiết thuật toán MINRES theo phương pháp giải hệ}\label{alg:MINRES-Detailed-1}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng không xác định dấu, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
@@ -1091,7 +1142,7 @@ Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của c
 \end{algorithm}
 
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Các bước chi tiết thuật toán MINRES theo phương pháp tìm mối quan hệ giữa $x_n$ và $x_{n-1}$}\label{alg:MINRES-Detailed-2}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng không xác định dấu, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
@@ -1140,7 +1191,7 @@ với:
 
 $L_n$ là ma trận hai đường chéo tam giác dưới, $D_n$ là ma trận đường chéo. Lưu đồ mã giả thuật toán đề xác định ma trận $L_n$ và $D_n$ là:
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Thuật toán tính $L_n$ và $D_n$}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $T_n \in \mathbb{R}^n$} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {Ma trận $L_n \in \mathbb{R}^n, D_n \in \mathbb{R}^n$}
@@ -1173,7 +1224,7 @@ Ta đặt $z_n = L_n^T y$, hệ phương trình \ref{eq:Forward-Substitution} tr
 Hệ phương trình với $z_n$ là ẩn trên được giải bằng phương pháp thế xuôi. Sau khi giải xong \ref{eq:Forward-Substitution}, ta giải hệ $L_n^T y = z_n$ với $y$ là ẩn bằng phương pháp thế ngược.
 Thuật toán để giải hệ phương trình \ref{eq:Forward-Substitution} là:
 
-\begin{algorithm}
+\begin{algorithm}[h!]
     \caption{Thuật toán giải hệ $L_n D_n z_n = \beta e_1$} \label{alg:LD-Forward-Substitution}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $L_n \in \mathbb{R}^{n \times n}$, ma trận $D_n \in \mathbb{R}^{n \times n}$, $\beta = \lVert b \rVert$} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$z_n \in \mathbb{R}^n$}
