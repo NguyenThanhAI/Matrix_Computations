@@ -819,7 +819,7 @@ Phương pháp khởi tạo lại có ưu điểm là khiến cho chi phí bộ 
 
 Nhược điểm của phương pháp là khiến cho thuật toán GMRES lâu hội tụ hơn. Nếu $n_{\max}$ quá lớn vẫn có thể khiến cho bộ nhớ bị tràn hoặc chi phí tính toán trong từng bước lớn. Nếu $n_{\max}$ nhỏ có thể khiến thuật toán GMRES gần như không bao giờ hội tụ. Việc chọn $n_{\max}$ tối ưu vẫn là một câu hỏi mở.
 
-\subsubsection{Phương pháp điều kiện đầu}
+\subsubsection{Phương pháp điều kiện đầu} \label{GMRES-Precondition}
 
 Thay vì giới hạn số bước lặp cho phép của thuật toán GMRES, đôi khi người ta sẽ cải thiện sự hội tụ của thuật toán bằng cách thay đổi cấu trúc giá trị riêng của ma trận $A$ từ đó làm giảm số bước lặp cần thiết để thuật toán hội tụ.
 Từ những phân tích ở tiểu mục \ref{GMRES-Convergence}, ta nhận thấy thuật toán GMRES hội tụ rất nhanh nếu ma trận $A$ có một số ít các giá trị riêng riêng biệt hoặc các giá trị riêng tập trung thành số ít các cụm. Vì vậy một ý tưởng tự nhiên là biến đổi ma trận $A$ bằng cách nhân ma trận $A$ với một ma trận $M$ (có thể nhân $M$ vào bên trái hoặc bên phải ma trận $A$ hoặc từ hai phía) mà kết quả là một ma trận có những đặc tính mong muốn giúp cho thuật toán hội tụ nhanh.
@@ -1437,10 +1437,54 @@ $\lVert I_{n+1} - \hat{Q}_{n+1}^T \hat{Q}_{n+1} \rVert$, nếu đại lượng n
 
 \subsubsection{Phương pháp điều kiện đầu}
 
+Như ta đã biết, phương pháp điều kiện đầu là một phương pháp phổ biến để cải thiện đặc tính hội tụ của một hệ phương trình bằng cách biến đổi hệ phương trình làm thay đổi cấu trúc các giá trị riêng của ma trận $A$.
+Ví dụ: với ma trận $A$ có các giá trị riêng riêng biệt tách xa nhau, ta sẽ tìm các biến đổi sao cho các giá trị riêng sẽ phân thành một số ít nhóm nhỏ các giá trị riêng gần nhau, hoặc đẩy xa các giá trị riêng gần 0 của ma trận $A$ ra xa 0.
 
+Cũng như thuật toán GMRES, thuật toán MINRES cũng có các kiểu điều kiện đầu tương ứng:
 
+\begin{equation}
+    M^{-1}Ax = M^{-1}b
+\end{equation}
+
+là điều kiện đầu bên trái.
+
+\begin{equation}
+    AM^{-1}y = b, x = M^{-1}y
+\end{equation}
+
+là điều kiện đầu bên phải. Và:
+
+\begin{equation}
+    L^{-1}AU^{-1}z = L^{-1}b
+\end{equation}
+được gọi là điều kiện đầu phân tách với $x = U^{-1}z$.
+Ngoài các loại điều kiện đầu phổ biến trên còn có điều kiện đầu theo khối và điều kiện đầu sử đa thức.
+Những yêu cầu về xây dựng một ma trận điều kiện đầu tốt đã được nêu ở mục \ref{GMRES-Precondition}
+
+Trên thực tế, khi thực hiện thuật toán, chúng ta hệ phương trình với ma trận điều kiện đầu $M$ mà không cần tính $M^{-1}$.
+Nếu $\lVert I - M^{-1} A \rVert \ll 1$ thì sự hội tụ xảy ra rất nhanh
+
+Với thuật toán MINRES mà ma trận $A$ là ma trận đối xứng xác định dấu dương thì điều kiện đầu phân tách trở thành:
+
+\begin{equation}
+    L^{-1}A L^{-T} z = L^{-1}b
+\end{equation}
+
+Nếu $\kappa(L^{-1}AL^{-T})$ gần với 1 thì cận sai số $\dfrac{\lVert r_n \rVert}{\lVert b \rVert}$ dựa trên đa thức Chebysev nhỏ.
+
+Các loại điều kiện đầu được chia làm ba loại:
+
+\begin{itemize}
+    \item Loại I: Điều kiện đầu được thiết kế cho các lớp ma trận tổng quát (ma trận với các phần tử nằm trên đường chéo khác 0, ma trận xác định dấu dương,...). Ví dụ các điều kiện đầu thuộc loại này là Jacobi, Gauss-Seidel, SOR, Cholesky không đầy đủ và Cholesky không đầy đủ hiệu chỉnh.
+    \item Loại II: Điều kiện đầu được thiết kế cho các lớp bài toán ẩn như phương trình đạo hàm riêng elliptic.
+    \item Loại III: Các điều kiện đầu được thiết kế cho các ma trận đặc biệt hoặc là các bài toán ẩn, ví dụ: các phương trình chuyển hóa, các điều kiện đầu tăng tốc khuếch tán tổng hợp (DSA).
+\end{itemize}
+
+Ưu điểm là các điều kiện đều loại I là có thể được sử dụng trong các bài toán mà điều kiện đầu chính xác của bài toán không cần biết trước. Hầu hết các điều kiện đầu loại I cần biết một số thông tin về các phần tử của ma trận $A$ nhưng thông thường các thông tin này có sẵn, đôi khi có những trường hợp dễ hơn rất nhiều ta có thể tính các phần tử của ma trận thông qua một số công thức đặc biệt.
 
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
+
+\subsection{Hình thức hai phương pháp}
 
 Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
 MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị.
@@ -1512,11 +1556,11 @@ Những điểm đã đạt được:
     \item Một số các phương pháp phổ biến để cải thiện hai phương pháp
 \end{itemize}
 
-Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn chế về mặt thời gian nên tiểu luận chưa thể phân tích sâu về các vấn đề như: Chọn và ảnh hưởng đến quá trình hội tụ của $n_{\max}$ trong phương pháp khởi tạo lại, phân tích và nghiên cứu ảnh hưởng một cách của sai số làm tròn làm mất tính trực giao của hệ cơ sở trực chuẩn $q_1, q_2, \dots, q_n$ và sự hội tụ của thuật toán,chọn các ma trận trong phương pháp điều kiện đầu (\textit{preconditioning}) để cải thiện sự hội tụ của các phương pháp,
+Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn chế về mặt thời gian nên tiểu luận chưa thể phân tích sâu về các vấn đề như: Chọn và ảnh hưởng đến quá trình hội tụ của $n_{\max}$ trong phương pháp khởi tạo lại, phân tích và nghiên cứu ảnh hưởng một cách của sai số làm tròn làm mất tính trực giao của hệ cơ sở trực chuẩn $q_1, q_2, \dots, q_n$ và sự hội tụ của thuật toán, chọn các ma trận trong phương pháp điều kiện đầu (\textit{preconditioning}) để cải thiện sự hội tụ của các phương pháp,
 cũng như phân tích sâu về các phương pháp như: song trực giao hóa (\textit{biorthogonalization}), tái trực giao hóa có lựa chọn (\textit{selective reorthogonalization}).
 Ngoài ra tiểu luận vẫn chưa thể phân tích khi một số trường hợp đặc biệt xảy ra (ví dụ: nếu tồn tại một bước $n$ mà ma trận $T_n$ kỳ dị).
 
-Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian Krylov.
+Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian con Krylov.
 \newpage
 \addcontentsline{toc}{section}{TÀI LIỆU THAM KHẢO}
 %\bibliographystyle{IEEEtraN}
