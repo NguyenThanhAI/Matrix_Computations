@@ -1418,6 +1418,28 @@ Với dấu mũ là giá trị được tính toán. $\hat{q}_i$ là cột thứ
 
 \subsection{Cải thiện thuật toán MINRES}
 
+\subsubsection{Tái trực giao hóa có lựa chọn}
+
+Như ta đã biết, do ảnh hưởng của sai số làm tròn, tính trực giao của các vector $q_1, q_2, \dots, q_n$ chỉ quan sát được ở các bước lặp ban đầu của thuật toán (khi $n$ còn nhỏ). Nhưng từ một bước nào đó trở đi thì tính trực giao của hệ sơ sở trực chuẩn mất đi rất nhanh.
+Đã có nhiều nghiên cứu để tìm cách khôi phục lại tính trực giao hoặc ít nhất là làm giảm đi ảnh hưởng của sai số làm tròn.
+Một trong những phương pháp được nghiên cứu là tái trực giao hóa có lựa chọn (\textit{selective reorthogonalization}) \cite{parlett1979lanczos}.
+
+Đặc điểm chính của phương pháp này là sai số của ma trận $\hat{T}_n$ được mô tả bởi một số cặp Ritz $\lbrace \hat{\theta}_j, \hat{y}_j \rbrace$ là các cặp giá trị Ritz và vector Ritz tương ứng đã được đề cập ở mục \ref{Lanczos-Algorithm}. Ta nhắc lại các giá trị Ritz chính là các giá trị riêng của ma trận $\hat{T}_n$, các vector Ritz được tính bằng $\hat{y}_j =\hat{Q}_n \hat{t}_j$ với $\hat{t}_j$ là vector riêng ứng với trị riêng $\hat{\theta}_j$. Dấu mũ là các đại lượng được tính toán thực tế.
+Ta gọi một tập các vector Ritz tốt nếu thỏa mãn điều kiện:
+
+\begin{equation}
+    \lVert A \hat{y}_j - \hat{\theta}_j \hat{y}_j \rVert \leq \sqrt{\epsilon} \lVert A \rVert
+\end{equation}
+
+Với $\epsilon$ là độ chính xác máy.
+Thường số lượng các vector Ritz được coi là tốt cần để biểu diễn sai số làm ảnh hưởng đến tính trực giao ít hơn $n$. Mỗi khi một vector mới trong hệ cơ sở trực chuẩn của không gian con Krylov mới $q_{n+1}$ được tính nó phải trực giao với từng vector trong tập vector Ritz được coi là tốt. Để kiểm tra khi nào cần thêm một Ritz vector vào tập các Ritz vector tốt, ta tính đại lượng:
+$\lVert I_{n+1} - \hat{Q}_{n+1}^T \hat{Q}_{n+1} \rVert$, nếu đại lượng này quá lớn, ta cần thêm các vector Ritz vào trong tập các vector Ritz được xem là tốt.
+
+\subsubsection{Phương pháp điều kiện đầu}
+
+
+
+
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
 
 Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
@@ -1478,6 +1500,23 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
     \addcontentsline{toc}{section}{{\bf KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN ĐỀ TÀI}\rm}
 \end{center}
 
+Tiểu luận đã trình bày các kiến thức của hai thuật toán GMRES và MINRES và so sánh được điểm giống và khác nhau của hai phương pháp này.
+Những điểm đã đạt được:
+
+\begin{itemize}
+    \item Cách thức chi tiết thực hiện hai phương pháp.
+    \item Chi phí về bộ nhớ của hai phương pháp.
+    \item Chi phí tính toán.
+    \item Các đặc điểm cơ bản của sự hội tụ.
+    \item Ưu, nhược điểm của các phương pháp
+    \item Một số các phương pháp phổ biến để cải thiện hai phương pháp
+\end{itemize}
+
+Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn chế về mặt thời gian nên tiểu luận chưa thể phân tích sâu về các vấn đề như: Chọn và ảnh hưởng đến quá trình hội tụ của $n_{\max}$ trong phương pháp khởi tạo lại, phân tích và nghiên cứu ảnh hưởng một cách của sai số làm tròn làm mất tính trực giao của hệ cơ sở trực chuẩn $q_1, q_2, \dots, q_n$ và sự hội tụ của thuật toán,chọn các ma trận trong phương pháp điều kiện đầu (\textit{preconditioning}) để cải thiện sự hội tụ của các phương pháp,
+cũng như phân tích sâu về các phương pháp như: song trực giao hóa (\textit{biorthogonalization}), tái trực giao hóa có lựa chọn (\textit{selective reorthogonalization}).
+Ngoài ra tiểu luận vẫn chưa thể phân tích khi một số trường hợp đặc biệt xảy ra (ví dụ: nếu tồn tại một bước $n$ mà ma trận $T_n$ kỳ dị).
+
+Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian Krylov.
 \newpage
 \addcontentsline{toc}{section}{TÀI LIỆU THAM KHẢO}
 %\bibliographystyle{IEEEtraN}
