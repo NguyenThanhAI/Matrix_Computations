@@ -225,8 +225,9 @@ $\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ 
 
 \begin{algorithm}
     \caption{Thuật toán Arnoldi}\label{alg:Arnoldi}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {Cơ sở trực chuẩn $q_1, q_2, \dots, q_n, q_{n+1} \in \mathbb{R}^m$, ma trận Hessenberg $\widetilde{H}_n \in \mathbb{R}^{(n+1) \times n}$}
     \begin{algorithmic}
-        \State {Cho ma trận $A, b$}
         \State {$q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n = 1,2,3,\dots$}
             \State $v \leftarrow Aq_n$
@@ -338,8 +339,9 @@ Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy h
 
 \begin{algorithm}
     \caption{Thuật toán Lanczos}\label{alg:Lanczos}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận đối xứng $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {Cơ sở trực chuẩn $q_1, q_2, \dots, q_n, q_{n+1} \in \mathbb{R}^m$, ma trận ba đường chéo $\widetilde{T}_n \in \mathbb{R}^{(n+1) \times n}$}
     \begin{algorithmic}
-        \State {Cho ma trận $A$ đối xứng, $b$}
         \State {$\beta_0 \leftarrow 0$}
         \State {$q_0 \leftarrow 0$}
         \State {$q_1 \leftarrow b/\lVert b \rVert$}
@@ -396,6 +398,8 @@ Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A
 
 Ta áp dụng công thức
 \begin{algorithm}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \caption{Các bước cơ bản thuật toán GMRES}\label{alg:GMRES}
     \begin{algorithmic}
         \State{Gán $q_1 \leftarrow b/\lVert b \rVert$}
@@ -627,8 +631,9 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
 
 \begin{algorithm}
     \caption{Các bước chi tiết thuật toán GMRES}\label{alg:GMRES-Detailed}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
-        \State{Cho ma trận $A$ không kỳ dị, $b$, chuẩn phần dư $\epsilon$ cho phép}
         \State{$q_1 \leftarrow b/\lVert b \rVert$}
         \State{$\beta \leftarrow \lVert b \rVert$}
         \State{$g_0 \leftarrow \beta$}
@@ -774,8 +779,9 @@ Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương 
 
 \begin{algorithm}
     \caption{Các bước chi tiết thuật toán GMRES khởi tạo lại}\label{alg:GMRES-Restart}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị, vector $b \in \mathbb{R}^m$, $n_{\max}$, chuẩn phần dư $\epsilon$ cho phép} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
-        \State{Cho ma trận $A$ không kỳ dị, $b$, $n_{\max}$, chuẩn phần dư $\epsilon$ cho phép}
         \State{$x_0 \leftarrow 0$}
         \State{$r_0 \leftarrow b - A x_0$}
         \State{$q_1 \leftarrow r_0 / \lVert r_0 \rVert$}
@@ -914,6 +920,8 @@ Cũng như thuật toán GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\
 
 \begin{algorithm}
     \caption{Thuật toán MINRES}\label{alg:MINRES}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
         \State{Gán $q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n=1,2,3,\dots$}
@@ -1060,8 +1068,9 @@ Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của c
 
 \begin{algorithm}
     \caption{Các bước chi tiết thuật toán MINRES theo phương pháp giải hệ}\label{alg:MINRES-Detailed-1}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng không xác định dấu, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
-        \State{Cho ma trận $A$ đối xứng không xác định dấu, $b$, chuẩn phần dư $\epsilon$ cho phép}
         \State{$q_1 \leftarrow b/\lVert b \rVert$}
         \State{$\beta \leftarrow \lVert b \rVert$}
         \State{$g_0 \leftarrow \beta$}
@@ -1084,8 +1093,9 @@ Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của c
 
 \begin{algorithm}
     \caption{Các bước chi tiết thuật toán MINRES theo phương pháp tìm mối quan hệ giữa $x_n$ và $x_{n-1}$}\label{alg:MINRES-Detailed-2}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng không xác định dấu, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
-        \State{Cho ma trận $A$ đối xứng không xác định dấu, $b$, chuẩn phần dư $\epsilon$ cho phép}
         \State{$q_1 \leftarrow b/\lVert b \rVert$}
         \State{$\beta \leftarrow \lVert b \rVert$}
         \State{$g_0 \leftarrow \beta$}
@@ -1128,13 +1138,71 @@ với:
         \thickspace & \thickspace & \thickspace & \thickspace & d_n\end{bmatrix}
 \end{equation}
 
-$L_n$ là ma trận hai đường chéo tam giác dưới, $D_n$ là ma trận đường chéo.
+$L_n$ là ma trận hai đường chéo tam giác dưới, $D_n$ là ma trận đường chéo. Lưu đồ mã giả thuật toán đề xác định ma trận $L_n$ và $D_n$ là:
 
+\begin{algorithm}
+    \caption{Thuật toán tính $L_n$ và $D_n$}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $T_n \in \mathbb{R}^n$} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {Ma trận $L_n \in \mathbb{R}^n, D_n \in \mathbb{R}^n$}
+    \begin{algorithmic}
+        \State {$d_1 \leftarrow \alpha_1$}
+        \For {$i=1,\dots,n$}
+            \State {$d_i \leftarrow \alpha_i - \mu_{i-1}\beta_{i-1}$}
+            \State {$\mu_i \leftarrow \dfrac{\beta_i}{d_i}$}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Thực tế khi trong quá trình thực hiện thuật toán, ta không tính $L_n$ và $D_n$ trong vòng lặp liên tiếp từ $1$ đến $n$ mà bước sau sẽ sử dụng bước trước hay $L_{n+1}, D_{n+1}$ được tính từ $L_n, D_n$
+Để tìm $y$, ta giải hệ phương trình:
+
+\begin{equation} \label{eq:Forward-Substitution}
+    T_n y = \beta e_1 \Rightarrow L_n D_n L_n^T y = \beta e_1
+\end{equation}
+
+Ta đặt $z_n = L_n^T y$, hệ phương trình \ref{eq:Forward-Substitution} trở thành:
+
+\begin{equation}
+    L_n D_n z_n = \beta e_1, L_n D_n = \begin{bmatrix} d_1 & \thickspace & \thickspace & \thickspace & \thickspace \\
+        d_1\mu_1 & d_2 & \thickspace & \thickspace & \thickspace \\
+        \thickspace & \ddots & \ddots & \thickspace & \thickspace \\
+        \thickspace & \thickspace & d_{n-2}\mu_{n-2} & d_{n-1} & \thickspace \\
+        \thickspace & \thickspace & \thickspace & d_{n-1}\mu_{n-1} & d_n \end{bmatrix}
+\end{equation}
+
+Hệ phương trình với $z_n$ là ẩn trên được giải bằng phương pháp thế xuôi. Sau khi giải xong \ref{eq:Forward-Substitution}, ta giải hệ $L_n^T y = z_n$ với $y$ là ẩn bằng phương pháp thế ngược.
+Thuật toán để giải hệ phương trình \ref{eq:Forward-Substitution} là:
+
+\begin{algorithm}
+    \caption{Thuật toán giải hệ $L_n D_n z_n = \beta e_1$} \label{alg:LD-Forward-Substitution}
+    \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $L_n \in \mathbb{R}^{n \times n}$, ma trận $D_n \in \mathbb{R}^{n \times n}$, $\beta = \lVert b \rVert$} \\
+    \hspace*{\algorithmicindent} \textbf{Output:} {$z_n \in \mathbb{R}^n$}
+    \begin{algorithmic}
+        \State{$t \leftarrow \beta$}
+        \State {$z_n\lbrack 1 \rbrack \leftarrow \dfrac{t}{d_1}$}
+        \For {$i=2,\dots,n$}
+            \State {$t \leftarrow t \mu_{i-1}$}
+            \State {$z_n \lbrack i \rbrack \leftarrow (-1)^{i+1}\dfrac{t}{d_i}$}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Với $z_n\lbrack i \rbrack$ là phần tử thứ $i$ của vector $z_n$
+Tiếp theo ta giải hệ phương trình $L_n^T y = z_n$ \ref{eq:L-Backward-Substitution} bằng phương pháp thế ngược. Từ thuật toán \ref{alg:LD-Forward-Substitution}, tại mỗi bước lặp $n$ chỉ có thành phần $z_n\lbrack n \rbrack$ được tính, các thành phần từ $1, \dots, n-1$ được giữ nguyên. Nhưng không may là trong quá trình thế ngược $z_n[n]$ làm thay đổi toàn bộ $y$ làm cho $y\lbrack 1:n-1 \rbrack$ tại bước $n-1$ khác với $y \lbrack 1:n-1 \rbrack$ tại bước lặp thứ $n$.
+
+
+\begin{equation} \label{eq:L-Backward-Substitution}
+    \begin{bmatrix} 1 & \mu_1 & \thickspace & \thickspace & \thickspace \\
+        \thickspace & 1 & \mu_2 & \thickspace & \thickspace \\
+        \thickspace & \thickspace & \ddots & \ddots & \thickspace \\
+        \thickspace & \thickspace & \thickspace & 1 & \mu_{n-1} \\
+        \thickspace & \thickspace & \thickspace & \thickspace & 1 \end{bmatrix} \begin{bmatrix} y \lbrack 1 \rbrack \\ y \lbrack 2 \rbrack \\ \vdots \\ y \lbrack n \rbrack \end{bmatrix} = \begin{bmatrix} z_n \lbrack 1 \rbrack \\ z_n \lbrack 2 \rbrack \\ \vdots \\ z_n \lbrack n \rbrack \end{bmatrix}
+\end{equation}
 \subsection{Một số đặc điểm của thuật toán MINRES}
 
 \subsubsection{Chi phí bộ nhớ}
 
-Thuật toán MINRES có yêu cầu về bộ nhớ cơ bản là lư vector $b, x \in \mathbb{R}^m$. Vì $A$ là ma trận đối xứng nên chỉ cần lưu $\dfrac{m^2}{2} + m$ số thực như vậy ta cần $\dfrac{m^2}{2} + 3m$ số thực để tạo bài toán.
+Thuật toán MINRES có yêu cầu về bộ nhớ cơ bản là lưu vector $b, x \in \mathbb{R}^m$. Vì $A$ là ma trận đối xứng nên chỉ cần lưu $\dfrac{m^2}{2} + m$ số thực như vậy ta cần $\dfrac{m^2}{2} + 3m$ số thực để tạo bài toán.
 Ta cần lưu ma trận $\widetilde{T}_n$ thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{(n+1) \times times}$ tam giác trên ba đường chéo với chi phí $n+(n-1) + (n-2)=3n-3$ số thực. Tại bước thứ $n$, ta cần lưu 3 ma trận quay Givens từ $\sin(\theta_{n-2}), \sin(\theta_{n-1}), \sin(\theta_n), \cos(\theta_{n-2}), \cos(\theta_{n-1}), \cos(\theta_n)$ với chi phí là 6, ngoại trừ $n=1$ lưu ma trận quay Givens với chi phí là 2 và $n=2$ là 4.
 Ta xét các trường hợp:
 
