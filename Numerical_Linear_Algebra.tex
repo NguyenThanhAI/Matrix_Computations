@@ -726,7 +726,7 @@ Từ công thức trên và công thức \ref{eq:GMRES-Convergence-Rate}, ta đi
     \begin{equation}
         \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert \leq \kappa(V) \inf_{p_n \in P_n} \lVert p_n \rVert_{\Lambda(A)}
     \end{equation}
-    với $\Lambda(A)$ là tập các giá trị riêng của ma trận $A$, $V$ là ma trận không kỳ dị của các vector riêng của ma trận $A$ (giả sử ma trận $A$ chéo hóa được), $\kappa(V)$ là số điều kiện của ma trận $V$ và $\lVert p_n \rVert_{\Lambda(A)}=\underset{\lambda \in \Lambda(A)}{\sup} \lvert p_n(\lambda) \rvert$
+    với $\Lambda(A)$ là tập các giá trị riêng của ma trận $A$, $V$ là ma trận không kỳ dị của các vector riêng của ma trận $A$ (giả sử ma trận $A$ chéo hóa được), $\kappa(V)$ là số điều kiện của ma trận $V$ và $\lVert p_n \rVert_{\Lambda(A)}=\underset{s \in \Lambda(A)}{\sup} \lvert p_n(s) \rvert$
 \end{dl}
 
 Ý nghĩa của định lý \ref{dl:GMRES-Convergence-Rate} là nếu ma trận $A$ có số điều kiện của ma trận $V$ là $\kappa(V)$ không quá lớn và một đa thức thuộc tập $P_n$ được tìm thấy mà độ lớn của nó trên phổ của ma trận $A$ là $\Lambda(A)$ giảm nhanh theo $n$ thì thuật toán GMRES hội tụ nhanh.
@@ -735,7 +735,7 @@ Thuật toán GMRES sẽ hội tụ khi ta thực hiện số bước lặp bằ
 Từ bài toán tìm đa thức $p_n \in P_n$ được nêu ở công thức \ref{eq:Find-Polynomial}, ta đặt đa thức $p_n$ có dạng:
 
 \begin{equation}
-    p_n(\lambda) = 1 - \sum_{i=1}^n c_i \lambda^i
+    p_n(s) = 1 - \sum_{i=1}^n c_i s^i
 \end{equation}
 
 Trong quá trình giải bài toán cực tiểu bằng việc tìm đa thức mà giá trị của nó nhỏ trên phổ của ma trận $A$ hay giá trị của nó nhỏ với mọi giá trị riêng của ma trận $A$. Trong trường hợp đặc biệt nếu $n$ lớn hơn số giá trị riêng của ma trận $A$ thì đa thức này sẽ bằng 0 tại mọi giá trị riêng của ma trận $A$ và thuộc $P_n$.
@@ -743,7 +743,7 @@ Nhưng đôi khi chúng ta chỉ hy vọng tìm được một đa thức mà c�
 
 Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \begin{itemize}
-    \item Nếu ma trận $A$ đối xứng xác định dương thì thuật toán GMRES cần $O(\sqrt{\kappa})$ bước để hội tụ.
+    \item Nếu ma trận $A$ đối xứng xác định dấu dương thì thuật toán GMRES cần $O(\sqrt{\kappa})$ bước để hội tụ.
     \item Nếu ma trận $A$ không xác định dấu thì thuật toán GMRES cần $O(\kappa)$ bước để hội tụ.
 \end{itemize}
 
