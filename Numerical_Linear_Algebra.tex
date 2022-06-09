@@ -664,7 +664,7 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
 \subsection{Một số đặc điểm của thuật toán GMRES} \label{GMRES-Characteristic}
 
 
-\subsubsection{Chi phí bộ nhớ}
+\subsubsection{Chi phí bộ nhớ} \label{GMRES-Storage}
 
 Thuật toán GMRES yêu cầu một lượng lớn bộ nhớ và trở nên rất đắt khi số bước lặp cao.
 Yêu cầu về bộ nhớ cơ bản là lưu các vector $b, x \in \mathbb{R}^{m}$ và ma trận $A \in \mathbb{R}^{m \times m}$. Nếu $A$ là ma trận thưa, mỗi hàng có $l$ phần tử khác 0 thì yêu cầu về bộ nhớ cần lưu $(l+2)m$ số thực để tạo bài toán. Thuật toán GMRES cần phải lưu tất cả các vector $q_1, q_2, \dots, q_n$. Từng vector $q_i \in \mathbb{R}^{m}, i=1\dots n$, vì vậy cần chi phí bộ nhớ là $mn$ số thực.
@@ -673,7 +673,7 @@ Chúng ta cũng cần lưu ma trận $\widetilde{H}_n$, thực tế chúng ta l�
 Cuối cùng chúng ta cần lưu các ma trận quay Givens, mỗi ma trận quay cần lưu hai số $\sin$ và $\cos$. Tại bước thứ $n$, cần lưu $n$ ma trận quay Givens từ $\sin(\theta_1),\dots, \sin(\theta_n)$ và $\cos(\theta_1),\dots,\cos(\theta_n)$ như vậy chi phí là $2n$.
 Tổng hợp lại chi phí bộ nhớ cho thuật toán GMRES tại bước thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
 
-\subsubsection{Chi phí tính toán}
+\subsubsection{Chi phí tính toán} \label{GMRES-Computation-Cost}
 
 Tại mỗi bước $n$, của thuật toán GMRES, ta cần thực hiện các công việc:
 
@@ -1251,7 +1251,7 @@ Tiếp theo ta giải hệ phương trình $L_n^T y = z_n$ \ref{eq:L-Backward-Su
 \end{equation}
 \subsection{Một số đặc điểm của thuật toán MINRES}
 
-\subsubsection{Chi phí bộ nhớ}
+\subsubsection{Chi phí bộ nhớ} \label{MINRES-Storage}
 
 Thuật toán MINRES có yêu cầu về bộ nhớ cơ bản là lưu vector $b, x \in \mathbb{R}^m$. Vì $A$ là ma trận đối xứng nên chỉ cần lưu $\dfrac{m^2}{2} + m$ số thực như vậy ta cần $\dfrac{m^2}{2} + 3m$ số thực để tạo bài toán.
 Ta cần lưu ma trận $\widetilde{T}_n$ thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{(n+1) \times times}$ tam giác trên ba đường chéo với chi phí $n+(n-1) + (n-2)=3n-3$ số thực. Tại bước thứ $n$, ta cần lưu 3 ma trận quay Givens từ $\sin(\theta_{n-2}), \sin(\theta_{n-1}), \sin(\theta_n), \cos(\theta_{n-2}), \cos(\theta_{n-1}), \cos(\theta_n)$ với chi phí là 6, ngoại trừ $n=1$ lưu ma trận quay Givens với chi phí là 2 và $n=2$ là 4.
@@ -1275,7 +1275,7 @@ Ta xét các trường hợp:
 
 Ta nhận thấy theo phương pháp thứ hai thì chi phí bộ nhớ trong quá trình thực hiện thuật toán nhỏ đi nhiều.
 
-\subsubsection{Chi phí tính toán}
+\subsubsection{Chi phí tính toán} \label{MINRES-Computation-Cost}
 
 Để ước lượng chi phí tính toán của thuật toán MINRES, ta sẽ tính chi phí tính toán của các bước mà cả hai phương pháp đều phải thực hiện:
 Tại mỗi bước $n$ của thuật toán GMRES, ta cần thực hiện:
@@ -1342,13 +1342,13 @@ Ta xét hai trường hợp:
     \end{equation}
     Theo công thức \ref{eq:Polynomial-Approximation} ta có:
     \begin{equation}
-        \lVert r_n \rVert = \lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert \leq \inf_{p_n \in P_n} \sup_{\lambda \in \Lambda(A)} \lvert p_n(\lambda) \rvert \lVert b \rVert
+        \lVert r_n \rVert = \lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert \leq \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert \lVert b \rVert
     \end{equation}
     Ta suy ra bất đẳng thức:
     \begin{equation} \label{eq:MINRES-RESIDUAL-CONVERGENCE}
-        \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \sup_{\lambda \in \Lambda(A)} \lvert p_n(\lambda) \rvert
+        \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert
     \end{equation}
-    Bất đẳng thức \ref{eq:MINRES-RESIDUAL-CONVERGENCE} thể hiện độ lớn tương đối của chuẩn giữa phần dư $r_n$ và $b$ bị chặn bởi $\sup_{\lambda \in \Lambda(A)} \lvert p_n(\lambda) \rvert$. Chúng ta có thể làm mạnh kết quả này nếu chúng ta giả định rằng $b$ là một tổ hợp tuyến tính của một số vector riêng của ma trận $A$, khi đó chỉ có tác động của $p_n$ lên một số giá trị riêng của $A$ là có ý nghĩa.
+    Bất đẳng thức \ref{eq:MINRES-RESIDUAL-CONVERGENCE} thể hiện độ lớn tương đối của chuẩn giữa phần dư $r_n$ và $b$ bị chặn bởi $\sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert$. Chúng ta có thể làm mạnh kết quả này nếu chúng ta giả định rằng $b$ là một tổ hợp tuyến tính của một số vector riêng của ma trận $A$, khi đó chỉ có tác động của $p_n$ lên một số giá trị riêng của $A$ là có ý nghĩa.
     Ta xét đại lượng:
     \begin{equation}
         \lVert p_n(\Lambda) V^T b \rVert = \Biggl\lVert \begin{bmatrix} p_n(\lambda_1) v_1^T b \\ p_n(\lambda_2) v_2^T b \\ \vdots \\ p_n(\lambda_m) v_m^T b\end{bmatrix} \Biggl\rVert
@@ -1392,7 +1392,7 @@ Ta xét hai trường hợp:
     \begin{dl} \label{dl:MINRES-RESIDUAL-CHEBYSEV}
         Xét hệ phương trình $Ax=b$. Với $A$ là ma trận đối xứng xác định dấu dương. Ta giải hệ phương trình $Ax=b$ bằng thuật toán MINRES, gọi $r_n$ là phần dư tại bước lặp thứ $n$. Khi đó:
         \begin{equation} \label{eq:MINRES-A-SPD-UPPER-BOUND}
-            \dfrac{\lVert r_n \rVert }{\lVert b \rVert} \leq \Big(\dfrac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1}\Big)^n
+            \dfrac{\lVert r_n \rVert }{\lVert b \rVert} \leq 2\Big(\dfrac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1}\Big)^n
         \end{equation}
     \end{dl}
     Ta chứng minh định lý \ref{dl:MINRES-RESIDUAL-CHEBYSEV}: Phần dư $r_n$ chính là phần dư sao cho $x_n \in \mathcal{K}_n$ sao cho chuẩn phần dư $\lVert r_n \rVert = \lVert b - Ax_n \rVert$ nhỏ nhất. Gọi $p_n$ là đa thức Krylov-Chebysev. $A=V \Lambda V^T$ là phân tích giá trị riêng của ma trận $A$, ta có:
@@ -1537,10 +1537,11 @@ Các loại điều kiện đầu được chia làm ba loại:
 
 \subsection{Hình thức hai phương pháp}
 
-Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$ trong các trường hợp tổng quan hơn phương pháp Gradient liên hợp.
-MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị.
-Hai phương pháp này gần giống với phương pháp Gradient liên hợp nhưng phương pháp Gradient liên hợp cực tiểu hóa hàm mục tiêu $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}x^TAx - x^Tb$,
-trong khi hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ n $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$
+Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian con Krylov để giải hệ phương trình $Ax=b$.
+MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị (vẫn có thể áp dụng nếu ma trận $A$ là ma trận đối xứng).
+Hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ $n$ $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$.
+
+Thuật toán cơ sở của GMRES là thuật toán Arnoldi, tại bước thứ $n$, ta tính vector $q_{n+1}$ và cột thứ $n$ của ma trận Hessenberg $\widetilde{H}_n$. Thuật toán cơ sở của MINRES là thuật toán Lanczos, tại bước thứ $n$, ta tính vector $q_{n+1}$ và cột thứ $n$ của ma trận 3 đường chéo $\widetilde{T}_n$.
 
 Hai phương pháp GMRES và MINRES giải các bài toán tối ưu hóa có ràng buộc, nói chung là bài toán khá khó giải. Xét $x_n \in \mathcal{K}_n$, ta có thể biểu diễn $x_n$ dạng:
 $x_n = Q_n y$ với $y$ là tọa độ của $x_n$ trong hệ cơ sở trực chuẩn của không gian Krylov thứ n $\mathcal{K}_n$. Hàm mục tiêu trở thành:
@@ -1588,6 +1589,52 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 \end{equation}
 
 đối với phương pháp MINRES
+
+\subsection{Chi phí bộ nhớ}
+
+Ở các mục \ref{GMRES-Storage} và \ref{MINRES-Storage} ta đã phân tích chi phí bộ nhớ của GMRES và MINRES.
+
+Chi phí bộ nhớ của thuật toán GMRES tại bước lặp thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$ nhưng ta đang xét trong trường hợp $A$ là ma trận thưa (mỗi hàng $l$ phần tử khác 0). Nếu $A$ là ma trận không thưa thì chi phí bộ nhớ cho thuật toán GMRES tại bước lặp thứ $n$ là: $(m+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
+
+Ở thuật toán MINRES, ta chia làm hai trường hợp:
+
+\begin{itemize}
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES, chi phí bộ nhớ tại bước thứ $n$ là:$\dfrac{m^2}{2}+3m + 3n-3+6+mn+n=\dfrac{m^2}{2}+mn+3m+4n+3$
+    \item Nếu ta giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$, chi phí tại bước thứ $n$ là: $\dfrac{m^2}{2}+3m + 3n-3+6+2m + m + 3m=\dfrac{m^2}{2}+9m+3n+3$
+\end{itemize}
+
+Nếu ta không xét đến chi phí bộ nhớ để thiết lập bài toán thì chi phí bộ nhớ của thuật toán GMRES tại bước thứ $n$ là $\mathcal{O}(mn)$, chi phí bộ nhớ của thuật toán MINRES giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES, chi phí bộ nhớ tại bước thứ $n$ là $\mathcal{O}(m)$. Nhưng nếu chi phí bộ nhớ thuật toán MINRES giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là $\mathcal{O}(m+n)$. Như vậy, ta thấy nếu thuật toán MINRES giải theo phương pháp giải $y$ và lưu các vector $q_1, q_2, \dots, q_n$ chi phí bộ nhớ ngang như thuật toán GMRES và chi phí bộ nhớ tăng lên khi số bước lặp $n$ tăng lên.
+Nhưng nếu thuật toán MINRES được giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ thì chi phí bộ nhớ thấp hơn rất nhiều.
+
+\subsection{Chi phí tính toán}
+
+Ở các mục \ref{GMRES-Computation-Cost} và \ref{MINRES-Computation-Cost} đã phân tích chi phí tính toán của thuật toán GMRES và thuật toán MINRES.
+
+Chi phí tính toán tích lũy của thuật toán GMRES giả sử rằng tại bước lặp thứ $n$ thuật toán GMRES đạt điều kiện hội tụ là: $2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
+
+Chi phí tính toán tích lũy của thuật toán GMRES giả sử rằng tại bước lặp thứ $n$ thuật toán MINRES đạt điều kiện hội tụ và giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES là: $2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$.
+Chi phí tính toán tích lũy của thuật toán GMRES giả sử rằng tại bước lặp thứ $n$ thuật toán MINRES đạt điều kiện hội tụ và giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là: $2m^n+15mn-n \sim \mathcal{O}(m^2n)$
+
+Nhược điểm rất lớn của thuật toán GMRES là chi phí tính toán mỗi bước sau sẽ tăng so với bước trước, nếu $n$ lớn thì chi phí mỗi bước lặp sẽ rất cao. Nhưng với thuật toán MINRES thì khác đối với phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ chi phí tính toán mỗi bước chỉ là $\mathcal{O}(m^2)$ (không tính chi phí giải $y$ khi đã đạt điều kiện hội tụ) và đối với phương pháp giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ vẫn là $\mathcal{O}(m^2)$
+
+\subsection{Sự hội tụ của hai phương pháp}
+
+Sự hội tụ của cả hai thuật toán GMRES và MINRES có những điểm khá tương đồng. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là:
+
+\begin{equation}
+    \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert
+\end{equation}
+
+Cả hai phương pháp mỗi bước lặp $n$ đều tìm một đa thức $p_n$ sao cho cực tiểu hóa chuẩn phần dư $\lVert r_n \rVert=\lVert b - Ax_n \rVert=\lVert p_n(A)b \rVert$. Trong một số trường hợp đặc biệt:
+
+\begin{itemize}
+    \item Ma trận $A$ là ma trận đối xứng xác định dấu dương cả hai phương pháp đều cần $\mathcal{O}(\sqrt(\kappa))$ bước lặp để đạt điều kiện hội tụ.
+    \item Ma trận $A$ là ma trận đối xứng không xác định dấu cả hai phương pháp đều cần $\mathcal{O}(\kappa)$ bước lặp để hội tụ.
+\end{itemize}
+
+Trong trường hợp tổng quát thì sự phân tích hội tụ của hai phương pháp rất phức tạp. Nhưng cách phân tích trực quan nhất vẫn là phân tích cấu trúc các giá trị riêng của ma trận $A$.
+
+
 
 \newpage
 \begin{center}
