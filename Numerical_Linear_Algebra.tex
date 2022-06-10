@@ -225,7 +225,7 @@ Vì vậy mà các phương pháp trên không gian con Krylov đã ra đời. C
 Để giải các hệ phương trình tuyến tính, các phương pháp quen thuộc như khử Gauss hoặc các phương pháp lặp đơn giản (ví dụ: phương pháp lặp Jacobi) sẽ được nghĩ đến. Nhưng khi phải làm việc với các ma trận dữ liệu cực lớn, các phương pháp trên dường như không hữu hiệu như với ma trận số chiều vừa và nhỏ. Bởi vì độ phức tạp của phương pháp khử Gauss và phép lặp Jacobi là $\mathcal{O}(m^3)$.
 Hơn nữa, các ma trận có thể không đối xứng hoặc không xác định dấu. Trong trường hợp này, sử dụng các phương pháp trên không gian con Krylov thực sự hiệu quả khi dùng để giải các hệ phương trình tuyến tính với kích thước của ma trận $A$ lớn.
 
-Alexei Krylov là nhà toán học người Nga đã xuất bản một công trình nghiên cứu \cite{krylov1931numerical} đề xuất một không gian con vào năm 1931. Cơ sở của không gian con này dựa trên hệ quả của định lý Cayley-Hamilton, nghịch đảo của ma trận $A$ được biểu diễn thành tổ hợp tuyến tính của các thành phần lũy thừa của ma trận $A$.
+Alexei Krylov là nhà toán học người Nga đã xuất bản một công trình nghiên cứu \cite{krylov1931numerical} đề xuất một không gian con vào năm 1931. Cơ sở của không gian con này dựa trên hệ quả của định lý Cayley-Hamilton, nghịch đảo của ma trận $A$ được biểu diễn thành tổ hợp tuyến tính của các thành phần là các lũy thừa của ma trận $A$.
 
 \begin{dl}
     Gọi $\chi_{A}(s) = \det(sI - A)$ là đa thức đặc tính của ma trận $A \in \mathbb{R}^{m \times m}$ thì:
@@ -598,7 +598,7 @@ phương pháp GMRES cũng giải một bài toán xấp xỉ đa thức. Ta xé
 Ta đặt:
 
 \begin{equation}
-    q(z) = c_0 + c_1 z + c_2 z^2 + \dots + c_{n-1}z^{n-1}
+    q_n(z) = c_0 + c_1 z + c_2 z^2 + \dots + c_{n-1}z^{n-1}
 \end{equation}
 
 Như vậy, nghiệm tại bước thứ $n$ có thể viết dưới dạng đa thức:
@@ -613,7 +613,7 @@ $q_{n-1}(z)$ là một đa thức có bậc tối đa bằng $n-1$ với các ve
     r_n = p_n(A)b
 \end{equation}
 
-phương pháp GMRES tại mỗi bước tìm một đa thức $p_n \in P_n$ với $P_n$ là:
+Phương pháp GMRES tại mỗi bước tìm một đa thức $p_n \in P_n$ với $P_n$ là:
 
 \begin{equation}
     P_n = \lbrace \text{là tập các đa thức có bậc } \leq n \text{ với } p(0)=1 \rbrace
@@ -625,7 +625,7 @@ sao cho $p_n$ làm cực tiểu hóa phần dư (tìm vector hệ số $c$ của
     p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
 \end{equation}
 
-phương pháp GMRES cũng thỏa mãn một số tính chất bất biến như thuật toán lặp Arnoldi
+Phương pháp GMRES cũng thỏa mãn một số tính chất bất biến như thuật toán lặp Arnoldi
 
 \begin{dl}
     phương pháp GMRES áp dụng cho một ma trận $A \in \mathbb{R}^{m \times m}$ thỏa mãn các tính chất sau:
@@ -636,7 +636,7 @@ phương pháp GMRES cũng thỏa mãn một số tính chất bất biến như
     \end{itemize}
 \end{dl}
 
-phương pháp GMRES không có tính chất bất biến tịnh tiến như thuật toán lặp Arnoldi, vì điều kiện chuẩn hóa $p(0)=1$ liên quan đến sự phụ thuộc quá trình tịnh tiến. Sự thay đổi của $\lbrace r_n \rbrace$ theo phép tịnh tiến phụ thuộc nhiều vào lựa chọn điểm gốc
+Phương pháp GMRES không có tính chất bất biến tịnh tiến như thuật toán lặp Arnoldi, vì điều kiện chuẩn hóa $p(0)=1$ liên quan đến sự phụ thuộc quá trình tịnh tiến. Sự thay đổi của $\lbrace r_n \rbrace$ theo phép tịnh tiến phụ thuộc nhiều vào lựa chọn điểm gốc
 
 \subsection{Chi tiết thực hiện phương pháp GMRES}
 
@@ -746,7 +746,7 @@ Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVer
 
 Đây là hệ phương trình gồm $n$ phương trình và $n$ ẩn, $y$ có thể giải bằng phép thế ngược do block phía trên của $R_n$ là ma trận tam giác trên.
 
-Để tính $\lVert r_n \rvert$, ta nhận thấy $r_n=g_n - R_n y$ có $n$ thành phần đầu bằng 0 do nghiệm $y$ thỏa mãn phương trình ở công thức \ref{eq:GMRES-Y-Backsubstitute}. Mặt khác do hàng cuối của $R_n$ là vector hàng 0 nên thành phần thứ $n+1$ của phần dư $r_n$ chính bằng thành phần thứ $n+1$ của $g_n$.
+Để tính $\lVert r_n \rVert$, ta nhận thấy $r_n=g_n - R_n y$ có $n$ thành phần đầu bằng 0 do nghiệm $y$ thỏa mãn phương trình ở công thức \ref{eq:GMRES-Y-Backsubstitute}. Mặt khác do hàng cuối của $R_n$ là vector hàng 0 nên thành phần thứ $n+1$ của phần dư $r_n$ chính bằng thành phần thứ $n+1$ của $g_n$.
 
 \begin{md}
     Chuẩn phần dư của nghiệm $x_n$ tại bước lặp thứ $n$ bằng thành phần thứ $n+1$ của vector $g_n$ thu được bằng cách nhân phía bên trái của $\beta e_1$ với liên tiếp các phép quay Givens biến đổi ma trận $\widetilde{H}_n$ thành ma trận tam giác trên.
@@ -823,7 +823,7 @@ Ngoài ra ta cần tính $x_n = Q_n y$ cần $m(2n-1)$ phép tính
 
 Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng phương pháp GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+16n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
 
-Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với phương pháp GMRES.
+Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$, ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với phương pháp GMRES.
 
 \subsubsection{Sự hội tụ của phương pháp GMRES} \label{GMRES-Convergence}
 
@@ -840,7 +840,7 @@ Ta nhận thấy có hai quan sát với phần dư của phương pháp GMRES:
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert
 \end{equation}
 
-Ta cần phân tích với một ma trận $A$ và một số $n$ cho trước thì $\lVert p_n(A) \rVert$ có thể nhỏ bao nhiêu. Cách tiếp cận tiêu chuẩn là tìm một đa thức $p(z)$ sao cho $p(z)$ càng nhỏ càng tốt trên tập phổ của ma trận $A$ $\Lambda(A)$ và thỏa mãn $p(0)=1$. Ta giả sử ma trận $A$ là ma trận chéo hóa được, thỏa mãn $A=V\Lambda V^{-1}$ với $V$ là ma trận không kỳ dị và $\Lambda$ là ma trận đường chéo. Ta có bất đẳng thức:
+Ta cần phân tích với một ma trận $A$ và một số $n$ cho trước thì $\lVert p_n(A) \rVert$ có thể nhỏ bao nhiêu. Cách tiếp cận tiêu chuẩn là tìm một đa thức $p_n(s)$ sao cho $p_n(s)$ càng nhỏ càng tốt trên tập phổ của ma trận $A$ $\Lambda(A)$ và thỏa mãn $p(0)=1$. Ta giả sử ma trận $A$ là ma trận chéo hóa được, thỏa mãn $A=V\Lambda V^{-1}$ với $V$ là ma trận không kỳ dị và $\Lambda$ là ma trận đường chéo. Ta có bất đẳng thức:
 
 \begin{equation}
     \lVert p_n(A) \rVert \leq \lVert V \rVert \lVert p_n(\Lambda) \rVert \lVert V^{-1} \rVert = \dfrac{\max(\sigma(V))}{\min(\sigma(V))} \lVert p_n(\Lambda) \rVert = \kappa(V) \lVert p_n(\Lambda) \rVert
@@ -877,7 +877,7 @@ Một số trường hợp đặc biệt:
     \end{equation}
 \end{bd}
 
-Bổ đề cho ta thấy nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một chiếc đĩa bán kính nhỏ, nằm xa gốc tọa độ sẽ đảm bảo tốc độ hội tụ nhanh của phương pháp GMRES.
+Bổ đề cho ta thấy nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một chiếc đĩa mở bán kính nhỏ, nằm xa gốc tọa độ sẽ đảm bảo tốc độ hội tụ nhanh của phương pháp GMRES.
 
 \begin{bd}
     Cho ma trận $A \in \mathbb{R}^{m \times m}$ và $A$ chéo hóa được, nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một hình ellipse đóng $\mathcal{E}(c, d, a)$ ($c \in \mathbb{R}, \text{ tiêu cự } d > 0, \text{ bán trục lớn } a > 0$), ta có:
@@ -885,6 +885,8 @@ Bổ đề cho ta thấy nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm 
         \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert \leq \Big( \dfrac{a + \sqrt{a^2 - d^2}}{c + \sqrt{c^2 - d^2}} \Big)^n
     \end{equation}
 \end{bd}
+
+Bổ đề cho ta thấy nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một hình ellipse đóng và bán trục lớn nhỏ và nằm xa gốc tọa độ thì phương pháp GMRES sẽ hội tụ nhanh.
 
 Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \begin{itemize}
@@ -1384,7 +1386,7 @@ Thuật toán để giải hệ phương trình \ref{eq:Forward-Substitution} l�
     \end{algorithmic}
 \end{algorithm}
 
-Với $z_n\lbrack i \rbrack$ là phần tử thứ $i$ của vector $z_n$
+Với $z_n\lbrack i \rbrack$ là thành phần thứ $i$ của vector $z_n$
 Tiếp theo ta giải hệ phương trình $L_n^T y = z_n$ \ref{eq:L-Backward-Substitution} bằng phương pháp thế ngược. Từ thuật toán \ref{alg:LD-Forward-Substitution}, tại mỗi bước lặp $n$ chỉ có thành phần $z_n\lbrack n \rbrack$ được tính, các thành phần từ $1, \dots, n-1$ được giữ nguyên. Nhưng không may là trong quá trình thế ngược $z_n[n]$ làm thay đổi toàn bộ $y$ làm cho $y\lbrack 1:n-1 \rbrack$ tại bước $n-1$ khác với $y \lbrack 1:n-1 \rbrack$ tại bước lặp thứ $n$.
 
 
@@ -1872,7 +1874,7 @@ Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn
 cũng như phân tích sâu về các phương pháp như: song trực giao hóa (\textit{biorthogonalization}), tái trực giao hóa có lựa chọn (\textit{selective reorthogonalization}).
 Ngoài ra tiểu luận vẫn chưa thể phân tích khi một số trường hợp đặc biệt xảy ra (ví dụ: nếu tồn tại một bước $n$ mà ma trận $T_n$ kỳ dị).
 
-Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian con Krylov.
+Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề được nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian con Krylov.
 \newpage
 \addcontentsline{toc}{section}{TÀI LIỆU THAM KHẢO}
 %\bibliographystyle{IEEEtraN}
