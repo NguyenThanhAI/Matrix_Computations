@@ -1698,7 +1698,7 @@ Nhược điểm rất lớn của phương pháp GMRES là chi phí tính toán
 
 \subsection{Sự hội tụ của hai phương pháp}
 
-Sự hội tụ của cả hai phương pháp GMRES và MINRES có những điểm khá tương đồng. Phần dư của hai phương pháp theo từng bước lặp đơn điệu giảm. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là:
+Sự hội tụ của cả hai phương pháp GMRES và MINRES có những điểm khá tương đồng. Phần dư của hai phương pháp theo từng bước lặp đơn điệu giảm. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là (trong trường hợp ma trận $A$ chéo hóa được):
 
 \begin{equation}
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert
@@ -1732,7 +1732,7 @@ Một hình ảnh trực quan so sánh tốc độ hội tụ của hai phương
 \begin{figure}[h!] \centering
 
     \includegraphics[scale=0.6]{GMRES-MINRES-Convergence-Comparison.jpg}
-    \caption{So sánh tốc độ hội tụ của phương pháp GMRES và phương pháp MINRES sử dụng cho hệ phương trình $Ax=b, A \in \mathbb{R}^{24 \times 24}$, $A$ là ma trận xác định dấu dương}
+    \caption{So sánh tốc độ hội tụ của phương pháp GMRES và phương pháp MINRES sử dụng cho hệ phương trình $Ax=b, A \in \mathbb{R}^{24 \times 24}$, $A$ là ma trận xác định dấu dương \cite{driscoll1998potential}}
 
     \label{fig:GMRES-MINRES-Convergence-Comparison}
 \end{figure}
