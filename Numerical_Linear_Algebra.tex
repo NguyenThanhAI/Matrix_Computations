@@ -284,6 +284,7 @@ Ta thấy $\mathcal{K}_1 \subseteq \mathcal{K}_2 \subseteq \mathcal{K}_3 \subset
 
 Ý tưởng đằng sau của các phương pháp lặp dựa trên không gian con Krylov là tạo ra một dãy các lời giải xấp xỉ
 $x_n \in \mathcal{K}_n(A, b)$ của hệ phương trình $Ax=b$ mà phần dư tương ứng $r_n = b - Ax_n \in \mathcal{K}_{n+1}(A, b)$ hội tụ về vector 0 hay chuẩn phần dư $\lVert r_n \rVert$ hội tụ về 0.
+Nói cách khác tại mỗi bước lặp $n$, ta tìm một $x_n \in \mathcal{K}_n(A, b)$ sao cho cực tiểu hóa chuẩn phần dư $\underset{x_n \in \mathcal{K}_n(A, b)}{\min}\lVert r_n \rVert = \underset{x_n \in \mathcal{K}_n(A, b)}{\min}\lVert b - A x_n \rVert$.
 
 Rất khó để đưa ra một định nghĩa về mặt hình thức của các phương pháp dựa trên không gian con Krylov mà bao hàm tất cả các trường hợp và không quá tổng quát theo nghĩa không còn nắm được những khía cạnh quan trọng của các phương pháp dựa trên không gian con Krylov, ta có định nghĩa:
 
@@ -751,7 +752,7 @@ Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVer
     Chuẩn phần dư của nghiệm $x_n$ tại bước lặp thứ $n$ bằng thành phần thứ $n+1$ của vector $g_n$ thu được bằng cách nhân phía bên trái của $\beta e_1$ với liên tiếp các phép quay Givens biến đổi ma trận $\widetilde{H}_n$ thành ma trận tam giác trên.
 \end{md}
 
-Trong thực tế, khi giải các bài toán, tại mỗi bước ta thường kiểm tra chuẩn phần dư $\lVert r_n \rVert$ trước khi giải ra nghiệm $y$. Do trước khi thực hiện thuật toán, chúng ta có một ngưỡng chuẩn phần dư cho phép dừng vòng lặp $\epsilon$. Nếu tại bước hiện tại $n$, ta kiểm tra chuẩn phần dư $\lVert r_n \rvert$, nếu $\lbrack r_n \rbrack < \epsilon$ thì ta dừng vòng lặp, giải $y$ và tính $x_n=Q_n y$. Nếu không ta chuyển sang bước thứ $n+1$.
+Trong thực tế, khi giải các bài toán, tại mỗi bước ta thường kiểm tra chuẩn phần dư $\lVert r_n \rVert$ trước khi giải ra nghiệm $y$. Do trước khi thực hiện thuật toán, chúng ta có một ngưỡng chuẩn phần dư cho phép dừng vòng lặp $\epsilon$. Nếu tại bước hiện tại $n$, ta kiểm tra chuẩn phần dư $\lVert r_n \rVert$, nếu $\lVert r_n \rVert < \epsilon$ thì ta dừng vòng lặp, giải $y$ và tính $x_n=Q_n y$. Nếu không ta chuyển sang bước thứ $n+1$.
 
 Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của phương pháp GMRES được miêu tả ở thuật toán \ref{alg:GMRES-Detailed}:
 
@@ -857,7 +858,7 @@ Từ công thức trên và công thức \ref{eq:GMRES-Convergence-Rate}, ta đi
 
 Ý nghĩa của định lý \ref{dl:GMRES-Convergence-Rate} là nếu ma trận $A$ có số điều kiện của ma trận $V$ là $\kappa(V)$ không quá lớn và một đa thức thuộc tập $P_n$ được tìm thấy mà độ lớn của nó trên phổ của ma trận $A$ là $\Lambda(A)$ giảm nhanh theo $n$ thì phương pháp GMRES hội tụ nhanh.
 
-phương pháp GMRES sẽ hội tụ khi ta thực hiện số bước lặp bằng với số giá trị riêng riêng biệt của ma trận $A$. Sự hội tụ sẽ phụ thuộc vào cấu trúc các giá trị riêng của ma trận $A$ được phân bố thế nào.
+Phương pháp GMRES sẽ hội tụ khi ta thực hiện số bước lặp bằng với số giá trị riêng riêng biệt của ma trận $A$. Sự hội tụ sẽ phụ thuộc vào cấu trúc các giá trị riêng của ma trận $A$ được phân bố thế nào.
 Từ bài toán tìm đa thức $p_n \in P_n$ được nêu ở công thức \ref{eq:Find-Polynomial}, ta đặt đa thức $p_n$ có dạng:
 
 \begin{equation}
@@ -867,6 +868,24 @@ Từ bài toán tìm đa thức $p_n \in P_n$ được nêu ở công thức \re
 Trong quá trình giải bài toán cực tiểu bằng việc tìm đa thức mà giá trị của nó nhỏ trên phổ của ma trận $A$ hay giá trị của nó nhỏ với mọi giá trị riêng của ma trận $A$. Trong trường hợp đặc biệt nếu $n$ lớn hơn số giá trị riêng của ma trận $A$ thì đa thức này sẽ bằng 0 tại mọi giá trị riêng của ma trận $A$ và thuộc $P_n$.
 Nhưng đôi khi chúng ta chỉ hy vọng tìm được một đa thức mà có giá trị đủ nhỏ tại tất cả các giá trị riêng. Việc tìm đa thức sẽ càng dễ hơn nếu các giá trị riêng phân thành các nhóm mà mỗi nhóm các giá trị riêng nằm sát nhau và khó hơn nếu các giá trị riêng có các giá trị riêng biệt và nằm xa nhau. Và việc phân bố các giá trị riêng của ma trận $A$ có mối quan hệ mật thiết với số điều kiện của ma trận $A$.
 
+Một số trường hợp đặc biệt:
+
+\begin{bd}
+    Cho ma trận $A \in \mathbb{R}^{m \times m}$ và $A$ chéo hóa được, nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một đĩa mở $\mathcal{C}(c, \rho)$ ($c \in \mathbb{C}, \rho > 0, 0 \notin \mathcal{C}(c, \rho)$), ta có:
+    \begin{equation}
+        \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert \leq \Big( \dfrac{\rho}{\lvert c \rvert} \Big)^n
+    \end{equation}
+\end{bd}
+
+Bổ đề cho ta thấy nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một chiếc đĩa bán kính nhỏ, nằm xa gốc tọa độ sẽ đảm bảo tốc độ hội tụ nhanh của phương pháp GMRES.
+
+\begin{bd}
+    Cho ma trận $A \in \mathbb{R}^{m \times m}$ và $A$ chéo hóa được, nếu phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một hình ellipse đóng $\mathcal{E}(c, d, a)$ ($c \in \mathbb{R}, \text{ tiêu cự } d > 0, \text{ bán trục lớn } a > 0$), ta có:
+    \begin{equation}
+        \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert \leq \Big( \dfrac{a + \sqrt{a^2 - d^2}}{c + \sqrt{c^2 - d^2}} \Big)^n
+    \end{equation}
+\end{bd}
+
 Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \begin{itemize}
     \item Nếu ma trận $A$ đối xứng xác định dấu dương thì phương pháp GMRES cần $O(\sqrt{\kappa})$ bước để hội tụ.
@@ -874,6 +893,14 @@ Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \end{itemize}
 
 Nếu ma trận $A$ là một ma trận không chéo hóa được, nếu $n^{*}$ là số chiều của \textit{không gian bất biến tổng quát nhỏ nhất} chứ vector $b$, phương pháp GMRES sẽ dừng sau đúng $n^{*}$ bước. Một không gian $\mathcal{S}$ được gọi là \textit{không gian con bất biến tổng quát} nếu $v \in \mathcal{S} \Rightarrow A^{n}v \in \mathcal{S} \thickspace \forall n \geq 0$ 
+
+\begin{dl} \label{dl:Jordan-Residual-Bound}
+    Cho $A$ là một ma trận không kỳ dị kích thước $m \times m$, với các giá trị riêng $\lambda_1, \lambda_2, \lambda_3, \dots, \lambda_r$ với các bội đại số tương ứng là $\mu_1, \mu_2, \mu_3, \dots, \mu_r$. Ta xét dạng chuẩn Jordan của ma trận $A$ có dạng $A=V^{-1}JV$ và ký hiệu $J(\lambda_k)$ là khối Jordan tương ướng với giá trị riêng $\lambda_k$, đặt $l_k \leq \mu_k$ là thứ tự của trị riêng này. Bất đẳng thức sau đúng:
+
+    \begin{equation}
+        \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \kappa(V) \inf_{p_n \in P_n} \sup_{k=1,2,\dots,r} \lvert p_n(J(\lambda_k)) \rvert \leq \kappa(V) \inf_{p_n \in P_n} \sup_{k=1,2,\dots,r} \Bigg( \sum_{j=0}^{l_k - 1} \dfrac{1}{j!} \lvert p_n^{(j)}(\lambda_k) \rvert \Bigg)
+    \end{equation}
+\end{dl}
 
 Nếu ma trận $A=VJV^{-1}$ với ma trận $J$ là một ma trận có dạng chuẩn Jordan thì:
 
@@ -887,7 +914,7 @@ và:
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert \leq \kappa(V) \inf_{p_n \in P_n} \lVert p_n(J) \rVert
 \end{equation}
 
-Để đánh giá $\inf_{p_n \in P_n} \lVert p_n(J) \rVert$ khá phức tạp, giá trị này được phân tích rất kỹ trong \cite{tichy2005worst}.
+Để đánh giá $\inf_{p_n \in P_n} \lVert p_n(J) \rVert$ khá phức tạp, giá trị này được phân tích rất kỹ trong \cite{tichy2005worst} theo định lý \ref{dl:Jordan-Residual-Bound}.
 
 \textbf{Ví dụ:} Một ma trận $A$ có kích thước $200\times 200$ mà từng phần từ của nó độc lập và được lấy mẫu từ phân bố chuẩn $\mathcal{N}\Bigg(2;\Big(\dfrac{0.5}{\sqrt{200}} \Big)^2 \Bigg)$
 
