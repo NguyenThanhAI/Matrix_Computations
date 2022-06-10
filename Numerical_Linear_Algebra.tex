@@ -213,19 +213,23 @@ Kết cấu tiểu luận gồm 4 phần chính:
 
 \section{Tổng quan về các phương pháp lặp trên không gian con Krylov}
 
+\subsection{Không gian con Krylov}
+
 Các phương pháp trên không gian con Krylov là một nhóm các phương pháp quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
 
 \begin{equation}
     x \rightarrow \boxed{\text{hộp đen}} \rightarrow Ax
 \end{equation}
 
-Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n$ với $\mathcal{K}_n$ là không gian con Krylov thứ n $\mathcal{K}_n=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$
+Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n$ với $\mathcal{K}_n$ là không gian con Krylov thứ n $\mathcal{K}_n=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$.
 Các đặc điểm của không gian con Krylov:
 \begin{itemize}
     \item Ta có thể xây dựng $\mathcal{K}_n$ như một hộp đen
     \item $\mathcal{K}_n \subseteq \mathcal{K}_{n+1}$
     \item Giả sử $p^n(A)$ là một đa thức của ma trận $A$. Bất kỳ một tổ hợp tuyến tính của các vector $b, Ab, \dots$ cũng bằng $p^n(A)$ nhân với $b$, $\lVert b - Ax \rVert_2^2 = \lVert p^n(A)b \rVert_2^2$
 \end{itemize}
+
+\subsection{Thuật toán lặp Arnoldi}
 
 Ta xét ma trận Krylov, $K_n = \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \end{bmatrix}$. Đây là một ma trận điều kiện tồi. Vì khi $n$ càng lớn, vector $A^nb$ tiến gần đến bội của một vector riêng của ma trận $A$, làm cho ma trận $K_n$ rất gần với một ma trận kỳ dị. Vì vậy ta cần làm việc với một hệ sơ sở trực chuẩn.
 
@@ -256,12 +260,8 @@ $\widetilde{H}_n$ là ma trận tam giác trên và một đường chéo phụ 
     Aq_n = h_{1, n}q_1 + h_{2, n}q_2 + \dots + h_{n, n}q_n + h_{n+1, n}q_{n+1}
 \end{equation}
 
-
-\subsection{Thuật toán lặp Arnoldi}
-
-
 \begin{algorithm}[h!]
-    \caption{Thuật toán Arnoldi}\label{alg:Arnoldi}
+    \caption{Thuật toán lặp Arnoldi}\label{alg:Arnoldi}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {Cơ sở trực chuẩn $q_1, q_2, \dots, q_n, q_{n+1} \in \mathbb{R}^m$, ma trận Hessenberg $\widetilde{H}_n \in \mathbb{R}^{(n+1) \times n}$}
     \begin{algorithmic}
@@ -375,7 +375,7 @@ $T_n$ là ma trận thu được bằng cách lấy $n$ hàng đầu của ma tr
 Ma trận $T_n$ về mặt hình thức còn được gọi là ma trận truy hồi ba tham số.
 
 \begin{algorithm}[h!]
-    \caption{Thuật toán Lanczos}\label{alg:Lanczos}
+    \caption{Thuật toán lặp Lanczos}\label{alg:Lanczos}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận đối xứng $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {Cơ sở trực chuẩn $q_1, q_2, \dots, q_n, q_{n+1} \in \mathbb{R}^m$, ma trận ba đường chéo $\widetilde{T}_n \in \mathbb{R}^{(n+1) \times n}$}
     \begin{algorithmic}
