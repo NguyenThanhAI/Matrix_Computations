@@ -213,7 +213,7 @@ Kết cấu tiểu luận gồm 4 phần chính:
 
 \section{Tổng quan về các phương pháp lặp trên không gian con Krylov}
 
-Các phương pháp trên không gian con Krylov là một nhóm quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
+Các phương pháp trên không gian con Krylov là một nhóm các phương pháp quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
 
 \begin{equation}
     x \rightarrow \boxed{\text{hộp đen}} \rightarrow Ax
@@ -907,7 +907,7 @@ Phương pháp khởi tạo lại có ưu điểm là khiến cho chi phí bộ 
 
 Nhược điểm của phương pháp là khiến cho phương pháp GMRES lâu hội tụ hơn. Nếu $n_{\max}$ quá lớn vẫn có thể khiến cho bộ nhớ bị tràn hoặc chi phí tính toán trong từng bước lớn. Nếu $n_{\max}$ nhỏ có thể khiến phương pháp GMRES gần như không bao giờ hội tụ. Việc chọn $n_{\max}$ tối ưu vẫn là một câu hỏi mở.
 
-\subsubsection{Phương pháp điều kiện đầu} \label{GMRES-Precondition}
+\subsubsection{Phương pháp điều kiện đầu (\textit{preconditioning})} \label{GMRES-Precondition}
 
 Thay vì giới hạn số bước lặp cho phép của phương pháp GMRES, đôi khi người ta sẽ cải thiện sự hội tụ của thuật toán bằng cách thay đổi cấu trúc giá trị riêng của ma trận $A$ từ đó làm giảm số bước lặp cần thiết để thuật toán hội tụ.
 Từ những phân tích ở tiểu mục \ref{GMRES-Convergence}, ta nhận thấy phương pháp GMRES hội tụ rất nhanh nếu ma trận $A$ có một số ít các giá trị riêng riêng biệt hoặc các giá trị riêng tập trung thành số ít các cụm. Vì vậy một ý tưởng tự nhiên là biến đổi ma trận $A$ bằng cách nhân ma trận $A$ với một ma trận $M$ (có thể nhân $M$ vào bên trái hoặc bên phải ma trận $A$ hoặc từ hai phía) mà kết quả là một ma trận có những đặc tính mong muốn giúp cho thuật toán hội tụ nhanh.
@@ -1524,7 +1524,7 @@ Với $\epsilon$ là độ chính xác máy.
 Thường số lượng các vector Ritz được coi là tốt cần để biểu diễn sai số làm ảnh hưởng đến tính trực giao ít hơn $n$. Mỗi khi một vector mới trong hệ cơ sở trực chuẩn của không gian con Krylov mới $q_{n+1}$ được tính nó phải trực giao với từng vector trong tập vector Ritz được coi là tốt. Để kiểm tra khi nào cần thêm một Ritz vector vào tập các Ritz vector tốt, ta tính đại lượng:
 $\lVert I_{n+1} - \hat{Q}_{n+1}^T \hat{Q}_{n+1} \rVert$, nếu đại lượng này quá lớn, ta cần thêm các vector Ritz vào trong tập các vector Ritz được xem là tốt.
 
-\subsubsection{Phương pháp điều kiện đầu}
+\subsubsection{Phương pháp điều kiện đầu (\textit{preconditioning})}
 
 Như ta đã biết, phương pháp điều kiện đầu là một phương pháp phổ biến để cải thiện đặc tính hội tụ của một hệ phương trình bằng cách biến đổi hệ phương trình làm thay đổi cấu trúc các giá trị riêng của ma trận $A$.
 Ví dụ: với ma trận $A$ có các giá trị riêng riêng biệt tách xa nhau, ta sẽ tìm các biến đổi sao cho các giá trị riêng sẽ phân thành một số ít nhóm nhỏ các giá trị riêng gần nhau, hoặc đẩy xa các giá trị riêng gần 0 của ma trận $A$ ra xa 0.
@@ -1570,6 +1570,9 @@ Các loại điều kiện đầu được chia làm ba loại:
 \end{itemize}
 
 Ưu điểm là các điều kiện đều loại I là có thể được sử dụng trong các bài toán mà điều kiện đầu chính xác của bài toán không cần biết trước. Hầu hết các điều kiện đầu loại I cần biết một số thông tin về các phần tử của ma trận $A$ nhưng thông thường các thông tin này có sẵn, đôi khi có những trường hợp dễ hơn rất nhiều ta có thể tính các phần tử của ma trận thông qua một số công thức đặc biệt.
+
+Trong các ma trận điều kiện đầu được thiết kết cho các ma trận tổng quát, có ít các định lý định lượng đánh giá một ma trận điều kiện đầu tốt như thế nào. Ví dụ: số điều kiện của ma trận điều kiện đầu nhỏ bao nhiêu so với ma trận gốc. Tuy nhiên có những định lý so sánh, trong một số lượng lớn các bài toán ta có thể chứng minh ma trận điều kiện đầu $M_1$ tốt hơn so với ma trận điều kiện đầu $M_2$ bằng cách chỉ ra $\rho(I - M^{-1}A) < \rho (I - M^{-2})$ với $\rho$ là một tiêu chuẩn nào đó.
+Các kết quả này dẫn đến các định lý về một ma trận điều kiện đầu tối ưu của một dạng cho trước. Tuy nhiên các định lý và tiêu chuẩn so sánh các ma trận điều kiện đầu sẽ không được đề cập đến trong tiểu luận.
 
 \section{So sánh phương pháp GMRES và phương pháp MINRES}
 
