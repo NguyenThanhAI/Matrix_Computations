@@ -87,11 +87,13 @@
 \newtheorem{md}{Mệnh đề}
 \newtheorem{bd}{Bổ đề}
 \newtheorem{dn}{Định nghĩa}
+\newtheorem{hq}{Hệ quả}
 
 \numberwithin{dl}{section}
 \numberwithin{md}{section}
 \numberwithin{bd}{section}
 \numberwithin{dn}{section}
+\numberwithin{hq}{section}
 
 \doublespacing
 \begin{document}
@@ -201,7 +203,7 @@ Trong các bài toán trong lý thuyết cũng như trong kỹ thuật, các h�
 Các thuật toán lặp chính là phương pháp ta tìm kiếm, mục tiêu của mỗi bước lặp là sau mỗi bước sẽ tìm được một nghiệm sao cho ssau một số bước đủ lớn, nghiệm chúng ta tìm được gần đúng với nghiệm chính xác. Trong nhóm phương pháp này các phương pháp trên không gian con Krylov $\mathcal{K}_n$ đóng một vai trò rất quan trọng. Ý tưởng của nhóm phương pháp này là tại mỗi bước ta mở rộng không con con Krylov $\mathcal{K}_n$ và tìm một nghiệm $x_n$ trên không gian con này sao cho làm cực tiểu hóa chuẩn phần dư $\underset{x_n \in \mathcal{K}_n}{\min}\lVert r_n \rVert = \underset{x_n \in \mathcal{K}_n}{\min}\lVert b - A x_n \rVert$. Trong nhóm các phương pháp này hai phương pháp nổi bật nhất chính là GMRES (Generalized Minimal Residual Method) và MINRES (Minimal Residual Method).
 Phương pháp GMRES dùng để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị. Phương pháp MINRES được áp dụng cho các hệ phương trình mà ma trận $A$n là ma trận đối xứng (ma trận $A$ đối xứng vẫn có thể áp dụng phương pháp GMRES được). Tiểu luận sẽ tìm hiểu về phương pháp MINRES và so sánh những điểm giống và khác nhau của hai phương pháp. Dù phương pháp MINRES là trọng tâm chính của tiểu luận nhưng phương pháp GMRES vẫn sẽ được trình bày chi tiết nhằm có một so sánh toàn diện và chi tiết nhất giữa hai phương pháp.
 
-Kết cấu tiểu luận gồm 4 phần chính:
+Cấu trúc tiểu luận gồm 4 phần chính:
 
 \begin{itemize}
     \item Phần 1 trình bày tổng quan về các phương pháp trên không gian con Krylov và hai thuật toán lặp Arnoldi và Lanczos. Thuật toán lặp Arnoldi là bước cơ sở thực hiện mỗi bước lặp của phương pháp lặp GMRES và thuật toán lặp Lanczos là bước cơ sở thực hiện phương pháp MINRES.
@@ -215,23 +217,102 @@ Kết cấu tiểu luận gồm 4 phần chính:
 
 \subsection{Không gian con Krylov}
 
-Các phương pháp trên không gian con Krylov là một nhóm các phương pháp quan trọng trong việc giải các hệ phương trình. Ta xét một phép biến đổi tuyến tính dưới dạng một hộp đen:
+Khi ta gặp một bài toán giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ và vector $b \in \mathbb{R}^m$, ta luôn nghĩ đến lời giải $x^* = A^{-1}b$ thế nhưng khi ma trận $A$ có kích thước lớn, việc tính nghịch đảo của ma trận $A$ không hiệu quả và cần rất nhiều thời gian.
 
-\begin{equation}
-    x \rightarrow \boxed{\text{hộp đen}} \rightarrow Ax
-\end{equation}
+Có nhiều phương pháp đã được phát triển để giải các hệ phương trình tuyến tính. Tuy nhiên, khi kích thước các ma trận tăng lên và các ma trận thưa hơn, cần có những cách thức tiếp cận mới.
+Vì vậy mà các phương pháp trên không gian con Krylov đã ra đời. Các phương pháp này có một nền tảng cơ sở lý thuyết vững chắc để giải quyết những hệ phương trình mà ma trận $A$ có kích thước lớn và thưa. 
 
-Chúng ta muốn xây dựng một phương pháp lặp sao cho $x_n \rightarrow x$ với $Ax=b$ khi $n \rightarrow \infty$. Gọi $x_n \in \mathcal{K}_n$ với $\mathcal{K}_n$ là không gian con Krylov thứ n $\mathcal{K}_n=\mathrm{span} \lbrace b, Ab, A^2b, \dots, A^{n-1}b \rbrace$.
-Các đặc điểm của không gian con Krylov:
-\begin{itemize}
-    \item Ta có thể xây dựng $\mathcal{K}_n$ như một hộp đen
-    \item $\mathcal{K}_n \subseteq \mathcal{K}_{n+1}$
-    \item Giả sử $p^n(A)$ là một đa thức của ma trận $A$. Bất kỳ một tổ hợp tuyến tính của các vector $b, Ab, \dots$ cũng bằng $p^n(A)$ nhân với $b$, $\lVert b - Ax \rVert_2^2 = \lVert p^n(A)b \rVert_2^2$
-\end{itemize}
+Để giải các hệ phương trình tuyến tính, các phương pháp quen thuộc như khử Gauss hoặc các phương pháp lặp đơn giản (ví dụ: phương pháp lặp Jacobi) sẽ được nghĩ đến. Nhưng khi phải làm việc với các ma trận dữ liệu cực lớn, các phương pháp trên dường như không hữu hiệu như với ma trận số chiều vừa và nhỏ. Bởi vì độ phức tạp của phương pháp khử Gauss và phép lặp Jacobi là $\mathcal{O}(m^3)$.
+Hơn nữa, các ma trận có thể không đối xứng hoặc không xác định dấu. Trong trường hợp này, sử dụng các phương pháp trên không gian con Krylov thực sự hiệu quả khi dùng để giải các hệ phương trình tuyến tính với kích thước của ma trận $A$ lớn.
+
+Alexei Krylov là nhà toán học người Nga đã xuất bản một công trình nghiên cứu \cite{krylov1931numerical} đề xuất một không gian con vào năm 1931. Cơ sở của không gian con này dựa trên hệ quả của định lý Cayley-Hamilton, nghịch đảo của ma trận $A$ được biểu diễn thành tổ hợp tuyến tính của các thành phần lũy thừa của ma trận $A$.
+
+\begin{dl}
+    Gọi $\chi_{A}(s) = \det(sI - A)$ là đa thức đặc tính của ma trận $A \in \mathbb{R}^{m \times m}$ thì:
+    \begin{equation}
+        \chi_{A}(A)=0
+    \end{equation}
+\end{dl}
+
+\begin{hq}
+    Cho ma trận $A \in \mathbb{R}^{m \times m}$ và $\chi_A(s)$ là đa thức đặc tính của ma trận $A$. Đa thức đặc tính $\chi_A(s)$ có dạng:
+    \begin{equation}
+        \chi_A(s) = s^n + a_{n-1}s^{n-1} + a_{n-2}s^{n-2} + \dots + a_0
+    \end{equation}
+    với $a_0 = \det(A) \neq 0$ thì:
+    \begin{equation}
+        A^{-1} = - \dfrac{1}{a_0} \lbrack A^{n-1} + a_{n-1}A^{n-2} + a_{n-3}A^{n-3} + \dots + a_1 I \rbrack
+    \end{equation}
+\end{hq}
+
+\begin{dn}
+    Cho một ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị và một vector $b \neq 0 \in \mathbb{R}^m$, không gian con Krylov thứ $n$ $\mathcal{K}_n(A, b)$ được tạo ra từ $A$ và $b$ là:
+    \begin{equation}
+        \mathcal{K}_n := \mathcal{K}_n (A,b) := \mathrm{span} \lbrace b, Ab, A^2, \dots, A^{n-1}b \rbrace
+    \end{equation}
+\end{dn}
+
+Ta thấy $\mathcal{K}_1 \subseteq \mathcal{K}_2 \subseteq \mathcal{K}_3 \subseteq \dots$, số chiều của không gian con Krylov tăng dần lên (ít nhất giữ nguyên) theo từng bước. Nhưng nếu khi số chiều của gian con Krylov không tăng khi chúng ta cố mở rộng không gian con, chúng ta có thể kỳ vọng sẽ tìm được nghiệm chính xác $x^*$ trong không gian này.
+
+\begin{bd} \label{bd:invariant-space}
+    Tồn tại một số nguyên không âm $\nu = \nu(b, A)$ gọi là lớp của $b$ tương ứng với $A$:
+    \begin{equation}
+        \dim \mathcal{K}_n(A, b) = \begin{cases} n \text{ nếu } n \leq \nu \\ \nu \text{ nếu } n \geq \nu \end{cases}
+    \end{equation}
+\end{bd}
+
+\begin{hq}
+    $\mathcal{K}_{\nu}(A, b)$ là không gian con bất biến nhỏ nhất của ma trận $A$ chứa vector $b$.
+\end{hq}
+
+\begin{bd}
+    Số nguyên không âm $\nu$ của bổ đề \ref{bd:invariant-space} thỏa mãn:
+    \begin{equation}
+        \nu = \min \lbrace n \vert A^{-1}b \in \mathcal{K}_n(A, b) \rbrace 
+    \end{equation}
+\end{bd}
+
+\textbf{Chú ý: }Ta sẽ mặc định nghiệm bắt đầu của bài toán trước khi thực hiện các phương pháp lặp trên không gian con Krylov là 0.
+
+\begin{hq}
+    Gọi $x^*$ là nghiệm của hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị và vector $b \neq 0 \in \mathbb{R}^m$.
+    Hơn nữa, đặt $\nu := \nu(b, A)$, khi đó:
+    \begin{equation}
+        x^* \in \mathcal{K}_{\nu}(A, b)
+    \end{equation}
+\end{hq}
+
+Ý tưởng đằng sau của các phương pháp lặp dựa trên không gian con Krylov là tạo ra một dãy các lời giải xấp xỉ
+$x_n \in \mathcal{K}_n(A, b)$ của hệ phương trình $Ax=b$ mà phần dư tương ứng $r_n = b - Ax_n \in \mathcal{K}_{n+1}(A, b)$ hội tụ về vector 0 hay chuẩn phần dư $\lVert r_n \rVert$ hội tụ về 0.
+
+Rất khó để đưa ra một định nghĩa về mặt hình thức của các phương pháp dựa trên không gian con Krylov mà bao hàm tất cả các trường hợp và không quá tổng quát theo nghĩa không còn nắm được những khía cạnh quan trọng của các phương pháp dựa trên không gian con Krylov, ta có định nghĩa:
+
+\begin{dn} \label{dn:Krylov-Solver-Definition}
+    Một phương pháp dựa trên không gian con Krylov giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị và vector $b \neq 0 \in \mathbb{R}^m$, một cách ngắn gọn, phương pháp giải là một phương pháp lặp, từng bước bước lặp $n$ tạo ra một nghiệm xấp xỉ $n$ và phần dư tương ứng $r_n = b - A x_n$ cho đến khi tìm được nghiệm chính xác:
+
+    \begin{equation}
+        x_n \in q_{n-1}(A)b \in \mathcal{K}_n (A, b)
+    \end{equation}
+    với đa thức $q_{n-1}$ là đa thức bậc tối đa bằng $n-1$
+\end{dn}
+
+Ta có bổ đề cho phần dư:
+
+\begin{bd}
+    Phần dư $r_n = b - A x_n$ của phương pháp lặp dựa trên không gian con Krylov thỏa mãn:
+    \begin{equation}
+        r_n = p_n(A)b \in b + A \mathcal{K}_n(A, b) \subseteq \mathcal{K}_{n+1}(A, b)
+    \end{equation}
+    trong đó $p_n$ là một đa thức có bậc tối đa là $n$ được gọi là đa thức phần dư thứ $n$ liên quan đến đa thức $q_{n-1}$ của định nghĩa \ref{dn:Krylov-Solver-Definition} theo công thức:
+    \begin{equation}
+        p_n(s) = 1 - sq_{n-1}(s)
+    \end{equation}
+    Đặc biệt, đa thức trên thỏa mãn điều kiện $p_n(0)=1$.
+\end{bd}
 
 \subsection{Thuật toán lặp Arnoldi}
 
-Ta xét ma trận Krylov, $K_n = \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \end{bmatrix}$. Đây là một ma trận điều kiện tồi. Vì khi $n$ càng lớn, vector $A^nb$ tiến gần đến bội của một vector riêng của ma trận $A$, làm cho ma trận $K_n$ rất gần với một ma trận kỳ dị. Vì vậy ta cần làm việc với một hệ sơ sở trực chuẩn.
+Ta xét ma trận Krylov, $K_n := \begin{bmatrix} b, Ab, A^2b, \dots, A^{n-1}b \end{bmatrix}$. Đây là một ma trận điều kiện tồi. Vì khi $n$ càng lớn, vector $A^nb$ tiến gần đến bội của một vector riêng của ma trận $A$, làm cho ma trận $K_n$ rất gần với một ma trận kỳ dị. Vì vậy ta cần làm việc với một hệ sơ sở trực chuẩn.
 
 Với ma trận $A$ có kích thước $m \times m$, ta có thể tính một ma trận trực giao $Q$ và một ma trận Hessenberg $H$ có dạng một ma trận tam giác trên và một đường chéo phụ:
 
@@ -522,10 +603,10 @@ Ta đặt:
 Như vậy, nghiệm tại bước thứ $n$ có thể viết dưới dạng đa thức:
 
 \begin{equation}
-    x_n = q(A)b
+    x_n = q_{n-1}(A)b
 \end{equation}
 
-$z(z)$ là một đa thức có bậc tối đa bằng $n-1$ với các vector hệ số $c$. Phần dư tương ứng $r_n=b - Ax_n=(I - Aq(A))b$, ta đặt đa thức $p_n(z) = 1 - z q(z)$. Như vậy ta thu được:
+$q_{n-1}(z)$ là một đa thức có bậc tối đa bằng $n-1$ với các vector hệ số $c$. Phần dư tương ứng $r_n=b - Ax_n=(I - Aq_n(A))b$, ta đặt đa thức $p_n(z) = 1 - z q_n(z)$. Như vậy ta thu được:
 
 \begin{equation} \label{eq:Polynomial-Approximation}
     r_n = p_n(A)b
@@ -1582,7 +1663,9 @@ Phương pháp GMRES và MINRES là các phương pháp lặp trên không gian 
 MINRES được sử dụng để giải các hệ phương trình mà ma trận $A$ là ma trận đối xứng, còn phương pháp GMRES để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị (vẫn có thể áp dụng nếu ma trận $A$ là ma trận đối xứng).
 Hai phương pháp GMRES và MINRES tìm vector trong không gian con Krylov thứ $n$ $\displaystyle \mathcal{K}_n$ mà làm cực tiểu hóa phần dư $\displaystyle \min_{x \in \mathcal{K}_n}\dfrac{1}{2}\lVert b - Ax \rVert_2^2$.
 
-Thuật toán cơ sở của GMRES là thuật toán Arnoldi, tại bước thứ $n$, ta tính vector $q_{n+1}$ và cột thứ $n$ của ma trận Hessenberg $\widetilde{H}_n$. Thuật toán cơ sở của MINRES là thuật toán Lanczos, tại bước thứ $n$, ta tính vector $q_{n+1}$ và cột thứ $n$ của ma trận 3 đường chéo $\widetilde{T}_n$.
+Thuật toán cơ sở của GMRES là thuật toán lặp Arnoldi, tại bước thứ $n$, ta tính vector $q_{n+1}$ và cột thứ $n$ của ma trận Hessenberg $\widetilde{H}_n$. Thuật toán cơ sở của MINRES là thuật toán Lanczos, tại bước thứ $n$, ta tính vector $q_{n+1}$ và cột thứ $n$ của ma trận 3 đường chéo $\widetilde{T}_n$.
+Trong trường hợp đặc biệt, đối với thuật toán lặp Arnoldi, tại một bước $n$ nào đó khi tính $v \leftarrow v - h_{j,n}q_j$, nếu ta thu được $v=0$ ta sẽ dừng thuật toán Arnoldi vì không gian con Krylov đã mở rộng đến cực đại và và có thể tìm được nghiệm chính xác của bài toán trên không gian con Krylov $\mathcal{K}_n$. 
+Điều tương tự cũng xảy ra với thuật toán lặp Lanczos, nếu tại một bước $n$ nào đó ta tính $v \leftarrow Aq_n - \beta_{n-1}q_{n-1} - \alpha_n q_n$ thu được $v = 0$.
 
 Hai phương pháp GMRES và MINRES giải các bài toán tối ưu hóa có ràng buộc, nói chung là bài toán khá khó giải. Xét $x_n \in \mathcal{K}_n$, ta có thể biểu diễn $x_n$ dạng:
 $x_n = Q_n y$ với $y$ là tọa độ của $x_n$ trong hệ cơ sở trực chuẩn của không gian Krylov thứ n $\mathcal{K}_n$. Hàm mục tiêu trở thành:
@@ -1758,7 +1841,7 @@ Những điểm đã đạt được:
     \item Một số các phương pháp phổ biến để cải thiện hai phương pháp
 \end{itemize}
 
-Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn chế về mặt thời gian nên tiểu luận chưa thể phân tích sâu về các vấn đề như: Chọn và ảnh hưởng đến quá trình hội tụ của $n_{\max}$ trong phương pháp khởi tạo lại, phân tích và nghiên cứu ảnh hưởng một cách của sai số làm tròn làm mất tính trực giao của hệ cơ sở trực chuẩn $q_1, q_2, \dots, q_n$ và sự hội tụ của thuật toán, chọn các ma trận trong phương pháp điều kiện đầu (\textit{preconditioning}) để cải thiện sự hội tụ của các phương pháp,
+Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn chế về mặt thời gian nên tiểu luận chưa thể phân tích sâu về các vấn đề như: Chọn và ảnh hưởng đến quá trình hội tụ của $n_{\max}$ trong phương pháp khởi tạo lại, phân tích và nghiên cứu ảnh hưởng một cách của sai số làm tròn làm mất tính trực giao của hệ cơ sở trực chuẩn $q_1, q_2, \dots, q_n$ và sự hội tụ của phương pháp, tính ổn định ngược của hai phương pháp, chọn các ma trận trong phương pháp điều kiện đầu (\textit{preconditioning}) để cải thiện sự hội tụ của các phương pháp,
 cũng như phân tích sâu về các phương pháp như: song trực giao hóa (\textit{biorthogonalization}), tái trực giao hóa có lựa chọn (\textit{selective reorthogonalization}).
 Ngoài ra tiểu luận vẫn chưa thể phân tích khi một số trường hợp đặc biệt xảy ra (ví dụ: nếu tồn tại một bước $n$ mà ma trận $T_n$ kỳ dị).
 
