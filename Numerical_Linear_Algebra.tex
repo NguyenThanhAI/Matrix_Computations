@@ -107,7 +107,7 @@
 %    \textsc{\Large Môn học: Phương pháp số cho đại số tuyến tính }\\[1.5cm] % Minor heading such as course title
 %
 %
-%    \textsc{\Large Đề tài: Tìm hiểu thuật toán MINRES.\\So sánh thuật toán GMRES và thuật toán MINRES }\\[1.5cm]
+%    \textsc{\Large Đề tài: Tìm hiểu phương pháp MINRES.\\So sánh phương pháp GMRES và phương pháp MINRES }\\[1.5cm]
 %     
 %
 %    %----------------------------------------------------------------------------------------
@@ -396,11 +396,11 @@ Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong 
 \end{itemize}
 
 
-\section{Thuật toán GMRES}
+\section{Phương pháp GMRES}
 
-\subsection{Giới thiệu thuật toán GMRES} \label{GMRES-Introduction}
+\subsection{Giới thiệu phương pháp GMRES} \label{GMRES-Introduction}
 
-Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của thuật toán GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa phần dư $r_n = b - A x_n$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
+Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của phương pháp GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa phần dư $r_n = b - A x_n$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
 
 
 
@@ -408,7 +408,7 @@ Ta áp dụng công thức
 \begin{algorithm}[h!]
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
-    \caption{Các bước cơ bản thuật toán GMRES}\label{alg:GMRES}
+    \caption{Các bước cơ bản phương pháp GMRES}\label{alg:GMRES}
     \begin{algorithmic}
         \State{Gán $q_1 \leftarrow b/\lVert b \rVert$}
         \For {$n=1,2,3,\dots$}
@@ -468,9 +468,9 @@ Trong quá trình thực hiện thuật toán lặp Arnoldi được miêu tả 
 
 Tại mỗi bước $n$, ta giải bài toán cho $y$ và thu được $x_n = Q_n y$. Nhưng trong thực tế, tại mỗi bước $n$ ta không cần giải tường minh $y$ mà chỉ cần tính phần dư $\lVert \beta e_1 - \widetilde{H}_n y \rVert$, nếu phần dư này đã đủ nhỏ hơn một ngưỡng cho trước, ta sẽ dừng tại bước $n$ hiện tại và tính $x_n$. Nếu phần dư đủ nhỏ ta thực hiện bước $n+1$. Chi tiết cách tính phần dư tại mỗi bước sẽ được trình bày chi tiết ở mục sau.
 
-Các bước cơ bản của thuật toán GMRES được trình bày ở thuật toán \ref{alg:GMRES}
+Các bước cơ bản của phương pháp GMRES được trình bày ở thuật toán \ref{alg:GMRES}
 
-Thuật toán GMRES cũng giải một bài toán xấp xỉ đa thức. Ta xét nghiệm $x_n$, tại bước $n$, vì $x_n \in \mathcal{K}_n$ nên ta có thể viết:
+phương pháp GMRES cũng giải một bài toán xấp xỉ đa thức. Ta xét nghiệm $x_n$, tại bước $n$, vì $x_n \in \mathcal{K}_n$ nên ta có thể viết:
 
 \begin{equation}
     x_n = c_0 b + c_1 A b + c_2 A^b + \dots + c_{n-1}A^{n-1}b=(c_0 + c_1 A + c_2 A^2 + \dots + c_{n-1} A^{n-1})b
@@ -494,7 +494,7 @@ $z(z)$ là một đa thức có bậc tối đa bằng $n-1$ với các vector h
     r_n = p_n(A)b
 \end{equation}
 
-Thuật toán GMRES tại mỗi bước tìm một đa thức $p_n \in P_n$ với $P_n$ là:
+phương pháp GMRES tại mỗi bước tìm một đa thức $p_n \in P_n$ với $P_n$ là:
 
 \begin{equation}
     P_n = \lbrace \text{là tập các đa thức có bậc } \leq n \text{ với } p(0)=1 \rbrace
@@ -506,10 +506,10 @@ sao cho $p_n$ làm cực tiểu hóa phần dư (tìm vector hệ số $c$ của
     p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
 \end{equation}
 
-Thuật toán GMRES cũng thỏa mãn một số tính chất bất biến như thuật toán lặp Arnoldi
+phương pháp GMRES cũng thỏa mãn một số tính chất bất biến như thuật toán lặp Arnoldi
 
 \begin{dl}
-    Thuật toán GMRES áp dụng cho một ma trận $A \in \mathbb{R}^{m \times m}$ thỏa mãn các tính chất sau:
+    phương pháp GMRES áp dụng cho một ma trận $A \in \mathbb{R}^{m \times m}$ thỏa mãn các tính chất sau:
 
     \begin{itemize}
         \item \textbf{Bất biến co dãn:} Nếu ma trận $A$ thay đổi thành $\sigma A$ với một số $\sigma \in \mathbb{R}$, và $b$ thay đổi thành $\sigma b$ thì phần dư $\lbrace r_n \rbrace$ thay đổi thành $\lbrace \sigma r_n \rbrace$.
@@ -517,9 +517,9 @@ Thuật toán GMRES cũng thỏa mãn một số tính chất bất biến như 
     \end{itemize}
 \end{dl}
 
-Thuật toán GMRES không có tính chất bất biến tịnh tiến như thuật toán lặp Arnoldi, vì điều kiện chuẩn hóa $p(0)=1$ liên quan đến sự phụ thuộc quá trình tịnh tiến. Sự thay đổi của $\lbrace r_n \rbrace$ theo phép tịnh tiến phụ thuộc nhiều vào lựa chọn điểm gốc
+phương pháp GMRES không có tính chất bất biến tịnh tiến như thuật toán lặp Arnoldi, vì điều kiện chuẩn hóa $p(0)=1$ liên quan đến sự phụ thuộc quá trình tịnh tiến. Sự thay đổi của $\lbrace r_n \rbrace$ theo phép tịnh tiến phụ thuộc nhiều vào lựa chọn điểm gốc
 
-\subsection{Chi tiết thực hiện thuật toán GMRES}
+\subsection{Chi tiết thực hiện phương pháp GMRES}
 
 Một phương pháp tiêu chuẩn để giải bài toán cực tiểu hóa $y = \underset{y \in \mathbb{R}^{n}}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{H}_n y \rVert$ là phân tích ma trận $\widetilde{H}_n$ thành một một ma trận trực giao $G^T$ có kích thước $(n+1) \times (n+1)$ nhân với một ma trận tam giác trên $R$ có kích thước $(n+1) \times n$ (một ma trận mà khối $(n \times n)$ phía trên là ma trận tam giác trên và hàng cuối cùng là một vector hàng 0):
 
@@ -615,7 +615,7 @@ Tại mỗi bước $n$, chúng ta chỉ áp dụng $G(n-1, n, \theta_{n-1})G(n-
     \item Từ công thức \ref{eq:Rotation-Result}, mỗi phép quay ta cần 6 phép tính (4 phép nhân, 2 phép cộng)
 \end{itemize}
 
-Vì vậy, tại mỗi bước $n$ của thuật toán GMRES, ta cần $6n$ phép tính. Số phép tính tích lũy cần để phân tích QR cho ma trận $\widetilde{H}_n$ tính từ cột đầu tiên đến cột thứ $n=6(1+2+3+\dots+n)=6\dfrac{n(n+1)}{2}\sim \mathcal{O}(n^2)$
+Vì vậy, tại mỗi bước $n$ của phương pháp GMRES, ta cần $6n$ phép tính. Số phép tính tích lũy cần để phân tích QR cho ma trận $\widetilde{H}_n$ tính từ cột đầu tiên đến cột thứ $n=6(1+2+3+\dots+n)=6\dfrac{n(n+1)}{2}\sim \mathcal{O}(n^2)$
 phép tính.
 
 Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVert$ tại bước lặp thứ $n$.
@@ -635,10 +635,10 @@ Một vấn đề nữa là chúng ta cần tìm $y$ và tính $\lVert r_n \rVer
 
 Trong thực tế, khi giải các bài toán, tại mỗi bước ta thường kiểm tra chuẩn phần dư $\lVert r_n \rVert$ trước khi giải ra nghiệm $y$. Do trước khi thực hiện thuật toán, chúng ta có một ngưỡng chuẩn phần dư cho phép dừng vòng lặp $\epsilon$. Nếu tại bước hiện tại $n$, ta kiểm tra chuẩn phần dư $\lVert r_n \rvert$, nếu $\lbrack r_n \rbrack < \epsilon$ thì ta dừng vòng lặp, giải $y$ và tính $x_n=Q_n y$. Nếu không ta chuyển sang bước thứ $n+1$.
 
-Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuật toán GMRES được miêu tả ở thuật toán \ref{alg:GMRES-Detailed}:
+Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của phương pháp GMRES được miêu tả ở thuật toán \ref{alg:GMRES-Detailed}:
 
 \begin{algorithm}[h!]
-    \caption{Các bước chi tiết thuật toán GMRES}\label{alg:GMRES-Detailed}
+    \caption{Các bước chi tiết phương pháp GMRES}\label{alg:GMRES-Detailed}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
@@ -661,21 +661,21 @@ Từ các lập luận trên, ta có sơ đồ mã giả chi tiết của thuậ
     \end{algorithmic}
 \end{algorithm}
 
-\subsection{Một số đặc điểm của thuật toán GMRES} \label{GMRES-Characteristic}
+\subsection{Một số đặc điểm của phương pháp GMRES} \label{GMRES-Characteristic}
 
 
 \subsubsection{Chi phí bộ nhớ} \label{GMRES-Storage}
 
-Thuật toán GMRES yêu cầu một lượng lớn bộ nhớ và trở nên rất đắt khi số bước lặp cao.
-Yêu cầu về bộ nhớ cơ bản là lưu các vector $b, x \in \mathbb{R}^{m}$ và ma trận $A \in \mathbb{R}^{m \times m}$. Nếu $A$ là ma trận thưa, mỗi hàng có $l$ phần tử khác 0 thì yêu cầu về bộ nhớ cần lưu $(l+2)m$ số thực để tạo bài toán. Thuật toán GMRES cần phải lưu tất cả các vector $q_1, q_2, \dots, q_n$. Từng vector $q_i \in \mathbb{R}^{m}, i=1\dots n$, vì vậy cần chi phí bộ nhớ là $mn$ số thực.
+phương pháp GMRES yêu cầu một lượng lớn bộ nhớ và trở nên rất đắt khi số bước lặp cao.
+Yêu cầu về bộ nhớ cơ bản là lưu các vector $b, x \in \mathbb{R}^{m}$ và ma trận $A \in \mathbb{R}^{m \times m}$. Nếu $A$ là ma trận thưa, mỗi hàng có $l$ phần tử khác 0 thì yêu cầu về bộ nhớ cần lưu $(l+2)m$ số thực để tạo bài toán. phương pháp GMRES cần phải lưu tất cả các vector $q_1, q_2, \dots, q_n$. Từng vector $q_i \in \mathbb{R}^{m}, i=1\dots n$, vì vậy cần chi phí bộ nhớ là $mn$ số thực.
 Ngoài ra ta cần giải bài toán cực tiểu hóa, ta thu được $y \in \mathbb{R}^n$, tại bước lặp thứ $n$ $x_n = Q_n y$ (nếu thỏa mãn điều kiện hội tụ là $\lVert r_n \rVert < \epsilon$), ta cần lưu $n$ số thực cho $y$.
 Chúng ta cũng cần lưu ma trận $\widetilde{H}_n$, thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{(n+1) \times n}$ với chi phí $\dfrac{n^2 + n}{2}$.
 Cuối cùng chúng ta cần lưu các ma trận quay Givens, mỗi ma trận quay cần lưu hai số $\sin$ và $\cos$. Tại bước thứ $n$, cần lưu $n$ ma trận quay Givens từ $\sin(\theta_1),\dots, \sin(\theta_n)$ và $\cos(\theta_1),\dots,\cos(\theta_n)$ như vậy chi phí là $2n$.
-Tổng hợp lại chi phí bộ nhớ cho thuật toán GMRES tại bước thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
+Tổng hợp lại chi phí bộ nhớ cho phương pháp GMRES tại bước thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
 
 \subsubsection{Chi phí tính toán} \label{GMRES-Computation-Cost}
 
-Tại mỗi bước $n$, của thuật toán GMRES, ta cần thực hiện các công việc:
+Tại mỗi bước $n$, của phương pháp GMRES, ta cần thực hiện các công việc:
 
 \begin{itemize}
     \item Thực hiện thuật toán Arnoldi để thu được vector $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{H}_n$. Bước này chi phí là: \begin{itemize}
@@ -689,7 +689,7 @@ Tại mỗi bước $n$, của thuật toán GMRES, ta cần thực hiện các 
     \item Bước cập nhật $g_n \leftarrow G(n, n+1, \theta_n)g_{n-1}$ cần 6 phép tính
 \end{itemize}
 
-Như vậy tại bước thứ $n$ của thuật toán GMRES ta cần số phép tính là: $2m^2+4mn+2m-n + 6n+10 + 6=2m^2+4mn+2m+5n+16$ phép tính.
+Như vậy tại bước thứ $n$ của phương pháp GMRES ta cần số phép tính là: $2m^2+4mn+2m-n + 6n+10 + 6=2m^2+4mn+2m+5n+16$ phép tính.
 
 Nếu giả sử tại bước $n$, điều kiện hội tụ đã thỏa mãn $\lVert r_n \rVert < \epsilon$, ta cần thêm bước giải $y$ bằng phép thế ngược. Để giải hệ ở phương trình \ref{eq:GMRES-Y-Backsubstitute}, tại bước thế ngược thứ $k, k=1,2,\dots,n$, ta cần số phép tính:
 \begin{itemize}
@@ -702,20 +702,20 @@ Vậy số bước cần để giải hệ phương trình \ref{eq:GMRES-Y-Backs
 
 Ngoài ra ta cần tính $x_n = Q_n y$ cần $m(2n-1)$ phép tính
 
-Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng thuật toán GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+16n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
+Ta tổng hợp số phép tính tích lũy từ khi bắt đầu đến khi nhận được lời giải sử dụng phương pháp GMRES là: $2m^2 n + 4m\dfrac{n(n+1)}{2}+2mn + 5\dfrac{n(n+1)}{2}+16n+n^2+m(2n-1)=2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
 
-Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với thuật toán GMRES.
+Ta thấy chi phí tính toán là một nhược điểm lớn của GMRES, do tại mỗi bước $n$, chi phí tính toán phần thực hiện thuật toán lặp Arnoldi phụ thuộc vào $n$ ($2m^2+4mn+2m+5n+15$) khiến cho $n$ càng lớn thì chi phí tính toán càng lớn, bước sau chi phí tính toán nhiều hơn bước trước. Đây là vấn đề cần được cải thiện đối với phương pháp GMRES.
 
-\subsubsection{Sự hội tụ của thuật toán GMRES} \label{GMRES-Convergence}
+\subsubsection{Sự hội tụ của phương pháp GMRES} \label{GMRES-Convergence}
 
-Ta nhận thấy có hai quan sát với phần dư của thuật toán GMRES:
+Ta nhận thấy có hai quan sát với phần dư của phương pháp GMRES:
 
 \begin{itemize}
     \item $ \lVert r_{n+1} \rVert \leq \lVert r_{n} \rVert $. Lý do là vì $\lVert r_n \rVert$ nhỏ nhất có thể trong không gian con Krylov thứ $n$ $\mathcal{K}_n$, khi mở rộng không gian con Krylov $\mathcal{K}_n$ sang $\mathcal{K}_{n+1}$, chuẩn phần dư chỉ có thể giảm hoặc tệ nhất là chuẩn phần dư không thay đổi.
-    \item Mặt khác sau khi thực hiện $m$ bước lặp, quá trình phải hội tụ hay $\lVert r_m \rVert=0$. $\lVert r_m \rVert = 0$ sẽ xảy ra khi $\mathcal{K}_m = \mathbb{R}^m$ và trong trường hợp đặc biệt nếu vector $b \in \mathcal{K}_n$ với một số $n < m$, thì sự hội tụ sẽ xảy ra sớm hơn. $\lVert r_m \rVert = 0$ chỉ có ý nghĩa về mặt lý thuyết của thuật toán GMRES nhưng không có nhiều ý nghĩa về mặt thực tiễn, chúng ta mong rằng GMRES sẽ hội tụ sau $n$ bước nhỏ hơn rất nhiều so với $m$.
+    \item Mặt khác sau khi thực hiện $m$ bước lặp, quá trình phải hội tụ hay $\lVert r_m \rVert=0$. $\lVert r_m \rVert = 0$ sẽ xảy ra khi $\mathcal{K}_m = \mathbb{R}^m$ và trong trường hợp đặc biệt nếu vector $b \in \mathcal{K}_n$ với một số $n < m$, thì sự hội tụ sẽ xảy ra sớm hơn. $\lVert r_m \rVert = 0$ chỉ có ý nghĩa về mặt lý thuyết của phương pháp GMRES nhưng không có nhiều ý nghĩa về mặt thực tiễn, chúng ta mong rằng GMRES sẽ hội tụ sau $n$ bước nhỏ hơn rất nhiều so với $m$.
 \end{itemize}
 
-Để thu được nhiều thông tin hữu ích hơn về quá trình hội tụ của thuật toán GMRES, ta phải sử dụng bài toán xấp xỉ đa thức đã được đề cập ở mục \ref{GMRES-Introduction}. Từ công thức \ref{eq:Polynomial-Approximation}, ta biết rằng: $\lVert r_n \rVert=\lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert$. Ngoại trừ trường hợp $b$ có cấu trúc đặc biệt liên quan đến ma trận $A$ thì nhân tố quan trọng xác định $ \lVert r_n \rVert$ là $\lVert p_n(A) \rVert$. Bất đẳng thức xác định tốc độ hội tụ của thuật toán GMRES là:
+Để thu được nhiều thông tin hữu ích hơn về quá trình hội tụ của phương pháp GMRES, ta phải sử dụng bài toán xấp xỉ đa thức đã được đề cập ở mục \ref{GMRES-Introduction}. Từ công thức \ref{eq:Polynomial-Approximation}, ta biết rằng: $\lVert r_n \rVert=\lVert p_n(A)b \rVert \leq \lVert p_n(A) \rVert \lVert b \rVert$. Ngoại trừ trường hợp $b$ có cấu trúc đặc biệt liên quan đến ma trận $A$ thì nhân tố quan trọng xác định $ \lVert r_n \rVert$ là $\lVert p_n(A) \rVert$. Bất đẳng thức xác định tốc độ hội tụ của phương pháp GMRES là:
 
 \begin{equation} \label{eq:GMRES-Convergence-Rate}
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert
@@ -730,16 +730,16 @@ Ta cần phân tích với một ma trận $A$ và một số $n$ cho trước t
 Từ công thức trên và công thức \ref{eq:GMRES-Convergence-Rate}, ta đi đến định lý:
 
 \begin{dl} \label{dl:GMRES-Convergence-Rate}
-    Tại bước thứ $n$ của thuật toán GMRES, phần dư $r_n$ thỏa mãn:
+    Tại bước thứ $n$ của phương pháp GMRES, phần dư $r_n$ thỏa mãn:
     \begin{equation}
         \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \lVert p_n(A) \rVert \leq \kappa(V) \inf_{p_n \in P_n} \lVert p_n \rVert_{\Lambda(A)}
     \end{equation}
     với $\Lambda(A)$ là tập các giá trị riêng của ma trận $A$, $V$ là ma trận không kỳ dị của các vector riêng của ma trận $A$ (giả sử ma trận $A$ chéo hóa được), $\kappa(V)$ là số điều kiện của ma trận $V$ và $\lVert p_n \rVert_{\Lambda(A)}=\underset{s \in \Lambda(A)}{\sup} \lvert p_n(s) \rvert$
 \end{dl}
 
-Ý nghĩa của định lý \ref{dl:GMRES-Convergence-Rate} là nếu ma trận $A$ có số điều kiện của ma trận $V$ là $\kappa(V)$ không quá lớn và một đa thức thuộc tập $P_n$ được tìm thấy mà độ lớn của nó trên phổ của ma trận $A$ là $\Lambda(A)$ giảm nhanh theo $n$ thì thuật toán GMRES hội tụ nhanh.
+Ý nghĩa của định lý \ref{dl:GMRES-Convergence-Rate} là nếu ma trận $A$ có số điều kiện của ma trận $V$ là $\kappa(V)$ không quá lớn và một đa thức thuộc tập $P_n$ được tìm thấy mà độ lớn của nó trên phổ của ma trận $A$ là $\Lambda(A)$ giảm nhanh theo $n$ thì phương pháp GMRES hội tụ nhanh.
 
-Thuật toán GMRES sẽ hội tụ khi ta thực hiện số bước lặp bằng với số giá trị riêng riêng biệt của ma trận $A$. Sự hội tụ sẽ phụ thuộc vào cấu trúc các giá trị riêng của ma trận $A$ được phân bố thế nào.
+phương pháp GMRES sẽ hội tụ khi ta thực hiện số bước lặp bằng với số giá trị riêng riêng biệt của ma trận $A$. Sự hội tụ sẽ phụ thuộc vào cấu trúc các giá trị riêng của ma trận $A$ được phân bố thế nào.
 Từ bài toán tìm đa thức $p_n \in P_n$ được nêu ở công thức \ref{eq:Find-Polynomial}, ta đặt đa thức $p_n$ có dạng:
 
 \begin{equation}
@@ -751,11 +751,11 @@ Nhưng đôi khi chúng ta chỉ hy vọng tìm được một đa thức mà c�
 
 Nếu $\kappa(V)$ nhỏ thì ta có hai trường hợp:
 \begin{itemize}
-    \item Nếu ma trận $A$ đối xứng xác định dấu dương thì thuật toán GMRES cần $O(\sqrt{\kappa})$ bước để hội tụ.
-    \item Nếu ma trận $A$ không xác định dấu thì thuật toán GMRES cần $O(\kappa)$ bước để hội tụ.
+    \item Nếu ma trận $A$ đối xứng xác định dấu dương thì phương pháp GMRES cần $O(\sqrt{\kappa})$ bước để hội tụ.
+    \item Nếu ma trận $A$ không xác định dấu thì phương pháp GMRES cần $O(\kappa)$ bước để hội tụ.
 \end{itemize}
 
-Nếu ma trận $A$ là một ma trận không chéo hóa được, nếu $n^{*}$ là số chiều của \textit{không gian bất biến tổng quát nhỏ nhất} chứ vector $b$, thuật toán GMRES sẽ dừng sau đúng $n^{*}$ bước. Một không gian $\mathcal{S}$ được gọi là \textit{không gian con bất biến tổng quát} nếu $v \in \mathcal{S} \Rightarrow A^{n}v \in \mathcal{S} \thickspace \forall n \geq 0$ 
+Nếu ma trận $A$ là một ma trận không chéo hóa được, nếu $n^{*}$ là số chiều của \textit{không gian bất biến tổng quát nhỏ nhất} chứ vector $b$, phương pháp GMRES sẽ dừng sau đúng $n^{*}$ bước. Một không gian $\mathcal{S}$ được gọi là \textit{không gian con bất biến tổng quát} nếu $v \in \mathcal{S} \Rightarrow A^{n}v \in \mathcal{S} \thickspace \forall n \geq 0$ 
 
 Nếu ma trận $A=VJV^{-1}$ với ma trận $J$ là một ma trận có dạng chuẩn Jordan thì:
 
@@ -784,12 +784,12 @@ và:
 \begin{figure}[h!] \centering
 
     \includegraphics[scale=0.6]{GMRES-Convergence-Curve.jpg}
-    \caption{Đường cong hội tụ $\dfrac{\lVert r_n \rVert}{\lVert b \rVert} $ theo thuật toán GMRES của ma trận $A$ \cite{trefethen1997numerical}}
+    \caption{Đường cong hội tụ $\dfrac{\lVert r_n \rVert}{\lVert b \rVert} $ theo phương pháp GMRES của ma trận $A$ \cite{trefethen1997numerical}}
 
     \label{fig:GMRES-Convergence-Curve}
 \end{figure}
 
-Hình \ref{fig:A-Eigenvalues} thể hiện các giá trị riêng của ma trận $A$, một tập các điểm được phân bố đều trong một chiếc đĩa bán kính $R=\dfrac{1}{2}$ và tâm $(0;2)$. Hình \ref{GMRES-Convergence} đường cong hội tụ khi thực hiện thuật toán GMRES giải hệ phương trình $Ax=b$ với $b=\begin{bmatrix} 1 & 1 \dots & 1 \end{bmatrix}^T$. Sự hội tụ trong trường hợp này bằng $4^{-n}$. Ta có phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một chiếc đĩa được miêu tả ở trên. $\lVert p_n(A) \rVert $ được cực tiểu hóa với lựa chọn $p_n(s)=(1-s/2)^n$, ta có $\lVert p_n(A) \rVert = \lVert (I - A/2)^n \rVert \approx 4^{-n}$. Ma trận $A$ là ma trận có điều kiện tốt với số điều kiện $\kappa(A) \approx 2.03$
+Hình \ref{fig:A-Eigenvalues} thể hiện các giá trị riêng của ma trận $A$, một tập các điểm được phân bố đều trong một chiếc đĩa bán kính $R=\dfrac{1}{2}$ và tâm $(0;2)$. Hình \ref{GMRES-Convergence} đường cong hội tụ khi thực hiện phương pháp GMRES giải hệ phương trình $Ax=b$ với $b=\begin{bmatrix} 1 & 1 \dots & 1 \end{bmatrix}^T$. Sự hội tụ trong trường hợp này bằng $4^{-n}$. Ta có phổ của ma trận $A$ là $\Lambda(A)$ nằm trong một chiếc đĩa được miêu tả ở trên. $\lVert p_n(A) \rVert $ được cực tiểu hóa với lựa chọn $p_n(s)=(1-s/2)^n$, ta có $\lVert p_n(A) \rVert = \lVert (I - A/2)^n \rVert \approx 4^{-n}$. Ma trận $A$ là ma trận có điều kiện tốt với số điều kiện $\kappa(A) \approx 2.03$
 
 \textbf{Ví dụ:} Cho trước các giá trị riêng (chấm đỏ) và các đa thức $p_n$ (các đường cong màu xanh) được chọn được biểu diễn trên các hình \ref{fig:Convergence-Behavior-1} và hình \ref{fig:Convergence-Behavior-2}, phân tích sự hội tụ trong từng trường hợp
 
@@ -809,18 +809,18 @@ Hình \ref{fig:A-Eigenvalues} thể hiện các giá trị riêng của ma trậ
     \label{fig:Convergence-Behavior-2}
 \end{figure}
 
-Trong hình \ref{fig:Convergence-Behavior-1}, hình đầu tiên bên trái ma trận $A$ có hai giá trị riêng, đa thức được chọn là một hàm bậc 2, đường cong này có giá trị bằng 0 tại các giá trị riêng, hình thứ 2 ma trận $A$ có 3 giá trị riêng và đa thức được chọn là một hàm bậc 3 hay hình thứ 3 ma trận $A$ có 5 giá trị riêng, tương tự đa thức được chọn là một hàm bậc 5. Trong trường hợp cả 3 hình này, phần dư đều đã về 0, thuật toán GMRES tìm được nghiệm chính xác tương ứng sau số bước lặp chính bằng số giá trị riêng của ma trận $A$.
+Trong hình \ref{fig:Convergence-Behavior-1}, hình đầu tiên bên trái ma trận $A$ có hai giá trị riêng, đa thức được chọn là một hàm bậc 2, đường cong này có giá trị bằng 0 tại các giá trị riêng, hình thứ 2 ma trận $A$ có 3 giá trị riêng và đa thức được chọn là một hàm bậc 3 hay hình thứ 3 ma trận $A$ có 5 giá trị riêng, tương tự đa thức được chọn là một hàm bậc 5. Trong trường hợp cả 3 hình này, phần dư đều đã về 0, phương pháp GMRES tìm được nghiệm chính xác tương ứng sau số bước lặp chính bằng số giá trị riêng của ma trận $A$.
 
 Trong hình \ref{fig:Convergence-Behavior-2}, cả 3 hình đều biểu diễn các giá trị riêng của ma trận $A$ có 5 giá trị riêng, nhưng thể hiện các đường cong là các đa thức được chọn tại các bước lặp $n$ khác nhau. Hình đầu tiên bên trái, tại $n=2$, đa thức được chọn là hàm số bậc 2 nhưng giá trị của đa thức này tại các giá trị riêng vẫn khá lớn (chỉ nhỏ tại giá trị riêng thứ 4). Hình thứ 2 tại $n=3$, đa thức được chọn là hàm số bậc 3, giá trị của đa thức này khá nhỏ ở 3 giá trị riêng bên phải nhưng vẫn khá lớn ở 2 giá trị riêng bên trái nên phần dư tại $n=3$ vẫn khá lớn. Hình cuối cùng tại $n=4$, đa thức được chọn là hàm số bậc 4 đã có giá trị rất nhỏ tại tất cả các giá trị riêng của ma trận $A$, ta đã có thể dừng tại bước này vì phần dư đã đủ nhỏ. Tuy nhiên nếu ta thực hiện thêm bước lặp $n=5$, ta sẽ chọn được một đa thức là hàm số bậc 5 và có giá trị bằng 0 tại mọi giá trị riêng.
 
-Từ ví dụ trên, ta xác nhận một điều. Nếu ma trận $A$ có $n$ giá trị riêng riêng biệt thì thuật toán GMRES sẽ tìm được nghiệm chính xác sau $n$ bước lặp. Nếu các giá trị riêng phân thành các nhóm gần nhau thì thuật toán GMRES sẽ cần số bước ít hơn (xấp xỉ bằng số nhóm) để đạt điều kiện hội tụ. Nếu các giá trị riêng tách biệt xa nhau, thuật toán cần nhiều bước (xấp xỉ số giá trị riêng riêng biệt) để đạt điều kiện hội tụ.
+Từ ví dụ trên, ta xác nhận một điều. Nếu ma trận $A$ có $n$ giá trị riêng riêng biệt thì phương pháp GMRES sẽ tìm được nghiệm chính xác sau $n$ bước lặp. Nếu các giá trị riêng phân thành các nhóm gần nhau thì phương pháp GMRES sẽ cần số bước ít hơn (xấp xỉ bằng số nhóm) để đạt điều kiện hội tụ. Nếu các giá trị riêng tách biệt xa nhau, thuật toán cần nhiều bước (xấp xỉ số giá trị riêng riêng biệt) để đạt điều kiện hội tụ.
 
-\subsection{Cải thiện thuật toán GMRES}
+\subsection{Cải thiện phương pháp GMRES}
 
 \subsubsection{Phương pháp khởi tạo lại}
 
-Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi phí về lưu trữ bộ nhớ và chi phí tính toán tăng theo $n$. Đây là nhược điểm rất lớn của thuật toán GMRES, vì vậy trong thực tế ta sẽ hay sử dụng phương pháp khởi tạo lại.
-Ý tưởng của phương pháp này là chọn giới hạn số bước lặp $n_{\max}$. Khi $n$ đạt đến $n_{\max}$ mà thuật toán GMRES chưa hội tụ, ta tính $x_{n_{\max}}$ và bỏ tất cả các vector trực giao $q_1, q_2, \dots, q_{n_{\max}}$ chỉ giữ lại nghiệm tại bước lặp $x_{n_{\max}}$. Đặt $x_{n_{\max}}=x_0$, ta quay trở lại giải hệ phương trình:
+Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi phí về lưu trữ bộ nhớ và chi phí tính toán tăng theo $n$. Đây là nhược điểm rất lớn của phương pháp GMRES, vì vậy trong thực tế ta sẽ hay sử dụng phương pháp khởi tạo lại.
+Ý tưởng của phương pháp này là chọn giới hạn số bước lặp $n_{\max}$. Khi $n$ đạt đến $n_{\max}$ mà phương pháp GMRES chưa hội tụ, ta tính $x_{n_{\max}}$ và bỏ tất cả các vector trực giao $q_1, q_2, \dots, q_{n_{\max}}$ chỉ giữ lại nghiệm tại bước lặp $x_{n_{\max}}$. Đặt $x_{n_{\max}}=x_0$, ta quay trở lại giải hệ phương trình:
 
 \begin{equation} \label{eq:Restart-Equation}
     A(x - x_0) = b - A x_0 = r_0
@@ -829,7 +829,7 @@ Từ các phân tích ở mục \ref{GMRES-Characteristic}, ta thấy rằng chi
 Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương tự như trình tự đã được trình bày ở thuật toán \ref{alg:GMRES-Detailed} chỉ khác là vai trò của $b$ đã được thay bằng $r_0$ và $x_n$ được thay bằng $x_0+Q_n y$
 
 \begin{algorithm}[h!]
-    \caption{Các bước chi tiết thuật toán GMRES khởi tạo lại}\label{alg:GMRES-Restart}
+    \caption{Các bước chi tiết phương pháp GMRES khởi tạo lại}\label{alg:GMRES-Restart}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ không kỳ dị, vector $b \in \mathbb{R}^m$, $n_{\max}$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
@@ -866,14 +866,14 @@ Cách giải hệ phương trình \ref{eq:Restart-Equation} hoàn toàn tương 
     \end{algorithmic}
 \end{algorithm}
 
-Phương pháp khởi tạo lại có ưu điểm là khiến cho chi phí bộ nhớ và chi phí tính toán tại mỗi bước là không quá lớn. Đặc biệt việc giới hạn không cho phép lượng bộ nhớ quá lớn phải sử dụng, nếu không giới hạn số bước thì rất có thể bộ nhớ trong hệ thống thực thi thuật toán GMRES dễ bị tràn.
+Phương pháp khởi tạo lại có ưu điểm là khiến cho chi phí bộ nhớ và chi phí tính toán tại mỗi bước là không quá lớn. Đặc biệt việc giới hạn không cho phép lượng bộ nhớ quá lớn phải sử dụng, nếu không giới hạn số bước thì rất có thể bộ nhớ trong hệ thống thực thi phương pháp GMRES dễ bị tràn.
 
-Nhược điểm của phương pháp là khiến cho thuật toán GMRES lâu hội tụ hơn. Nếu $n_{\max}$ quá lớn vẫn có thể khiến cho bộ nhớ bị tràn hoặc chi phí tính toán trong từng bước lớn. Nếu $n_{\max}$ nhỏ có thể khiến thuật toán GMRES gần như không bao giờ hội tụ. Việc chọn $n_{\max}$ tối ưu vẫn là một câu hỏi mở.
+Nhược điểm của phương pháp là khiến cho phương pháp GMRES lâu hội tụ hơn. Nếu $n_{\max}$ quá lớn vẫn có thể khiến cho bộ nhớ bị tràn hoặc chi phí tính toán trong từng bước lớn. Nếu $n_{\max}$ nhỏ có thể khiến phương pháp GMRES gần như không bao giờ hội tụ. Việc chọn $n_{\max}$ tối ưu vẫn là một câu hỏi mở.
 
 \subsubsection{Phương pháp điều kiện đầu} \label{GMRES-Precondition}
 
-Thay vì giới hạn số bước lặp cho phép của thuật toán GMRES, đôi khi người ta sẽ cải thiện sự hội tụ của thuật toán bằng cách thay đổi cấu trúc giá trị riêng của ma trận $A$ từ đó làm giảm số bước lặp cần thiết để thuật toán hội tụ.
-Từ những phân tích ở tiểu mục \ref{GMRES-Convergence}, ta nhận thấy thuật toán GMRES hội tụ rất nhanh nếu ma trận $A$ có một số ít các giá trị riêng riêng biệt hoặc các giá trị riêng tập trung thành số ít các cụm. Vì vậy một ý tưởng tự nhiên là biến đổi ma trận $A$ bằng cách nhân ma trận $A$ với một ma trận $M$ (có thể nhân $M$ vào bên trái hoặc bên phải ma trận $A$ hoặc từ hai phía) mà kết quả là một ma trận có những đặc tính mong muốn giúp cho thuật toán hội tụ nhanh.
+Thay vì giới hạn số bước lặp cho phép của phương pháp GMRES, đôi khi người ta sẽ cải thiện sự hội tụ của thuật toán bằng cách thay đổi cấu trúc giá trị riêng của ma trận $A$ từ đó làm giảm số bước lặp cần thiết để thuật toán hội tụ.
+Từ những phân tích ở tiểu mục \ref{GMRES-Convergence}, ta nhận thấy phương pháp GMRES hội tụ rất nhanh nếu ma trận $A$ có một số ít các giá trị riêng riêng biệt hoặc các giá trị riêng tập trung thành số ít các cụm. Vì vậy một ý tưởng tự nhiên là biến đổi ma trận $A$ bằng cách nhân ma trận $A$ với một ma trận $M$ (có thể nhân $M$ vào bên trái hoặc bên phải ma trận $A$ hoặc từ hai phía) mà kết quả là một ma trận có những đặc tính mong muốn giúp cho thuật toán hội tụ nhanh.
 Ta xét hệ phương trình $Ax=b$. Một ma trận điều kiện đầu $M$ thay đổi hệ phương trình thành:
 
 \begin{equation}
@@ -902,13 +902,13 @@ Ta xét hệ phương trình $Ax=b$. Một ma trận điều kiện đầu $M$ t
     \item Ma trận $M$ có thể được xây dựng bởi chi phí tính toán đủ thấp.
 \end{itemize}
 
-\section{Thuật toán MINRES}
+\section{Phương pháp MINRES}
 
-\subsection{Giới thiệu thuật toán MINRES}
+\subsection{Giới thiệu phương pháp MINRES}
 
-Chương trước đã trình bày về thuật toán GMRES. Mặc dù thuật toán MINRES là đối tượng chính được đề cập trong tiểu luận nhưng thuật toán GMRES được trình bày rất chi tiết, mục đích là để có thể dễ dàng so sánh sự giống nhau và khác nhau của hai thuật toán trên nhiều khía cạnh. Thuật toán MINRES áp dụng cho bài toán giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ là ma trận đối xứng không xác định dấu và có thể là ma trận kỳ dị, vector $b \in \mathbb{R}^m$, ma trận $A \neq 0$ và vector $b \neq 0$
+Chương trước đã trình bày về phương pháp GMRES. Mặc dù phương pháp MINRES là đối tượng chính được đề cập trong tiểu luận nhưng phương pháp GMRES được trình bày rất chi tiết, mục đích là để có thể dễ dàng so sánh sự giống nhau và khác nhau của hai thuật toán trên nhiều khía cạnh. phương pháp MINRES áp dụng cho bài toán giải hệ phương trình $Ax=b$ với ma trận $A \in \mathbb{R}^{m \times m}$ là ma trận đối xứng không xác định dấu và có thể là ma trận kỳ dị, vector $b \in \mathbb{R}^m$, ma trận $A \neq 0$ và vector $b \neq 0$
 
-Thuật toán MINRES có nhiều điểm tương đồng với thuật toán GMRES. Thuật toán MINRES có thể xem như là thuật toán GMRES áp dụng cho ma trận đối xứng không xác định dấu.
+phương pháp MINRES có nhiều điểm tương đồng với phương pháp GMRES. phương pháp MINRES có thể xem như là phương pháp GMRES áp dụng cho ma trận đối xứng không xác định dấu.
 Thuật toán lặp Arnoldi trở thành thuật toán lặp Lanczos hay còn gọi là phương pháp truy hồi ba tham số.
 
 Ta cần kiểm chứng hệ vector được tạo thành từ thuật toán lặp Lanczos cũng là hệ cơ sở trực chuẩn giống như thuật toán lặp Arnoldi khi ma trận $A$ là ma trận đối xứng. Đặt $\tilde{q}_{n+1}=Aq_{n} - \alpha_n q_n - \beta_{n-1}q_{n-1}$
@@ -935,7 +935,7 @@ Với $k < n-1$, ta xét tích vô hướng $\tilde{q}_{n+1}^T q_k$:
 
 Vì vậy, các vector $q_1, q_2, \dots, q_{n+1}$ tạo thành một hệ cơ sở trực chuẩn của không gian con Krylov.
 
-Giống như thuật toán GMRES, tại mỗi bước $n$, ta tìm một điểm $x_n$ sao cho cực tiểu hóa phần dư $r_n=b - Ax_n$
+Giống như phương pháp GMRES, tại mỗi bước $n$, ta tìm một điểm $x_n$ sao cho cực tiểu hóa phần dư $r_n=b - Ax_n$
 Ta xét lại công thức \ref{eq:AQHQ}, vì $A = A^T$ nên ta có:
 
 \begin{equation}
@@ -961,7 +961,7 @@ Ta sử dụng công thức \ref{eq:Three-term-recurrence}, bài toán cực ti�
     y = \underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert Q_{n+1}^T(b - Q_{n+1} \widetilde{T}_{n+1} y) \rVert
 \end{equation}
 
-Cũng như thuật toán GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\beta e_1$, dạng cuối cùng của bài toán cực tiểu hóa MINRES:
+Cũng như phương pháp GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\beta e_1$, dạng cuối cùng của bài toán cực tiểu hóa MINRES:
 
 \begin{equation}
     y = \underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert \beta e_1 - \widetilde{T}_{n+1} y \rVert 
@@ -970,7 +970,7 @@ Cũng như thuật toán GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\
 
 
 \begin{algorithm}[h!]
-    \caption{Thuật toán MINRES}\label{alg:MINRES}
+    \caption{phương pháp MINRES}\label{alg:MINRES}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
@@ -984,16 +984,16 @@ Cũng như thuật toán GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=\
 \end{algorithm}
 
 Tại mỗi bước $n$, ta có thể thu được $x_n$ bằng cách tương tự như GMRES là giải bài toán cho $y$ và thu được $x_n = Q_n y$ hoặc một cách thuận tiện và tiết kiệm bộ nhớ hơn ta thu được $x_n$ từ $x_{n-1}$ mà không cần lưu các vector $q_1, q_2, \dots, q_n$. Ưu điểm dễ thấy nhất của cách thứ hai là ta không cần tốn chi phí bộ nhớ cho ma trận $Q_n$.
-Cách tính chuẩn phần dư cũng tương tự như thuật toán GMRES. Chi tiết thực hiện thuật toán GMRES sẽ được trình bày ở mục sau.
+Cách tính chuẩn phần dư cũng tương tự như phương pháp GMRES. Chi tiết thực hiện phương pháp GMRES sẽ được trình bày ở mục sau.
 
-Các bước cơ bản của thuật toán MINRES được trình bày ở thuật toán \ref{alg:MINRES}
+Các bước cơ bản của phương pháp MINRES được trình bày ở thuật toán \ref{alg:MINRES}
 
-Do thuật toán MINRES là trường hợp đặc biệt của thuật toán GMRES nên MINRES cũng giải một bài toán xấp xỉ đa thức. Hay nói cách khác là tìm một đa thức $p_n \in P_n$ làm cực tiểu hóa phần dư $r_n = p_n(A)b$:
+Do phương pháp MINRES là trường hợp đặc biệt của phương pháp GMRES nên MINRES cũng giải một bài toán xấp xỉ đa thức. Hay nói cách khác là tìm một đa thức $p_n \in P_n$ làm cực tiểu hóa phần dư $r_n = p_n(A)b$:
 \begin{equation}
     p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
 \end{equation}
 
-\subsection{Chi tiết thực hiện thuật toán MINRES}
+\subsection{Chi tiết thực hiện phương pháp MINRES}
 
 Phương pháp để giải bài toán $y=\underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert \beta e_1  \rVert$ là phân tích ma trận $\widetilde{T}_n$ thành một ma trận trực giao $G^T$ có kích thước $(n+1) \times (n+1)$ nhân với một tam giác trên $R$ có kích thước $(n+1) \times n$:
 
@@ -1038,13 +1038,13 @@ Như vậy, sau khi thực hiện phân tích QR cho ma trận $\widetilde{T}_n$
     \end{bmatrix}
 \end{equation}
 
-Tại mỗi bước $n$, thuật toán MINRES chỉ cần áp dụng ba phép quay (ngoại trừ hai cột đầu tiên) vào cột cuối cùng của ma trận $\widetilde{T}_n$. Chí phí để thực hiện phân tích QR tại mỗi bước $n, n \neq 1, 2$ là $6*3 + 10 \sim \mathcal{O}(1)$ phép tính (10 phép tính là số phép tính để tính $\cos(\theta_n)$ và $\sin(\theta_n)$)
+Tại mỗi bước $n$, phương pháp MINRES chỉ cần áp dụng ba phép quay (ngoại trừ hai cột đầu tiên) vào cột cuối cùng của ma trận $\widetilde{T}_n$. Chí phí để thực hiện phân tích QR tại mỗi bước $n, n \neq 1, 2$ là $6*3 + 10 \sim \mathcal{O}(1)$ phép tính (10 phép tính là số phép tính để tính $\cos(\theta_n)$ và $\sin(\theta_n)$)
 
 Tại đây ta có thể làm theo hai hướng:
 
 \begin{itemize}
-    \item Tương tự như thuật toán GMRES, ta lưu các vector $q_1, q_2, \dots, q_n$, kiểm tra xem đã đạt điều kiện hội tụ (chuẩn phần dư nhỏ hơn ngưỡng $\epsilon$ cho phép), nếu thỏa mãn tìm $y$ bằng cách giải hệ phương trình $R_n\lbrack 1:n, 1:n\rbrack y=g_n\lbrack 1:n \rbrack$ và tính $x_n=Q_n y$.
-    \item Ta không cần lưu các vector $q_1, q_2, \dots, q_n$, $x_n$ sẽ được tính từ $x_{n-1}$ và điều kiện để kết thúc thuật toán giống như điều kiện hội tụ ở thuật toán GMRES.
+    \item Tương tự như phương pháp GMRES, ta lưu các vector $q_1, q_2, \dots, q_n$, kiểm tra xem đã đạt điều kiện hội tụ (chuẩn phần dư nhỏ hơn ngưỡng $\epsilon$ cho phép), nếu thỏa mãn tìm $y$ bằng cách giải hệ phương trình $R_n\lbrack 1:n, 1:n\rbrack y=g_n\lbrack 1:n \rbrack$ và tính $x_n=Q_n y$.
+    \item Ta không cần lưu các vector $q_1, q_2, \dots, q_n$, $x_n$ sẽ được tính từ $x_{n-1}$ và điều kiện để kết thúc thuật toán giống như điều kiện hội tụ ở phương pháp GMRES.
 \end{itemize}
 
 Ta xét hướng thứ hai, để tìm công thức tính $x_n$ theo $x_{n-1}$, \cite{greenbaum1997iterative} định nghĩa một ma trận $Z_n$:
@@ -1113,12 +1113,12 @@ Từ đây ta suy ra công thức tính $x_n$ theo $x_{n-1}$:
 Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của cả hai phương pháp:
 
 \begin{itemize}
-    \item Thuật toán \ref{alg:MINRES-Detailed-1} miêu tả thuật toán MINRES giải tương tự theo cách của thuật toán GMRES bằng cách thế ngược và phải lưu các vector $q_1, q_2, \dots, q_n$ để tính $x_n = Q_n y$.
-    \item Thuật toán \ref{alg:MINRES-Detailed-2} miêu tả thuật toán MINRES mà $x_n$ được tính theo $x_{n-1}$ và không cần lưu các vector $q_1, q_2, \dots, q_n$.
+    \item Thuật toán \ref{alg:MINRES-Detailed-1} miêu tả phương pháp MINRES giải tương tự theo cách của phương pháp GMRES bằng cách thế ngược và phải lưu các vector $q_1, q_2, \dots, q_n$ để tính $x_n = Q_n y$.
+    \item Thuật toán \ref{alg:MINRES-Detailed-2} miêu tả phương pháp MINRES mà $x_n$ được tính theo $x_{n-1}$ và không cần lưu các vector $q_1, q_2, \dots, q_n$.
 \end{itemize}
 
 \begin{algorithm}[h!]
-    \caption{Các bước chi tiết thuật toán MINRES theo phương pháp giải hệ}\label{alg:MINRES-Detailed-1}
+    \caption{Các bước chi tiết phương pháp MINRES theo phương pháp giải hệ}\label{alg:MINRES-Detailed-1}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng không xác định dấu, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
@@ -1143,7 +1143,7 @@ Từ các lập luận trên, ta có lưu đồ thuật toán chi tiết của c
 
 
 \begin{algorithm}[h!]
-    \caption{Các bước chi tiết thuật toán MINRES theo phương pháp tìm mối quan hệ giữa $x_n$ và $x_{n-1}$}\label{alg:MINRES-Detailed-2}
+    \caption{Các bước chi tiết phương pháp MINRES theo phương pháp tìm mối quan hệ giữa $x_n$ và $x_{n-1}$}\label{alg:MINRES-Detailed-2}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng không xác định dấu, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
@@ -1249,16 +1249,16 @@ Tiếp theo ta giải hệ phương trình $L_n^T y = z_n$ \ref{eq:L-Backward-Su
         \thickspace & \thickspace & \thickspace & 1 & \mu_{n-1} \\
         \thickspace & \thickspace & \thickspace & \thickspace & 1 \end{bmatrix} \begin{bmatrix} y \lbrack 1 \rbrack \\ y \lbrack 2 \rbrack \\ \vdots \\ y \lbrack n \rbrack \end{bmatrix} = \begin{bmatrix} z_n \lbrack 1 \rbrack \\ z_n \lbrack 2 \rbrack \\ \vdots \\ z_n \lbrack n \rbrack \end{bmatrix}
 \end{equation}
-\subsection{Một số đặc điểm của thuật toán MINRES}
+\subsection{Một số đặc điểm của phương pháp MINRES}
 
 \subsubsection{Chi phí bộ nhớ} \label{MINRES-Storage}
 
-Thuật toán MINRES có yêu cầu về bộ nhớ cơ bản là lưu vector $b, x \in \mathbb{R}^m$. Vì $A$ là ma trận đối xứng nên chỉ cần lưu $\dfrac{m^2}{2} + m$ số thực như vậy ta cần $\dfrac{m^2}{2} + 3m$ số thực để tạo bài toán.
+phương pháp MINRES có yêu cầu về bộ nhớ cơ bản là lưu vector $b, x \in \mathbb{R}^m$. Vì $A$ là ma trận đối xứng nên chỉ cần lưu $\dfrac{m^2}{2} + m$ số thực như vậy ta cần $\dfrac{m^2}{2} + 3m$ số thực để tạo bài toán.
 Ta cần lưu ma trận $\widetilde{T}_n$ thực tế chúng ta lưu ma trận $R_n \in \mathbb{R}^{(n+1) \times times}$ tam giác trên ba đường chéo với chi phí $n+(n-1) + (n-2)=3n-3$ số thực. Tại bước thứ $n$, ta cần lưu 3 ma trận quay Givens từ $\sin(\theta_{n-2}), \sin(\theta_{n-1}), \sin(\theta_n), \cos(\theta_{n-2}), \cos(\theta_{n-1}), \cos(\theta_n)$ với chi phí là 6, ngoại trừ $n=1$ lưu ma trận quay Givens với chi phí là 2 và $n=2$ là 4.
 Ta xét các trường hợp:
 
 \begin{enumerate}[a)] % a), b), c), ...
-    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như phương pháp GMRES
     \begin{itemize}
         \item Ta cần lưu tất cả các vector $q_1, q_2, \dots, q_n$. Từng vector $q_i \in \mathbb{R}^n$ nên chi phí bộ nhớ là $mn$ số thực.
         \item Tại bước lặp thứ $n$, ta cần lưu $y \in \mathbb{R}^n$ (nếu thỏa mãn điều kiện hội tụ $\lVert r_n \rVert < \epsilon$) với chi phí $n$
@@ -1277,8 +1277,8 @@ Ta nhận thấy theo phương pháp thứ hai thì chi phí bộ nhớ trong qu
 
 \subsubsection{Chi phí tính toán} \label{MINRES-Computation-Cost}
 
-Để ước lượng chi phí tính toán của thuật toán MINRES, ta sẽ tính chi phí tính toán của các bước mà cả hai phương pháp đều phải thực hiện:
-Tại mỗi bước $n$ của thuật toán GMRES, ta cần thực hiện:
+Để ước lượng chi phí tính toán của phương pháp MINRES, ta sẽ tính chi phí tính toán của các bước mà cả hai phương pháp đều phải thực hiện:
+Tại mỗi bước $n$ của phương pháp GMRES, ta cần thực hiện:
 
 \begin{itemize}
     \item Thực hiện thuật toán lặp Lanczos thu được $q_{n+1}$ và cột thứ $n$ của ma trận $\widetilde{T}_n$. Bước này có chi phí là:
@@ -1292,12 +1292,12 @@ Tại mỗi bước $n$ của thuật toán GMRES, ta cần thực hiện:
     \item Bước áp dụng phép quay Givens cho cột thứ $n$ của ma trận $\widetilde{T}_n$, mỗi cột được áp dụng ba phép quay (trừ hai cột đầu) với chi phí là $6.3+10=28$ phép tính ($10$ là số phép tính để tính $\sin(\theta_n)$ và $\cos(\theta_n)$).
     \item Bước cập nhật $g_n \leftarrow G(n, n+1, \theta_n)g_{n-1}$ cần 6 phép tính.
 \end{itemize}
-Số phép tính cơ bản tại các bước chung của hai phương pháp tại bước thứ $n$ của thuật toán MINRES là: $2m^2 + 8m-1 + 28 + 6=2m^2 + 8m + 33$ phép tính
+Số phép tính cơ bản tại các bước chung của hai phương pháp tại bước thứ $n$ của phương pháp MINRES là: $2m^2 + 8m-1 + 28 + 6=2m^2 + 8m + 33$ phép tính
 
 Ta xét hai trường hợp:
 
 \begin{enumerate}[a)] % a), b), c), ...
-    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như phương pháp GMRES
     Nếu giả sử tại bước $n$, điều kiện hội tụ đã thỏa mãn $\lVert r_n \rVert < \epsilon$, ta cần thêm bước giải $y$ bằng phép thế ngược. Để giải hệ ở phương trình $R_n \lbrack 1:n, 1:n \rbrack y = g_n \lbrack 1:n \rbrack$, tại bước thế ngược thứ $k, k=1,2,\dots,n$, ta cần số phép tính:
     \begin{itemize}
         \item 1 phép chia.
@@ -1312,16 +1312,16 @@ Ta xét hai trường hợp:
         \item Một bước tính $z_{n-1} \leftarrow \dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}$ có hai phép nhân một số với một vector ($\epsilon_n z_{n-2}$ và $\delta_n z_{n-1}$) cần $2m$ phép tính. Hai phép trừ vector cần $2m$ phép tính. Một phép chia một vector cho một số cần $m$ phép tính. Bước này cần tổng cộng $5m$ phép tính.
         \item Một bước cập nhật $x_n \leftarrow x_{n-1} + g_n \lbrack n \rbrack z_{n-1}$ cần $2m$ phép tính (một phép nhân một số với một vector cần $m$ phép tính và một phép cộng vector chi phí $m$ phép tính)
     \end{itemize}
-    Tổng cộng tại mỗi bước $n$ với chi phí $7m$ phép tính. Nếu giả sử thuật toán MINRES cần $n$ bước để thỏa mãn điều kiện hội tụ $\lVert r_n \rVert < \epsilon$ thì chi phí tính toán cần là $7mn$
+    Tổng cộng tại mỗi bước $n$ với chi phí $7m$ phép tính. Nếu giả sử phương pháp MINRES cần $n$ bước để thỏa mãn điều kiện hội tụ $\lVert r_n \rVert < \epsilon$ thì chi phí tính toán cần là $7mn$
 \end{enumerate}
 
 \textbf{Nhận xét:} Sử dụng phương pháp thứ hai có lợi hơn về chi phí bộ nhớ nhưng chi phí tính toán cao hơn so với phương pháp thứ nhất ($7mn > m(2n-1) + 5n - 6$)
 
-Tổng hợp lại theo phương pháp thứ nhất chi phí tính toán của thuật toán GMRES là: $2m^2n+8mn-n+m(2n-1)+5n-6=2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$ và chi phí tính toán theo phương pháp thứ hai là: $2m^2n+8mn-n + 7mn=2m^n+15mn-n \sim \mathcal{O}(m^2n)$. Cả hai phương pháp đều có cùng độ phức tạp $\mathcal{O}(m^2n)$ nhưng phương pháp thứ hai có chi phí bộ nhớ thấp hơn nên trung thực tế phương pháp thứ hai là sử dụng mối quan hệ giữa $x_n$ và $x_{n-1}$ không lưu các vector $q_1, q_2, \dots, q_n$ hay được sử dụng hơn.
+Tổng hợp lại theo phương pháp thứ nhất chi phí tính toán của phương pháp GMRES là: $2m^2n+8mn-n+m(2n-1)+5n-6=2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$ và chi phí tính toán theo phương pháp thứ hai là: $2m^2n+8mn-n + 7mn=2m^n+15mn-n \sim \mathcal{O}(m^2n)$. Cả hai phương pháp đều có cùng độ phức tạp $\mathcal{O}(m^2n)$ nhưng phương pháp thứ hai có chi phí bộ nhớ thấp hơn nên trung thực tế phương pháp thứ hai là sử dụng mối quan hệ giữa $x_n$ và $x_{n-1}$ không lưu các vector $q_1, q_2, \dots, q_n$ hay được sử dụng hơn.
 
-\subsubsection{Sự hội tụ của thuật toán MINRES}
+\subsubsection{Sự hội tụ của phương pháp MINRES}
 
-Thuật toán MINRES có chuẩn phần dư $\lVert r_n \rVert $ đơn điệu giảm theo $n$. Cũng như thuật toán GMRES, MINRES tại mỗi bước cũng tìm một đa thức $p_n \in P_n$ sao cho $p_n$ cực tiểu hóa phần dư:
+phương pháp MINRES có chuẩn phần dư $\lVert r_n \rVert $ đơn điệu giảm theo $n$. Cũng như phương pháp GMRES, MINRES tại mỗi bước cũng tìm một đa thức $p_n \in P_n$ sao cho $p_n$ cực tiểu hóa phần dư:
 
 \begin{equation}
     p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
@@ -1354,11 +1354,11 @@ Ta xét hai trường hợp:
         \lVert p_n(\Lambda) V^T b \rVert = \Biggl\lVert \begin{bmatrix} p_n(\lambda_1) v_1^T b \\ p_n(\lambda_2) v_2^T b \\ \vdots \\ p_n(\lambda_m) v_m^T b\end{bmatrix} \Biggl\rVert
     \end{equation}
     Nếu vector $b$ trực giao hoặc gần trực giao với các vector riêng $v_i$ của $A$ thì các thành phần $p_n(\lambda_i)v_i^T b$ rất nhỏ dù $p_n(\lambda_i)$ lớn. Nhưng thực tế thì trường hợp vector $b$ là tổ hợp tuyến tính của một số vector riêng của ma trận $A$ hiếm khi xảy ra.
-    Bất đẳng thức \ref{eq:MINRES-RESIDUAL-CONVERGENCE} còn cho ta biết rằng nếu tồn tại một đa thức $p_n \in P_n$ bậc thấp mà có giá trị nhỏ trên các giá trị riêng của ma trận $A$, thì thuật toán MINRES sẽ hội tụ rất nhanh. Ví dụ: Nếu một đa thức $p_n$ thảo mãn $p_n(\lambda_i)=0  \thickspace \forall \lambda_i \neq 0 \in \Lambda(A)$ và không có sai số làm tròn thì sau đúng $n$ bước lặp (với $n$ là số giá trị riêng khác 0 của ma trận $A$) , thuật toán lặp MINRES sẽ hội tụ về nghiệm chính xác của bài toán.
-    Nếu ma trận $A$ có các giá trị riêng lặp lại, và có nhỏ hơn $m$ giá trị riêng thì thuật toán MINRES sẽ hội tụ sau một số bước bằng số giá trị riêng riêng biệt của ma trận $A$. Trong trường hợp nếu ma trận $A$ không có các giá trị riêng lặp lại, nhưng được phân nhóm thành một số cụm của ma trận riêng thì thuật toán MINRES vẫn hội tụ nhanh vì đa thức $p_n$ nếu có nghiệm tại gần cụm các giá trị riêng thì cũng có giá trị thấp tại các giá trị riêng.
-    Mặt khác $p_n$ không thể có giá trị nhỏ gần $0$ do $p_n(0)=1$, ta có một vài quan sát quan trọng: thuật toán MINRES sẽ hội tụ nhanh nếu các giá trị riêng của ma trận $A$ tạo thành từng cụm gần nhau và ma trận $A$ không có giá trị riêng nào gần 0.
+    Bất đẳng thức \ref{eq:MINRES-RESIDUAL-CONVERGENCE} còn cho ta biết rằng nếu tồn tại một đa thức $p_n \in P_n$ bậc thấp mà có giá trị nhỏ trên các giá trị riêng của ma trận $A$, thì phương pháp MINRES sẽ hội tụ rất nhanh. Ví dụ: Nếu một đa thức $p_n$ thảo mãn $p_n(\lambda_i)=0  \thickspace \forall \lambda_i \neq 0 \in \Lambda(A)$ và không có sai số làm tròn thì sau đúng $n$ bước lặp (với $n$ là số giá trị riêng khác 0 của ma trận $A$) , thuật toán lặp MINRES sẽ hội tụ về nghiệm chính xác của bài toán.
+    Nếu ma trận $A$ có các giá trị riêng lặp lại, và có nhỏ hơn $m$ giá trị riêng thì phương pháp MINRES sẽ hội tụ sau một số bước bằng số giá trị riêng riêng biệt của ma trận $A$. Trong trường hợp nếu ma trận $A$ không có các giá trị riêng lặp lại, nhưng được phân nhóm thành một số cụm của ma trận riêng thì phương pháp MINRES vẫn hội tụ nhanh vì đa thức $p_n$ nếu có nghiệm tại gần cụm các giá trị riêng thì cũng có giá trị thấp tại các giá trị riêng.
+    Mặt khác $p_n$ không thể có giá trị nhỏ gần $0$ do $p_n(0)=1$, ta có một vài quan sát quan trọng: phương pháp MINRES sẽ hội tụ nhanh nếu các giá trị riêng của ma trận $A$ tạo thành từng cụm gần nhau và ma trận $A$ không có giá trị riêng nào gần 0.
 
-    Nếu như ma trận $A$ có tồn tại giá trị riêng gần 0 hoặc các giá trị riêng riêng biệt tách xa nhau. Ý tưởng để cải thiện sự hội tụ của thuật toán MINRES, ta có thể nhân cả $A$ và $b$ với một ma trận nào đó giúp đẩy giá trị riêng gần 0 ra xa 0 hoặc thay đổi phân bố của các giá trị riêng từ xa nhau vào một số ít các cụm nhỏ. Đây chính là ý tưởng ban đầu của nhóm phương pháp điều kiện đầu (\textit{preconditioning}).
+    Nếu như ma trận $A$ có tồn tại giá trị riêng gần 0 hoặc các giá trị riêng riêng biệt tách xa nhau. Ý tưởng để cải thiện sự hội tụ của phương pháp MINRES, ta có thể nhân cả $A$ và $b$ với một ma trận nào đó giúp đẩy giá trị riêng gần 0 ra xa 0 hoặc thay đổi phân bố của các giá trị riêng từ xa nhau vào một số ít các cụm nhỏ. Đây chính là ý tưởng ban đầu của nhóm phương pháp điều kiện đầu (\textit{preconditioning}).
 
     Ngoài ra mối quan hệ giữa không gian con Krylov và đa thức $p_n$ cũng gợi ý những ý tưởng khác. Chẳng hạn ta biết được một vài thông tin về phổ của ma trận $A$, ta có thể đề xuất một dãy đa thức $q_n$ sao cho $x_n = q_n(A)b$ là một xấp xỉ tốt của nghiệm chính xác của hệ $Ax=b$ hoặc làm cho chuẩn phần dư $\lVert r_n \rVert = \lVert b - Ax_n \rVert$ nhỏ.
     Tuy nhiên việc tính các giá trị riêng của ma trận $A$ còn khó hơn là giải hệ phương trình $Ax=b$, nhưng dựa vào một số kiến trúc đặc biệt của ma trận $A$, ta có thể đưa ra thông tin về giá trị riêng lớn nhất $\lambda_{\max}$ và giá trị riêng nhỏ nhất $\lambda_{\min}$ của ma trận $A$ đối xứng xác định dấu dương. Ta xét $\lambda_i \in \Lambda(A)$ là tập các giá trị riêng của ma trận $A$ và được sắp xếp theo chiều không giảm ($\lambda_{\min}=\lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_m = \lambda_{\max}$)
@@ -1390,7 +1390,7 @@ Ta xét hai trường hợp:
     \end{dl}
 
     \begin{dl} \label{dl:MINRES-RESIDUAL-CHEBYSEV}
-        Xét hệ phương trình $Ax=b$. Với $A$ là ma trận đối xứng xác định dấu dương. Ta giải hệ phương trình $Ax=b$ bằng thuật toán MINRES, gọi $r_n$ là phần dư tại bước lặp thứ $n$. Khi đó:
+        Xét hệ phương trình $Ax=b$. Với $A$ là ma trận đối xứng xác định dấu dương. Ta giải hệ phương trình $Ax=b$ bằng phương pháp MINRES, gọi $r_n$ là phần dư tại bước lặp thứ $n$. Khi đó:
         \begin{equation} \label{eq:MINRES-A-SPD-UPPER-BOUND}
             \dfrac{\lVert r_n \rVert }{\lVert b \rVert} \leq 2\Big(\dfrac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1}\Big)^n
         \end{equation}
@@ -1416,7 +1416,7 @@ Ta xét hai trường hợp:
         \lim_{\kappa \rightarrow \infty} \Big( \dfrac{\sqrt{\kappa}-1}{\sqrt{\kappa} + 1}\Big)^n=\lim_{\kappa \rightarrow \infty} \Big(1 - \dfrac{2}{\sqrt{\kappa}}\Big)^n=\lim_{\kappa \rightarrow \infty} \Big(1 - \dfrac{2}{\sqrt{\kappa}}\Big)^{-\dfrac{\sqrt{\kappa}}{2}-\dfrac{2n}{\sqrt{\kappa}}}=\exp\Big (-\dfrac{2n}{\sqrt{\kappa}}\Big )
     \end{equation}
 
-    Từ công thức \ref{eq:MINRES-CONVERGENCE-LIM}, ta nhận thấy sự hội tụ của thuật toán MINRES xảy ra khi $n$ bằng một số bội lần của $\sqrt{\kappa}$ hay thuật toán sẽ hội tụ sau $\mathcal{O}(\sqrt{\kappa})$ bước.
+    Từ công thức \ref{eq:MINRES-CONVERGENCE-LIM}, ta nhận thấy sự hội tụ của phương pháp MINRES xảy ra khi $n$ bằng một số bội lần của $\sqrt{\kappa}$ hay thuật toán sẽ hội tụ sau $\mathcal{O}(\sqrt{\kappa})$ bước.
     \item Nếu ma trận $A$ là ma trận đối xứng không xác định dấu:
     Trong trường hợp này, các giá trị riêng của ma trận $A$ có thể dương hoặc âm. Ta chia tập các giá trị riêng của ma trận $A$ thành hai tập $I^-$ gồm các giá trị riêng nhỏ hơn 0 và $I^+$ gồm các giá trị riêng lớn hơn 0:
 
@@ -1444,15 +1444,15 @@ Ta xét hai trường hợp:
                 \lim_{\lambda_{l+1} \rightarrow 0} \Bigg( \dfrac{1/\lambda_{l+1}-1}{1/\lambda_{l+1}+1} \Bigg)^{\lbrack n/2 \rbrack}=\lim_{\kappa \rightarrow \infty}\Bigg( 1 - \dfrac{2}{\kappa} \Bigg)^{\lbrack n/2 \rbrack}=\lim_{\kappa \rightarrow \infty} \Bigg( 1 - \dfrac{2}{\kappa} \Bigg)^{-\dfrac{\kappa}{2}-\dfrac{2}{\kappa}\lbrack n/2 \rbrack} \approx \exp \Big( - \dfrac{n}{k} \Big)
         \end{equation}
 
-        Trong trường hợp này ta cần số bước lặp là $\mathcal{O}(\kappa)$ để thuật toán MINRES đạt điều kiện hội tụ.
+        Trong trường hợp này ta cần số bước lặp là $\mathcal{O}(\kappa)$ để phương pháp MINRES đạt điều kiện hội tụ.
 
-        Trong trường hợp tổng quát, hai khoảng $I^-$ và $I^+$ không có cùng độ dài, không có một cận trên tường minh cho bài toán ở công thức \ref{eq:Same-Length-Min-Max}, một lời giải được đề xuất trong \cite{fischer2011polynomial}. Ta có thể sử dụng cách chia các khoảng trên thành các khoảng có độ dài bằng nhau và vẫn áp dụng công thức \ref{eq:Same-Length-Upper-Bound}, nhưng thường đây là một cận trên yếu và không phản ánh chính xác thông tin về quá trình hội tụ của thuật toán MINRES.
+        Trong trường hợp tổng quát, hai khoảng $I^-$ và $I^+$ không có cùng độ dài, không có một cận trên tường minh cho bài toán ở công thức \ref{eq:Same-Length-Min-Max}, một lời giải được đề xuất trong \cite{fischer2011polynomial}. Ta có thể sử dụng cách chia các khoảng trên thành các khoảng có độ dài bằng nhau và vẫn áp dụng công thức \ref{eq:Same-Length-Upper-Bound}, nhưng thường đây là một cận trên yếu và không phản ánh chính xác thông tin về quá trình hội tụ của phương pháp MINRES.
         Một cách khác là xem xét đặc tính tiệm cận của giá trị min-max trong công thức \ref{eq:Same-Length-Min-Max} gọi là nhân tố hội tụ tiệm cận:
 
         \begin{equation} \label{eq:Asymtotic-Convergence-Bound}
             \rho(I^- \cup I^+) \equiv \lim_{n \rightarrow \infty} (\inf_{p_n \in P_n} \sup_{\lambda_i \in I^- \cup I^+} \lvert p_n(\lambda_i) \rvert)^{1/n}
         \end{equation}
-        Đại lượng ở công thức \ref{eq:Asymtotic-Convergence-Bound} rất hữu hiệu trong việc phân tích sự hội tụ của thuật toán MINRES trong trường hợp một hệ phương trình tăng dần số chiều.
+        Đại lượng ở công thức \ref{eq:Asymtotic-Convergence-Bound} rất hữu hiệu trong việc phân tích sự hội tụ của phương pháp MINRES trong trường hợp một hệ phương trình tăng dần số chiều.
 
     \end{itemize}
 \end{enumerate}
@@ -1467,7 +1467,7 @@ Như đã được trình bày về thuật toán Lanczos ở mục \ref{Lanczos
 
 Với dấu mũ là giá trị được tính toán. $\hat{q}_i$ là cột thứ $i$ của ma trận $\hat{Q}_n$, $\epsilon$ là độ chính xác máy, $\hat{r}_n=A\hat{q}_n - \hat{\alpha}_n \hat{q}_n - \hat{\beta}_{n-1} \hat{q}_{n-1} $ là phần dư tính toán. Sai số làm mất tính trực giao là một sai số tích lũy, khi $\hat{\beta}_n$ nhỏ, các cột của ma trận $\hat{Q}_{n+1}$ có thể mất tính trực giao ngay cả khi $\hat{r}_n^T \hat{Q}_n=0$. Nếu không được chú ý, những sai số làm tròn này sẽ làm cho các giá trị riêng của $\hat{T}_n$ khác xa so với các giá trị riêng của $T_n$.
 
-\subsection{Cải thiện thuật toán MINRES}
+\subsection{Cải thiện phương pháp MINRES}
 
 \subsubsection{Tái trực giao hóa có lựa chọn}
 
@@ -1491,7 +1491,7 @@ $\lVert I_{n+1} - \hat{Q}_{n+1}^T \hat{Q}_{n+1} \rVert$, nếu đại lượng n
 Như ta đã biết, phương pháp điều kiện đầu là một phương pháp phổ biến để cải thiện đặc tính hội tụ của một hệ phương trình bằng cách biến đổi hệ phương trình làm thay đổi cấu trúc các giá trị riêng của ma trận $A$.
 Ví dụ: với ma trận $A$ có các giá trị riêng riêng biệt tách xa nhau, ta sẽ tìm các biến đổi sao cho các giá trị riêng sẽ phân thành một số ít nhóm nhỏ các giá trị riêng gần nhau, hoặc đẩy xa các giá trị riêng gần 0 của ma trận $A$ ra xa 0.
 
-Cũng như thuật toán GMRES, thuật toán MINRES cũng có các kiểu điều kiện đầu tương ứng:
+Cũng như phương pháp GMRES, phương pháp MINRES cũng có các kiểu điều kiện đầu tương ứng:
 
 \begin{equation}
     M^{-1}Ax = M^{-1}b
@@ -1515,7 +1515,7 @@ Những yêu cầu về xây dựng một ma trận điều kiện đầu tốt 
 Trên thực tế, khi thực hiện thuật toán, chúng ta hệ phương trình với ma trận điều kiện đầu $M$ mà không cần tính $M^{-1}$.
 Nếu $\lVert I - M^{-1} A \rVert \ll 1$ thì sự hội tụ xảy ra rất nhanh
 
-Với thuật toán MINRES mà ma trận $A$ là ma trận đối xứng xác định dấu dương thì điều kiện đầu phân tách trở thành:
+Với phương pháp MINRES mà ma trận $A$ là ma trận đối xứng xác định dấu dương thì điều kiện đầu phân tách trở thành:
 
 \begin{equation}
     L^{-1}A L^{-T} z = L^{-1}b
@@ -1594,32 +1594,32 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 
 Ở các mục \ref{GMRES-Storage} và \ref{MINRES-Storage} ta đã phân tích chi phí bộ nhớ của GMRES và MINRES.
 
-Chi phí bộ nhớ của thuật toán GMRES tại bước lặp thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$ nhưng ta đang xét trong trường hợp $A$ là ma trận thưa (mỗi hàng $l$ phần tử khác 0). Nếu $A$ là ma trận không thưa thì chi phí bộ nhớ cho thuật toán GMRES tại bước lặp thứ $n$ là: $(m+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
+Chi phí bộ nhớ của phương pháp GMRES tại bước lặp thứ $n$ là: $(l+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$ nhưng ta đang xét trong trường hợp $A$ là ma trận thưa (mỗi hàng $l$ phần tử khác 0). Nếu $A$ là ma trận không thưa thì chi phí bộ nhớ cho phương pháp GMRES tại bước lặp thứ $n$ là: $(m+2)m + mn + n + \dfrac{n^2 + n}{2} + 2n$.
 
-Ở thuật toán MINRES, ta chia làm hai trường hợp:
+Ở phương pháp MINRES, ta chia làm hai trường hợp:
 
 \begin{itemize}
-    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES, chi phí bộ nhớ tại bước thứ $n$ là:$\dfrac{m^2}{2}+3m + 3n-3+6+mn+n=\dfrac{m^2}{2}+mn+3m+4n+3$
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như phương pháp GMRES, chi phí bộ nhớ tại bước thứ $n$ là:$\dfrac{m^2}{2}+3m + 3n-3+6+mn+n=\dfrac{m^2}{2}+mn+3m+4n+3$
     \item Nếu ta giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$, chi phí tại bước thứ $n$ là: $\dfrac{m^2}{2}+3m + 3n-3+6+2m + m + 3m=\dfrac{m^2}{2}+9m+3n+3$
 \end{itemize}
 
-Nếu ta không xét đến chi phí bộ nhớ để thiết lập bài toán thì chi phí bộ nhớ của thuật toán GMRES tại bước thứ $n$ là $\mathcal{O}(mn)$, chi phí bộ nhớ của thuật toán MINRES giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES, chi phí bộ nhớ tại bước thứ $n$ là $\mathcal{O}(m)$. Nhưng nếu chi phí bộ nhớ thuật toán MINRES giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là $\mathcal{O}(m+n)$. Như vậy, ta thấy nếu thuật toán MINRES giải theo phương pháp giải $y$ và lưu các vector $q_1, q_2, \dots, q_n$ chi phí bộ nhớ ngang như thuật toán GMRES và chi phí bộ nhớ tăng lên khi số bước lặp $n$ tăng lên.
-Nhưng nếu thuật toán MINRES được giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ thì chi phí bộ nhớ thấp hơn rất nhiều.
+Nếu ta không xét đến chi phí bộ nhớ để thiết lập bài toán thì chi phí bộ nhớ của phương pháp GMRES tại bước thứ $n$ là $\mathcal{O}(mn)$, chi phí bộ nhớ của phương pháp MINRES giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như phương pháp GMRES, chi phí bộ nhớ tại bước thứ $n$ là $\mathcal{O}(m)$. Nhưng nếu chi phí bộ nhớ phương pháp MINRES giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là $\mathcal{O}(m+n)$. Như vậy, ta thấy nếu phương pháp MINRES giải theo phương pháp giải $y$ và lưu các vector $q_1, q_2, \dots, q_n$ chi phí bộ nhớ ngang như phương pháp GMRES và chi phí bộ nhớ tăng lên khi số bước lặp $n$ tăng lên.
+Nhưng nếu phương pháp MINRES được giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ thì chi phí bộ nhớ thấp hơn rất nhiều.
 
 \subsection{Chi phí tính toán}
 
-Ở các mục \ref{GMRES-Computation-Cost} và \ref{MINRES-Computation-Cost} đã phân tích chi phí tính toán của thuật toán GMRES và thuật toán MINRES.
+Ở các mục \ref{GMRES-Computation-Cost} và \ref{MINRES-Computation-Cost} đã phân tích chi phí tính toán của phương pháp GMRES và phương pháp MINRES.
 
-Chi phí tính toán tích lũy của thuật toán GMRES giả sử rằng tại bước lặp thứ $n$ thuật toán GMRES đạt điều kiện hội tụ là: $2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
+Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp GMRES đạt điều kiện hội tụ là: $2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
 
-Chi phí tính toán tích lũy của thuật toán GMRES giả sử rằng tại bước lặp thứ $n$ thuật toán MINRES đạt điều kiện hội tụ và giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như thuật toán GMRES là: $2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$.
-Chi phí tính toán tích lũy của thuật toán GMRES giả sử rằng tại bước lặp thứ $n$ thuật toán MINRES đạt điều kiện hội tụ và giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là: $2m^n+15mn-n \sim \mathcal{O}(m^2n)$
+Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp MINRES đạt điều kiện hội tụ và giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như phương pháp GMRES là: $2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$.
+Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp MINRES đạt điều kiện hội tụ và giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là: $2m^n+15mn-n \sim \mathcal{O}(m^2n)$
 
-Nhược điểm rất lớn của thuật toán GMRES là chi phí tính toán mỗi bước sau sẽ tăng so với bước trước, nếu $n$ lớn thì chi phí mỗi bước lặp sẽ rất cao. Nhưng với thuật toán MINRES thì khác đối với phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ chi phí tính toán mỗi bước chỉ là $\mathcal{O}(m^2)$ (không tính chi phí giải $y$ khi đã đạt điều kiện hội tụ) và đối với phương pháp giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ vẫn là $\mathcal{O}(m^2)$
+Nhược điểm rất lớn của phương pháp GMRES là chi phí tính toán mỗi bước sau sẽ tăng so với bước trước, nếu $n$ lớn thì chi phí mỗi bước lặp sẽ rất cao. Nhưng với phương pháp MINRES thì khác đối với phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ chi phí tính toán mỗi bước chỉ là $\mathcal{O}(m^2)$ (không tính chi phí giải $y$ khi đã đạt điều kiện hội tụ) và đối với phương pháp giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ vẫn là $\mathcal{O}(m^2)$
 
 \subsection{Sự hội tụ của hai phương pháp}
 
-Sự hội tụ của cả hai thuật toán GMRES và MINRES có những điểm khá tương đồng. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là:
+Sự hội tụ của cả hai phương pháp GMRES và MINRES có những điểm khá tương đồng. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là:
 
 \begin{equation}
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert
@@ -1642,7 +1642,7 @@ Trong trường hợp tổng quát thì sự phân tích hội tụ của hai ph
     \addcontentsline{toc}{section}{{\bf KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN ĐỀ TÀI}\rm}
 \end{center}
 
-Tiểu luận đã trình bày các kiến thức của hai thuật toán GMRES và MINRES và so sánh được điểm giống và khác nhau của hai phương pháp này.
+Tiểu luận đã trình bày các kiến thức của hai phương pháp GMRES và MINRES và so sánh được điểm giống và khác nhau của hai phương pháp này.
 Những điểm đã đạt được:
 
 \begin{itemize}
