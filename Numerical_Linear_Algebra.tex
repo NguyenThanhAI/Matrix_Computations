@@ -1031,7 +1031,7 @@ Do phương pháp MINRES là trường hợp đặc biệt của phương pháp 
     p_n = \underset{p_n \in P_n}{\mathrm{argmin}} \lVert p_n(A)b \rVert
 \end{equation}
 
-\subsection{Chi tiết thực hiện phương pháp MINRES}
+\subsection{Chi tiết thực hiện phương pháp MINRES} \label{MINRES-Detailed}
 
 Phương pháp để giải bài toán $y=\underset{y \in \mathbb{R}^n}{\mathrm{argmin}} \lVert \beta e_1  \rVert$ là phân tích ma trận $\widetilde{T}_n$ thành một ma trận trực giao $G^T$ có kích thước $(n+1) \times (n+1)$ nhân với một tam giác trên $R$ có kích thước $(n+1) \times n$:
 
@@ -1144,7 +1144,7 @@ Ta suy ra công thức tổng quát để tính các cột của ma trận $Z_n$
 
 Từ đây ta suy ra công thức tính $x_n$ theo $x_{n-1}$:
 
-\begin{equation}
+\begin{equation} \label{eq:X-Recurrence}
     x_n = x_{n-1} + g_n\lbrack n \rbrack \Big(\dfrac{q_n - \epsilon_n z_{n-2} - \delta_n z_{n-1}}{\gamma_n}\Big)
 \end{equation}
 
@@ -1628,6 +1628,44 @@ Như vậy, bài toán được đưa về một bài toán bình phương tối
 
 đối với phương pháp MINRES
 
+Tại đây cả hai phương pháp ta đều áp dụng các phép quay Givens vào chuẩn phần dư ta được:
+
+\begin{equation}
+    \lVert r_n \rVert = \lVert G(\beta e_1 - \widetilde{H}_n y) \rVert = \lVert \beta G e_1 - R_n y \rVert
+\end{equation}
+
+đối với phương pháp GMRES, và:
+
+\begin{equation}
+    \lVert r_n \rVert = \lVert G(\beta e_1 - \widetilde{T}_n y) \rVert = \lVert \beta G e_1 - R_n y \rVert
+\end{equation}
+
+Ma trận $R_n$ đối với phương pháp GMRES là một ma trận tam giác trên nhưng với phương pháp MINRES thì ma trận $R_n$ là một ma trận tam giác trên với 3 đường chéo có dạng:
+
+\begin{equation}
+    R_n = \begin{bmatrix}
+        \gamma_1 & \delta_2 & \epsilon_3 & \space & \space & \space & \space \\
+        \space & \gamma_2 & \delta_3 & \epsilon_4 & \space & \space & \space \\
+        \space & \space  & \gamma_3 & \delta_4 & \epsilon_5 & \space & \space \\
+        \space & \space & \space & \ddots & \ddots & \ddots & \space \\
+        \space & \space & \space & \space & \gamma_{n-2} & \delta_{n-1} & \epsilon_n \\
+        \space & \space & \space & \space & \space & \gamma_{n-1} & \delta_n \\
+        \space & \space & \space & \space & \space & \space & \gamma_n \\
+        0 & \dots & 0 & \dots & 0 & \dots & 0
+    \end{bmatrix}
+\end{equation}
+
+Điểm khác là tại mỗi bước lặp, trong phương pháp GMRES số phép quay Givens áp dụng cho cột thứ $n$ của ma trận $\widetilde{H}_n$ là $n$ (số phép quay Givens áp dụng cho cột cuối cùng tăng dần theo từng bước). Trong phương pháp MINRES, mỗi cột thứ $n$ của ma trận $\widetilde{T}_n$ (trừ $n=1,2$) chỉ áp dụng 3 phép quay Givens. Như vậy rõ ràng rằng tại mỗi bước $n$, chi phí tính toán của phương pháp GMRES đã tăng lên so với bước trước.
+
+Cả hai phương pháp đều được kiểm tra chuẩn phần dư bằng cách so sánh thành phần thứ $n+1$ của $g_n=\beta G e_1$ với chuẩn phần dư $\epsilon$ cho phép. Nếu $g_n[n+1] < \epsilon$ thì phương pháp GMRES sẽ giải phương trình $R_n \lbrack 1:n, 1:n \rbrack = g_n \lbrack 1:n \rbrack$ bằng phương pháp thế ngược.
+
+Phương pháp MINRES ta chia làm hai trường hợp:
+
+\begin{itemize}
+    \item Nếu ta giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ cách giải giống như phương pháp GMRES được trình bày ở trên nhưng khác là giải $y$ bằng phép thế ngược có chi phí tính toán rẻ hơn phương pháp GMRES do ma trận $R_n$ là ma trận tam giác trên chỉ có 3 đường chéo nhưng chi phí bộ nhớ về cơ bản là như nhau do phải lưu các ma trận $q_1, q_2, \dots, q_n$. Chi tiết của phương pháp này đã được trình bày ở mục \ref{MINRES-Detailed} và thuật toán \ref{alg:MINRES-Detailed-1}.
+    \item Nếu ta giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ chi phí bộ nhớ rẻ hơn phương pháp trên và bước lặp nào cũng tính $x_n$ theo $x_{n-1}$ theo công thức \ref{eq:X-Recurrence}. Chi tiết của phương pháp này đã được trình bày ở mục \ref{MINRES-Detailed} và thuật toán \ref{alg:MINRES-Detailed-2}.
+\end{itemize}
+
 \subsection{Chi phí bộ nhớ}
 
 Ở các mục \ref{GMRES-Storage} và \ref{MINRES-Storage} ta đã phân tích chi phí bộ nhớ của GMRES và MINRES.
@@ -1666,7 +1704,7 @@ Sự hội tụ của cả hai phương pháp GMRES và MINRES có những đi�
 Cả hai phương pháp mỗi bước lặp $n$ đều tìm một đa thức $p_n$ sao cho cực tiểu hóa chuẩn phần dư $\lVert r_n \rVert=\lVert b - Ax_n \rVert=\lVert p_n(A)b \rVert$. Trong một số trường hợp đặc biệt:
 
 \begin{itemize}
-    \item Ma trận $A$ là ma trận đối xứng xác định dấu dương cả hai phương pháp đều cần $\mathcal{O}(\sqrt(\kappa))$ bước lặp để đạt điều kiện hội tụ.
+    \item Ma trận $A$ là ma trận đối xứng xác định dấu dương cả hai phương pháp đều cần $\mathcal{O}(\sqrt{\kappa})$ bước lặp để đạt điều kiện hội tụ.
     \item Ma trận $A$ là ma trận đối xứng không xác định dấu cả hai phương pháp đều cần $\mathcal{O}(\kappa)$ bước lặp để hội tụ.
 \end{itemize}
 
@@ -1696,7 +1734,7 @@ Tuy nhiên tiểu luận vẫn còn những hạn chế nhất định, do hạn
 cũng như phân tích sâu về các phương pháp như: song trực giao hóa (\textit{biorthogonalization}), tái trực giao hóa có lựa chọn (\textit{selective reorthogonalization}).
 Ngoài ra tiểu luận vẫn chưa thể phân tích khi một số trường hợp đặc biệt xảy ra (ví dụ: nếu tồn tại một bước $n$ mà ma trận $T_n$ kỳ dị).
 
-Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian con Krylov.
+Trong khuôn khổ có hạn, tiểu luận không thể đề cập đến mọi khía cạnh, các trường hợp đặc biệt cũng như giải quyết mọi vấn đề của hai phương pháp GMRES và MINRES. Ở các bước phát triển tiếp theo, các vấn đề nêu trên sẽ được tìm hiểu một cách sâu sắc hơn và cập nhật những công trình nghiên cứu mới về các phương pháp trên không gian con Krylov.
 \newpage
 \addcontentsline{toc}{section}{TÀI LIỆU THAM KHẢO}
 %\bibliographystyle{IEEEtraN}
