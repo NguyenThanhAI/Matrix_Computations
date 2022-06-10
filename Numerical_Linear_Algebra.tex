@@ -1704,12 +1704,37 @@ Sự hội tụ của cả hai phương pháp GMRES và MINRES có những đi�
 Cả hai phương pháp mỗi bước lặp $n$ đều tìm một đa thức $p_n$ sao cho cực tiểu hóa chuẩn phần dư $\lVert r_n \rVert=\lVert b - Ax_n \rVert=\lVert p_n(A)b \rVert$. Trong một số trường hợp đặc biệt:
 
 \begin{itemize}
-    \item Ma trận $A$ là ma trận đối xứng xác định dấu dương cả hai phương pháp đều cần $\mathcal{O}(\sqrt{\kappa})$ bước lặp để đạt điều kiện hội tụ.
+    \item Ma trận $A$ là ma trận đối xứng xác định dấu dương cả hai phương pháp đều cần $\mathcal{O}(\sqrt{\kappa})$ bước lặp để đạt điều kiện hội tụ. Trong trường hợp này, chuẩn phần dư $\lVert r_n \lVert$ thỏa mãn công thức:
+    \begin{equation}
+        \dfrac{\lVert r_n \rVert }{\lVert b \rVert} \leq 2\Big(\dfrac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1}\Big)^n
+    \end{equation}
+    với $\kappa=\dfrac{\lambda_{\max}}{\lambda_{\min}}$
     \item Ma trận $A$ là ma trận đối xứng không xác định dấu cả hai phương pháp đều cần $\mathcal{O}(\kappa)$ bước lặp để hội tụ.
 \end{itemize}
 
-Trong trường hợp tổng quát thì sự phân tích hội tụ của hai phương pháp rất phức tạp. Nhưng cách phân tích trực quan nhất vẫn là phân tích cấu trúc các giá trị riêng của ma trận $A$.
+Trong trường hợp tổng quát thì sự phân tích hội tụ của hai phương pháp rất phức tạp. Nhưng cách phân tích trực quan nhất vẫn là phân tích cấu trúc các giá trị riêng của ma trận $A$:
 
+\begin{itemize}
+    \item Nếu ma trận $A$ có $n$ giá trị riêng phân biệt thì các phương pháp sẽ tìm được nghiệm chính xác sau $n$ bước.
+    \item Nếu ma trận $A$ có 1 giá trị riêng phân biệt duy nhất (và khác 0) thì sau một bước lặp sẽ tìm được nghiệm chính xác.
+    \item Nếu ma trận $A$ có các giá trị riêng phân thành một số ít nhóm (càng ít nhóm càng tốt), mỗi nhóm các giá trị riêng nằm sát nhau thì phương pháp cũng chỉ cần số bước lặp khoảng bằng số nhóm để đạt điều kiện hội tụ.
+    \item Quá trình hội tụ sẽ khó hơn nếu ma trận $A$ có giá trị riêng nào đó nằm gần $0$ do $p_n \in P_n$ nên $p_n(0)=1$, sẽ khó khăn trong việc chọn một đa thức sao cho $p_n(0)=1$ và giá trị của nó tại một điểm gần 0 bằng 0 hoặc đủ nhỏ.
+\end{itemize}
+
+Để cải thiện đặc tính hội tụ của một hệ phương trình, ta có thể sử dụng các phương pháp điều kiện đầu (preconditioning) để cải thiện cấu trúc các giá trị riêng của ma trận $A$ như đẩy các giá trị riêng lại gần nhau hoặc đẩy các giá trị riêng gần 0 ra xa 0.
+
+Một hình ảnh trực quan so sánh tốc độ hội tụ của hai phương pháp GMRES và phương pháp MINRES cùng áp dụng cho một hệ phương trình $Ax=b, A \in \mathbb{R}^{24 \times 24}$, $A$ là ma trận đối xứng xác định dấu dương được thực hiện trong \cite{driscoll1998potential} được biểu diễn trên hình \ref{fig:GMRES-MINRES-Convergence-Comparison}:
+
+
+\begin{figure}[h!] \centering
+
+    \includegraphics[scale=0.6]{GMRES-MINRES-Convergence-Comparison.jpg}
+    \caption{So sánh tốc độ hội tụ của phương pháp GMRES và phương pháp MINRES sử dụng cho hệ phương trình $Ax=b, A \in \mathbb{R}^{24 \times 24}$, $A$ là ma trận xác định dấu dương}
+
+    \label{fig:GMRES-MINRES-Convergence-Comparison}
+\end{figure}
+
+Ta nhận thấy tốc độ hội tụ của phương pháp GMRES áp dụng lên hệ $Ax=b$ với $A$ là ma trận đối xứng xác định dấu dương nhanh hơn so với phương pháp MINRES. Một cách giải thích là vì phương pháp MINRES bị ảnh hưởng bởi sai số làm tròn, làm cho tính trực giao của các vector trong hệ cơ sở trực chuẩn $q_1, q_2, \dots, q_n$ của không gian con Krylov $\mathcal{K}_n$ không còn được đảm bảo, dẫn đến sai số lớn khi tính $x_n$ làm ảnh hưởng đến quá trình hội tụ của phương pháp.
 
 
 \newpage
