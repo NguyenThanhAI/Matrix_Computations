@@ -16,6 +16,9 @@
 \usepackage[shortlabels]{enumitem}
 \usepackage{fancyhdr} % header, footer
 \usepackage{hyperref} % loại bỏ border với mục lục và công thức
+\usepackage[nonumberlist, nopostdot, nogroupskip]{glossaries}
+\usepackage{glossary-superragged}
+\setglossarystyle{superraggedheaderborder}
 \pagestyle{fancy}
 %\usepackage[style=numeric,sortcites]{biblatex}
 %\addbibresource{ref.bib}
@@ -37,6 +40,21 @@
 %       {\gdef\multicitedelim{\addcomma\space}}%
 %    }%
 %}
+
+\makenoidxglossaries
+
+% Danh mục thuật ngữ
+\newglossaryentry{GMRES}
+{
+	name={GMRES},
+	description={Generalized Minimal Residual Method}
+}
+
+\newglossaryentry{MINRES}
+{
+	name={MINRES},
+	description={Minimal Residual Method}
+}
 
 \hypersetup{
     colorlinks=false,
@@ -158,6 +176,13 @@
 \tableofcontents
 \newpage
 \listoffigures
+\newpage
+\glsaddall 
+\renewcommand*{\glossaryname}{Danh mục các từ viết tắt}
+\renewcommand*{\acronymname}{Danh sách từ viết tắt}
+\renewcommand*{\entryname}{Viết tắt}
+\renewcommand*{\descriptionname}{Viết đầy đủ}
+\printnoidxglossary
 \cleardoublepage
 \pagenumbering{arabic}
 
@@ -172,6 +197,18 @@
 \end{center}
 \addcontentsline{toc}{section}{{\bf LỜI MỞ ĐẦU}\rm}
 
+Trong các bài toán trong lý thuyết cũng như trong kỹ thuật, các hệ phương trình đại số tuyến tính $Ax=b$ rất hay thường gặp. Bài toán này có thể dễ dàng giải trong lý thuyết bằng cách tính nghịch đảo $x^* = A^{-1}b$. Tuy nhiên, trong các bài toán thực tế, kích thước các ma trận $A$ thường rất lớn, vì vậy việc tính ma trận nghịch đảo có chi phí rất lớn. Yêu cầu thực tế đặt ra cần một nhóm các phương pháp mới giải các hệ phương trình đại số tuyến tính một cách hiệu quả và có chi phí thấp hơn.
+Các thuật toán lặp chính là phương pháp ta tìm kiếm, mục tiêu của mỗi bước lặp là sau mỗi bước sẽ tìm được một nghiệm sao cho ssau một số bước đủ lớn, nghiệm chúng ta tìm được gần đúng với nghiệm chính xác. Trong nhóm phương pháp này các phương pháp trên không gian con Krylov $\mathcal{K}_n$ đóng một vai trò rất quan trọng. Ý tưởng của nhóm phương pháp này là tại mỗi bước ta mở rộng không con con Krylov $\mathcal{K}_n$ và tìm một nghiệm $x_n$ trên không gian con này sao cho làm cực tiểu hóa chuẩn phần dư $\underset{x_n \in \mathcal{K}_n}{\min}\lVert r_n \rVert = \underset{x_n \in \mathcal{K}_n}{\min}\lVert b - A x_n \rVert$. Trong nhóm các phương pháp này hai phương pháp nổi bật nhất chính là GMRES (Generalized Minimal Residual Method) và MINRES (Minimal Residual Method).
+Phương pháp GMRES dùng để giải các hệ phương trình mà ma trận $A$ là ma trận không kỳ dị. Phương pháp MINRES được áp dụng cho các hệ phương trình mà ma trận $A$n là ma trận đối xứng (ma trận $A$ đối xứng vẫn có thể áp dụng phương pháp GMRES được). Tiểu luận sẽ tìm hiểu về phương pháp MINRES và so sánh những điểm giống và khác nhau của hai phương pháp. Dù phương pháp MINRES là trọng tâm chính của tiểu luận nhưng phương pháp GMRES vẫn sẽ được trình bày chi tiết nhằm có một so sánh toàn diện và chi tiết nhất giữa hai phương pháp.
+
+Kết cấu tiểu luận gồm 4 phần chính:
+
+\begin{itemize}
+    \item Phần 1 trình bày tổng quan về các phương pháp trên không gian con Krylov và hai thuật toán lặp Arnoldi và Lanczos. Thuật toán lặp Arnoldi là bước cơ sở thực hiện mỗi bước lặp của phương pháp lặp GMRES và thuật toán lặp Lanczos là bước cơ sở thực hiện phương pháp MINRES.
+    \item Phần 2 trình bày chi tiết về phương pháp GMRES.
+    \item Phần 3 trình bày chi tiết về phương pháp MINRES.
+    \item Phần 4 tổng hợp và so sánh sự giống nhau và khác nhau giữa hai phương pháp GMRES và MINRES đã được trình bày ở các phần trước.
+\end{itemize}
 \newpage
 
 \section{Tổng quan về các phương pháp lặp trên không gian con Krylov}
@@ -400,7 +437,7 @@ Tuy nhiên thuật toán lặp Lanczos vẫn có thể rất hữu hiệu trong 
 
 \subsection{Giới thiệu phương pháp GMRES} \label{GMRES-Introduction}
 
-Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của phương pháp GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa phần dư $r_n = b - A x_n$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
+Phương pháp GMRES áp dụng cho hệ phương trình $Ax=b$ có ma trận $A$ là ma trận không kỳ dị. Ta gọi nghiệm chính xác của bài toán là $x^* = A^{-1}b$. Ý tưởng của phương pháp GMRES khá đơn giản, tại bước thứ $n$, ta xác định một vector $x_n \in \mathcal{K}_n$ làm cực tiểu hóa chuẩn phần dư $\lVert r_n \rVert = \lVert b - A x_n \rVert$. Hay nói theo cách khác chúng ta đang tìm $x_n$ giải một bài toán cực tiểu hóa như ở hình \ref{fig:GMRES-LS}
 
 
 
@@ -911,7 +948,8 @@ Chương trước đã trình bày về phương pháp GMRES. Mặc dù phương
 phương pháp MINRES có nhiều điểm tương đồng với phương pháp GMRES. phương pháp MINRES có thể xem như là phương pháp GMRES áp dụng cho ma trận đối xứng không xác định dấu.
 Thuật toán lặp Arnoldi trở thành thuật toán lặp Lanczos hay còn gọi là phương pháp truy hồi ba tham số.
 
-Ta cần kiểm chứng hệ vector được tạo thành từ thuật toán lặp Lanczos cũng là hệ cơ sở trực chuẩn giống như thuật toán lặp Arnoldi khi ma trận $A$ là ma trận đối xứng. Đặt $\tilde{q}_{n+1}=Aq_{n} - \alpha_n q_n - \beta_{n-1}q_{n-1}$
+Ta cần kiểm chứng hệ vector được tạo thành từ thuật toán lặp Lanczos cũng là hệ cơ sở trực chuẩn giống như thuật toán lặp Arnoldi khi ma trận $A$ là ma trận đối xứng. Đặt $\tilde{q}_{n+1}=Aq_{n} - \alpha_n q_n - \beta_{n-1}q_{n-1}$,
+từ công thức tính $\alpha_n$ kéo theo $q_{n+1}^T q_n=0$. Ta giả sử $q_k^T q_i =0 \thickspace \forall i \neq k \text{ và } i, k < n$
 Ta xét tích vô hướng $\tilde{q}_{n+1}^T q_{n-1}$:
 
 \begin{equation}
@@ -970,7 +1008,7 @@ Cũng như phương pháp GMRES, ta đặt $\lVert b \rVert= \beta, Q_{n+1}^T b=
 
 
 \begin{algorithm}[h!]
-    \caption{phương pháp MINRES}\label{alg:MINRES}
+    \caption{Các bước cơ bản phương pháp MINRES}\label{alg:MINRES}
     \hspace*{\algorithmicindent} \textbf{Input:} {Ma trận $A \in \mathbb{R}^{m \times m}$ đối xứng, vector $b \in \mathbb{R}^m$, chuẩn phần dư $\epsilon$ cho phép} \\
     \hspace*{\algorithmicindent} \textbf{Output:} {$x_n \in \mathbb{R}^m$}
     \begin{algorithmic}
@@ -1317,7 +1355,7 @@ Ta xét hai trường hợp:
 
 \textbf{Nhận xét:} Sử dụng phương pháp thứ hai có lợi hơn về chi phí bộ nhớ nhưng chi phí tính toán cao hơn so với phương pháp thứ nhất ($7mn > m(2n-1) + 5n - 6$)
 
-Tổng hợp lại theo phương pháp thứ nhất chi phí tính toán của phương pháp GMRES là: $2m^2n+8mn-n+m(2n-1)+5n-6=2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$ và chi phí tính toán theo phương pháp thứ hai là: $2m^2n+8mn-n + 7mn=2m^n+15mn-n \sim \mathcal{O}(m^2n)$. Cả hai phương pháp đều có cùng độ phức tạp $\mathcal{O}(m^2n)$ nhưng phương pháp thứ hai có chi phí bộ nhớ thấp hơn nên trung thực tế phương pháp thứ hai là sử dụng mối quan hệ giữa $x_n$ và $x_{n-1}$ không lưu các vector $q_1, q_2, \dots, q_n$ hay được sử dụng hơn.
+Tổng hợp lại theo phương pháp thứ nhất chi phí tính toán của phương pháp GMRES là: $2m^2n+8mn-n+m(2n-1)+5n-6=2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$ và chi phí tính toán theo phương pháp thứ hai là: $2m^2n+8mn-n + 7mn=2m^2n+15mn-n \sim \mathcal{O}(m^2n)$. Cả hai phương pháp đều có cùng độ phức tạp $\mathcal{O}(m^2n)$ nhưng phương pháp thứ hai có chi phí bộ nhớ thấp hơn nên trung thực tế phương pháp thứ hai là sử dụng mối quan hệ giữa $x_n$ và $x_{n-1}$ không lưu các vector $q_1, q_2, \dots, q_n$ hay được sử dụng hơn.
 
 \subsubsection{Sự hội tụ của phương pháp MINRES}
 
@@ -1613,13 +1651,13 @@ Nhưng nếu phương pháp MINRES được giải theo phương pháp mối qua
 Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp GMRES đạt điều kiện hội tụ là: $2m^2 n + 2mn^2+4mn+3.5n^2+3m+15n+2.5 \sim \mathcal{O}(2m^2n+ 2mn^2)$
 
 Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp MINRES đạt điều kiện hội tụ và giải theo phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ như phương pháp GMRES là: $2m^2n+10mn-m+4n-6 \sim \mathcal{O}(m^2n)$.
-Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp MINRES đạt điều kiện hội tụ và giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là: $2m^n+15mn-n \sim \mathcal{O}(m^2n)$
+Chi phí tính toán tích lũy của phương pháp GMRES giả sử rằng tại bước lặp thứ $n$ phương pháp MINRES đạt điều kiện hội tụ và giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ là: $2m^2n+15mn-n \sim \mathcal{O}(m^2n)$
 
 Nhược điểm rất lớn của phương pháp GMRES là chi phí tính toán mỗi bước sau sẽ tăng so với bước trước, nếu $n$ lớn thì chi phí mỗi bước lặp sẽ rất cao. Nhưng với phương pháp MINRES thì khác đối với phương pháp giải $y$ bằng phương pháp thế ngược và lưu tất cả các vector $q_1, q_2, \dots, q_n$ chi phí tính toán mỗi bước chỉ là $\mathcal{O}(m^2)$ (không tính chi phí giải $y$ khi đã đạt điều kiện hội tụ) và đối với phương pháp giải theo phương pháp mối quan hệ giữa $x_n$ và $x_{n-1}$ và không lưu các vector $q_1, q_2, \dots, q_n$ vẫn là $\mathcal{O}(m^2)$
 
 \subsection{Sự hội tụ của hai phương pháp}
 
-Sự hội tụ của cả hai phương pháp GMRES và MINRES có những điểm khá tương đồng. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là:
+Sự hội tụ của cả hai phương pháp GMRES và MINRES có những điểm khá tương đồng. Phần dư của hai phương pháp theo từng bước lặp đơn điệu giảm. Công thức bản lề để đánh giá quá trình hội tụ của cả hai phương pháp là:
 
 \begin{equation}
     \dfrac{\lVert r_n \rVert}{\lVert b \rVert} \leq \inf_{p_n \in P_n} \sup_{s \in \Lambda(A)} \lvert p_n(s) \rvert
